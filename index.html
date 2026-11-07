@@ -1014,7 +1014,8 @@ function clickoFilterCatalogItems(items,{category='ทั้งหมด',query=
   if(condition&&p.condition!==condition)return false;
   if(availability!=='all'&&clickoStockStatus(p)!==availability)return false;
   const haystack=[p.name,p.category,p.sub,p.specs,p.note,p.id].map(v=>String(v??'')).join(' ').normalize('NFKC').toLocaleLowerCase();
-  return tokens.every(token=>haystack.includes(token));
+  const words=haystack.split(/[^a-z0-9\u0e00-\u0e7f]+/).filter(Boolean);
+  return tokens.every(token=>token.length<=2?words.includes(token):haystack.includes(token));
  });
  if(sort==='low'||sort==='high')result.sort((a,b)=>{
   const aa=typeof a.price==='number'&&Number.isFinite(a.price)?a.price:null;
