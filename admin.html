@@ -102,24 +102,27 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .photo-thumb img{width:88px;height:82px;object-fit:contain}
 .photo-thumb button{position:absolute;right:3px;top:3px;border-radius:50%;width:27px;height:27px;padding:0;background:#a4263e}
 .photo-thumb small{font-size:10px;color:#66758c}
+</style><style id="clicko-archived-products">
+.stock-badge.status-hidden{color:#606d81;background:#eef1f5;border-color:#dbe2e9}
+.item:has(.status-hidden){opacity:.77}
 </style></head><body>
 <header><div><h1>Clicko<span class="admin-title-accent">.</span> Admin</h1><span class="muted">จัดการร้านบนมือถือได้ทุกที่</span></div><div><a href="./orders.html">ออเดอร์ / กำไร</a> <a href="./backup.html">สำรองข้อมูล</a> <a href="./">หน้าร้าน ↗</a> <button id="logout" class="secondary hidden">ออกจากระบบ</button></div></header>
 <main><div id="notice"></div><section id="setup" class="panel hidden"><h2>ยังไม่ได้เชื่อมฐานข้อมูล</h2><p>สร้างโปรเจกต์ Supabase แล้วใส่ Project URL และ Publishable / anon key ในไฟล์ <code>supabase-config.js</code> บน GitHub ก่อนใช้งาน ไม่ต้องใส่ service_role key</p><p><a href="https://supabase.com/dashboard" target="_blank" rel="noopener">เปิด Supabase</a></p></section>
 <section id="login" class="panel hidden"><h2>เข้าสู่ระบบเจ้าของร้าน</h2><form id="login-form"><label>อีเมล</label><input id="email" type="email" required autocomplete="username"><label>รหัสผ่าน</label><input id="password" type="password" required autocomplete="current-password"><p><button type="submit">เข้าสู่ระบบ</button></p></form><p class="muted">ผู้ดูแลต้องได้รับสิทธิ์ในตาราง clicko_admins ก่อนแก้ไขสินค้า</p></section>
-<section id="workspace" class="hidden"><div class="panel"><div class="workspace-head"><div><span class="overline">PRODUCT MANAGER</span><h2>จัดการสินค้า</h2><p class="muted">แก้ราคาและสถานะได้จากหน้ารายการทันที</p></div><button id="new" type="button">+ เพิ่มสินค้า</button></div><div class="stock-overview" id="stock-overview" aria-label="สรุปจำนวนสินค้าตามสถานะ"><div class="stock-stat"><span>ทั้งหมด</span><strong id="stock-all">0</strong></div><div class="stock-stat"><span>พร้อมขาย</span><strong id="stock-available">0</strong></div><div class="stock-stat"><span>จองแล้ว</span><strong id="stock-reserved">0</strong></div><div class="stock-stat"><span>ขายแล้ว</span><strong id="stock-sold">0</strong></div></div><div class="stock-toolbar"><div class="search-field"><span class="search-symbol" aria-hidden="true">⌕</span><input id="search" type="search" autocomplete="off" placeholder="ค้นหาชื่อรุ่น / รหัสสินค้า" aria-label="ค้นหาสินค้า"><button type="button" class="search-clear" id="search-clear" aria-label="ล้างคำค้นหา">×</button></div><select id="stock-filter" aria-label="กรองสถานะ"><option value="all">ทุกสถานะ</option><option value="available">พร้อมขาย</option><option value="reserved">จองแล้ว</option><option value="sold">ขายแล้ว</option></select></div><div class="list-heading"><span id="result-count">0 รายการ</span><button type="button" id="reload" class="reload-button">↻ รีเฟรช</button></div><div id="items"></div></div>
+<section id="workspace" class="hidden"><div class="panel"><div class="workspace-head"><div><span class="overline">PRODUCT MANAGER</span><h2>จัดการสินค้า</h2><p class="muted">แก้ราคาและสถานะได้จากหน้ารายการทันที</p></div><button id="new" type="button">+ เพิ่มสินค้า</button></div><div class="stock-overview" id="stock-overview" aria-label="สรุปจำนวนสินค้าตามสถานะ"><div class="stock-stat"><span>ทั้งหมด</span><strong id="stock-all">0</strong></div><div class="stock-stat"><span>พร้อมขาย</span><strong id="stock-available">0</strong></div><div class="stock-stat"><span>จองแล้ว</span><strong id="stock-reserved">0</strong></div><div class="stock-stat"><span>ขายแล้ว</span><strong id="stock-sold">0</strong></div></div><div class="stock-toolbar"><div class="search-field"><span class="search-symbol" aria-hidden="true">⌕</span><input id="search" type="search" autocomplete="off" placeholder="ค้นหาชื่อรุ่น / รหัสสินค้า" aria-label="ค้นหาสินค้า"><button type="button" class="search-clear" id="search-clear" aria-label="ล้างคำค้นหา">×</button></div><select id="stock-filter" aria-label="กรองสถานะ"><option value="all">ทุกสถานะ</option><option value="available">พร้อมขาย</option><option value="reserved">จองแล้ว</option><option value="sold">ขายแล้ว</option><option value="hidden">ซ่อนจากหน้าร้าน</option></select></div><div class="list-heading"><span id="result-count">0 รายการ</span><button type="button" id="reload" class="reload-button">↻ รีเฟรช</button></div><div id="items"></div></div>
 <section id="editor" class="panel hidden"><div class="editor-heading"><div><span class="overline">PRODUCT EDITOR</span><h2 id="editor-title">แก้ไขสินค้า</h2></div><button type="button" class="secondary editor-back" id="editor-back">← กลับรายการ</button></div><form id="product-form"><div class="grid"><div><label>รหัสสินค้า (SKU)</label><input id="sku" required placeholder="CLK-001"></div><div><label>ชื่อสินค้า</label><input id="name" required></div><div><label>หมวดหมู่</label><select id="category"><option>PC PARTS</option><option>GAMING MOUSE</option><option>GAMEPAD & USB HUB</option><option>KEYBOARD</option><option>MOUSEPAD</option><option>AUDIO</option><option>MONITOR & ACCESSORIES</option></select></div><div><label>ประเภทย่อย</label><input id="sub" placeholder="CPU, RAM, ..."></div><div><label>สภาพสินค้า</label><select id="condition"><option>มือ1</option><option>มือ2</option></select></div><div><label>ราคา (บาท)</label><input id="price" type="number" min="0" step="1" placeholder="เว้นว่างเมื่อยังไม่ระบุราคา"></div><div><label>ประกัน</label><input id="warranty"></div><div><label>สถานะสต๊อก</label><select id="stock_status"><option value="available">พร้อมขาย</option><option value="reserved">จองแล้ว</option><option value="sold">ขายแล้ว</option></select></div></div><label>สเปคสินค้า</label><textarea id="specs"></textarea><label>หมายเหตุ / ตำหนิ</label><textarea id="note"></textarea><label>ลิงก์ภาพกล่องสินค้าตรงรุ่น (HTTPS)</label><p class="muted">ใช้ภาพกล่องตรงรุ่นเท่านั้น หากไม่มีภาพยืนยัน ให้เว้นว่างแทนการใช้ภาพผิดรุ่น</p><p><a id="box-search" href="https://www.google.com/search?tbm=isch&q=product%20retail%20box" target="_blank" rel="noopener">ค้นหาภาพกล่องสินค้ารุ่นนี้ ↗</a></p><input id="image" type="url" placeholder="https://..."><label>หรืออัปโหลดรูปสินค้า (JPG, PNG, WEBP ไม่เกิน 5 MB)</label><input id="photo" type="file" accept="image/jpeg,image/png,image/webp"><img id="preview" class="preview hidden" alt="ภาพสินค้า">
 <div class="photo-manager"><label for="extra-photos">เพิ่มรูปจริงหลายมุม (สูงสุด 8 รูปเสริม)</label>
 <input id="extra-photos" type="file" accept="image/jpeg,image/png,image/webp" multiple>
 <p class="muted">แต่ละรูปไม่เกิน 5 MB · ใช้เฉพาะรูปสินค้าจริง · รูปหลักอยู่ในช่องด้านบน</p>
 <div id="photo-gallery-admin" class="photo-gallery-admin"></div></div>
-<p class="row"><button type="submit" id="save">บันทึกสินค้า</button><button type="button" class="secondary" id="cancel">ยกเลิก</button><button type="button" class="danger" id="remove">ลบรายการจาก Admin</button></p></form></section></section><button id="mobile-add" type="button" class="mobile-add hidden" aria-label="เพิ่มสินค้าใหม่">+ เพิ่มสินค้า</button></main>
+<p class="row"><button type="submit" id="save">บันทึกสินค้า</button><button type="button" class="secondary" id="cancel">ยกเลิก</button><button type="button" class="danger" id="remove">ซ่อนจากหน้าร้าน</button></p></form></section></section><button id="mobile-add" type="button" class="mobile-add hidden" aria-label="เพิ่มสินค้าใหม่">+ เพิ่มสินค้า</button></main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script src="./supabase-config.js"></script><script>
 const cfg=window.CLICKO_SUPABASE||{}, $=id=>document.getElementById(id), visible=(id,on)=>$(id).classList.toggle('hidden',!on), notice=t=>$('notice').textContent=t;
 let db=null,rows=[],editing=null,authorized=false,loading=false,photoRows=[];
 const money=n=>n===null||n===undefined?'สอบถามราคา':'฿'+Number(n).toLocaleString('th-TH');
 const fields=['sku','name','category','sub','condition','price','warranty','stock_status','specs','note','image'];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function edit(p){editing=p?.sku||null;visible('editor',true);visible('mobile-add',false);$('editor-title').textContent=editing?'แก้ไขสินค้า '+editing:'เพิ่มสินค้าใหม่';fields.forEach(k=>$(k).value=p?.[k]??(k==='stock_status'?'available':''));$('sku').readOnly=!!editing;$('stock_status').value=p?.stock_status||(p?.sold?'sold':'available');$('box-search').href='https://www.google.com/search?tbm=isch&q='+encodeURIComponent((p?.name||'')+' retail box packaging');$('photo').value='';$('extra-photos').value='';$('preview').src=p?.image||'';visible('preview',!!p?.image);$('remove').disabled=!editing;renderPhotoGallery();$('editor').scrollIntoView({behavior:'smooth'});}
+function edit(p){editing=p?.sku||null;visible('editor',true);visible('mobile-add',false);$('editor-title').textContent=editing?'แก้ไขสินค้า '+editing:'เพิ่มสินค้าใหม่';fields.forEach(k=>$(k).value=p?.[k]??(k==='stock_status'?'available':''));$('sku').readOnly=!!editing;$('stock_status').value=p?.stock_status||(p?.sold?'sold':'available');$('box-search').href='https://www.google.com/search?tbm=isch&q='+encodeURIComponent((p?.name||'')+' retail box packaging');$('photo').value='';$('extra-photos').value='';$('preview').src=p?.image||'';visible('preview',!!p?.image);$('remove').disabled=!editing;$('remove').textContent=p?.is_hidden?'นำกลับมาแสดง':'ซ่อนจากหน้าร้าน';renderPhotoGallery();$('editor').scrollIntoView({behavior:'smooth'});}
 const STOCK_LABELS={available:'พร้อมขาย',reserved:'จองแล้ว',sold:'ขายแล้ว'};
 function stockStatus(p){return ['available','reserved','sold'].includes(p.stock_status)?p.stock_status:(p.sold?'sold':'available');}
 function stockOptions(selected){return Object.keys(STOCK_LABELS).map(k=>'<option value="'+k+'"'+(k===selected?' selected':'')+'>'+STOCK_LABELS[k]+'</option>').join('');}
@@ -155,21 +158,21 @@ async function uploadExtras(sku){
 function list(){
  const q=$('search').value.trim().toLocaleLowerCase(),filter=$('stock-filter').value;
  const stats={available:0,reserved:0,sold:0};
- for(const p of rows)stats[stockStatus(p)]++;
+ for(const p of rows)if(!p.is_hidden)stats[stockStatus(p)]++;
  $('stock-all').textContent=rows.length;
  for(const key of Object.keys(stats))$('stock-'+key).textContent=stats[key];
- const shown=rows.filter(p=>(p.sku+' '+p.name+' '+p.category+' '+p.sub).toLocaleLowerCase().includes(q)&&(filter==='all'||stockStatus(p)===filter));
+ const shown=rows.filter(p=>(p.sku+' '+p.name+' '+p.category+' '+p.sub).toLocaleLowerCase().includes(q)&&(filter==='all'||(filter==='hidden'?p.is_hidden:!p.is_hidden&&stockStatus(p)===filter)));
  $('result-count').textContent=shown.length+' / '+rows.length+' รายการ';
  $('search-clear').hidden=!$('search').value;
  $('items').innerHTML=shown.length?shown.map(p=>{
-   const state=stockStatus(p);
+   const state=p.is_hidden?'hidden':stockStatus(p);
    const sku=esc(p.sku);
    return '<article class="item" data-product-id="'+sku+'">'+
      (p.image?'<img src="'+esc(p.image)+'" alt="" loading="lazy">':'<div class="item-placeholder" aria-hidden="true">⌨</div>')+
-     '<div class="meta"><strong>'+esc(p.name)+'</strong><small>'+sku+' · '+esc(p.condition)+' · '+esc(p.category)+'</small><span class="stock-badge status-'+state+'">'+STOCK_LABELS[state]+'</span></div>'+
+     '<div class="meta"><strong>'+esc(p.name)+'</strong><small>'+sku+' · '+esc(p.condition)+' · '+esc(p.category)+'</small><span class="stock-badge status-'+state+'">'+(p.is_hidden?'ซ่อนแล้ว':STOCK_LABELS[state])+'</span></div>'+
      '<div class="item-controls"><div class="quick-price"><label for="price-'+sku+'">ราคา (฿)</label><div class="quick-price-row"><input id="price-'+sku+'" data-price-sku="'+sku+'" type="number" inputmode="numeric" min="0" step="1" value="'+(p.price===null?'':Number(p.price))+'" placeholder="ไม่ระบุ" aria-label="ราคา '+esc(p.name)+'"><button type="button" class="quick-save" data-save-price="'+sku+'" disabled>บันทึก</button></div></div>'+
-     '<div class="quick-status"><label for="status-'+sku+'">สถานะ</label><select id="status-'+sku+'" data-stock-sku="'+sku+'" aria-label="สถานะ '+esc(p.name)+'">'+stockOptions(state)+'</select></div>'+
-     '<button type="button" class="secondary edit-mini" data-sku="'+sku+'">แก้ไขรายละเอียด ↗</button></div>'+
+     '<div class="quick-status"><label for="status-'+sku+'">สถานะ</label><select id="status-'+sku+'" data-stock-sku="'+sku+'" aria-label="สถานะ '+esc(p.name)+'">'+stockOptions(stockStatus(p))+'</select></div>'+
+     '<button type="button" class="secondary edit-mini" data-sku="'+sku+'">แก้ไขรายละเอียด ↗</button>'+(p.is_hidden?'<button type="button" class="secondary edit-mini" data-unhide="'+sku+'">นำกลับมาแสดง</button>':'')+'</div>'+
      '</article>';
  }).join(''):'<div class="empty-results"><strong>ไม่พบสินค้า</strong><p>ลองค้นหาชื่อรุ่นอื่นหรือเลือกสถานะทั้งหมด</p><button type="button" id="empty-clear" class="secondary">ล้างตัวกรอง</button></div>';
 }
@@ -241,6 +244,8 @@ $('items').addEventListener('keydown',e=>{
 $('items').onclick=e=>{
  const price=e.target.closest('button[data-save-price]');if(price){savePrice(price.dataset.savePrice,price);return;}
  const clear=e.target.closest('#empty-clear');if(clear){$('search').value='';$('stock-filter').value='all';list();return;}
+ const restore=e.target.closest('button[data-unhide]');
+ if(restore){toggleProductHidden(restore.dataset.unhide,false);return;}
  const b=e.target.closest('button[data-sku]');if(b)edit(rows.find(x=>x.sku===b.dataset.sku));
 };
 $('items').onchange=e=>{const sel=e.target.closest('select[data-stock-sku]');if(sel)changeStock(sel.dataset.stockSku,sel.value,sel)};
@@ -257,6 +262,17 @@ $('photo-gallery-admin').addEventListener('click',async e=>{
  await load();notice('เอารูปเสริมออกจากหน้าร้านแล้ว');
 });
 $('product-form').onsubmit=async e=>{e.preventDefault();if(!authorized)return;const sku=$('sku').value.trim();if(!/^[a-zA-Z0-9_-]{2,50}$/.test(sku)){notice('รหัสสินค้าใช้ได้เฉพาะตัวอักษร ตัวเลข - และ _');return;}const p={sku,name:$('name').value.trim(),category:$('category').value,sub:$('sub').value.trim(),condition:$('condition').value,price:$('price').value===''?null:Number($('price').value),warranty:$('warranty').value.trim(),stock_status:$('stock_status').value,sold:$('stock_status').value==='sold',specs:$('specs').value.trim(),note:$('note').value.trim(),image:$('image').value.trim()};$('save').disabled=true;notice('กำลังบันทึก...');try{const file=$('photo').files[0];if(file){if(file.size>5*1024*1024||!['image/jpeg','image/png','image/webp'].includes(file.type))throw Error('รองรับเฉพาะ JPG PNG WEBP ขนาดไม่เกิน 5 MB');const ext=({'image/jpeg':'jpg','image/png':'png','image/webp':'webp'})[file.type];const path=sku+'/'+crypto.randomUUID()+'.'+ext;const {error}=await db.storage.from('product-images').upload(path,file,{contentType:file.type,upsert:false});if(error)throw error;p.image=db.storage.from('product-images').getPublicUrl(path).data.publicUrl;}const {error}=await db.from('clicko_products').upsert(p,{onConflict:'sku'});if(error)throw error;const added=await uploadExtras(sku);await load();closeEditor();notice('บันทึกสินค้าและรูปเสริมสำเร็จ'+(added?' · เพิ่มรูป '+added+' รูป':'')+' · หน้าร้านจะแสดงข้อมูลใหม่เมื่อรีเฟรช');}catch(err){notice('บันทึกไม่สำเร็จ: '+err.message)}finally{$('save').disabled=false}};
-$('remove').onclick=async()=>{if(!editing||!confirm('ลบข้อมูล '+editing+' ออกจาก Admin? สินค้าเดิมที่ฝังบนเว็บไซต์อาจกลับมาแสดง'))return;const {error}=await db.from('clicko_products').delete().eq('sku',editing);if(error){notice(error.message);return;}await load();closeEditor();notice('ลบรายการ Admin แล้ว')};
+async function toggleProductHidden(sku,hidden){
+ if(!authorized)return;
+ const p=rows.find(row=>row.sku===sku);if(!p)return;
+ const action=hidden?'ซ่อนสินค้า':'นำสินค้ากลับมาแสดง';
+ if(!confirm(action+' '+p.name+'? ระบบจะเก็บข้อมูล ราคา และประวัติเดิมไว้ทั้งหมด'))return;
+ notice('กำลัง'+action+'...');
+ const {data,error}=await db.from('clicko_products')
+  .update({is_hidden:hidden,updated_at:new Date().toISOString()}).eq('sku',sku).select('sku').single();
+ if(error||!data){notice(action+'ไม่สำเร็จ: '+(error?.message||'ไม่มีสิทธิ์'));return;}
+ await load();closeEditor();notice(action+'สำเร็จ · ข้อมูลเดิมยังอยู่ครบ');
+}
+$('remove').onclick=()=>{if(!editing)return;const p=rows.find(row=>row.sku===editing);if(p)toggleProductHidden(editing,!p.is_hidden)};
 (async()=>{if(!cfg.url||!cfg.anonKey||!window.supabase){visible('setup',true);notice('ยังไม่ตั้งค่า Supabase');return;}db=window.supabase.createClient(cfg.url,cfg.anonKey);try{await check()}catch(e){notice('เชื่อมต่อไม่สำเร็จ: '+e.message);visible('login',true)}})();
 </script></body></html>
