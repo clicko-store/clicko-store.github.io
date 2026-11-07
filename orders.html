@@ -40,7 +40,7 @@ label{display:block;font-size:12px;font-weight:800;color:#526d89;margin:0 0 6px}
 <p id="notice" role="status" aria-live="polite"></p>
 <section id="login" class="panel"><h1>เข้าสู่ระบบผู้ดูแลร้าน</h1><p class="muted">ใช้บัญชี Admin เดียวกับหน้าจัดการสินค้า Clicko</p><form id="login-form"><div class="form-grid"><div><label for="email">อีเมล</label><input id="email" type="email" required autocomplete="username"></div><div><label for="password">รหัสผ่าน</label><input id="password" type="password" required autocomplete="current-password"></div></div><div class="actions"><button type="submit">เข้าสู่ระบบ</button></div></form></section>
 <section id="workspace" class="hidden">
-<div class="panel"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div><h1>ภาพรวมการขาย</h1><p class="muted" style="margin:0">ยอดของเดือนปัจจุบัน เฉพาะออเดอร์ชำระแล้ว/จัดส่งแล้ว · กำไรคำนวณเมื่อมีต้นทุน</p></div><button id="refresh" class="secondary">↻ รีเฟรช</button></div><div class="metrics" style="margin-top:16px">
+<div class="panel"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div><h1>ภาพรวมการขาย</h1><p class="muted" style="margin:0">ออเดอร์ที่บันทึกในเดือนปัจจุบันและชำระแล้ว/จัดส่งแล้ว · กำไรคำนวณเฉพาะรายการที่มีต้นทุน</p></div><button id="refresh" class="secondary">↻ รีเฟรช</button></div><div class="metrics" style="margin-top:16px">
 <div class="metric"><span>ออเดอร์ทั้งหมด</span><strong id="metric-orders">0</strong></div>
 <div class="metric"><span>ยอดขายเดือนนี้</span><strong id="metric-revenue">฿0</strong></div>
 <div class="metric"><span>กำไรที่คำนวณได้</span><strong id="metric-profit">฿0</strong><small id="metric-profit-note"></small></div>
@@ -80,7 +80,8 @@ function downloadCsv(name,headers,records){
  const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
  const anchor=document.createElement('a');anchor.href=url;anchor.download=name;document.body.appendChild(anchor);anchor.click();anchor.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
 }
-function safeNum(id){const v=Number($(id).value);return Number.isFinite(v)&&v>=0?v:null}
+function validMoney(raw,optional=false){const str=String(raw??'').trim();if(!str)return optional?null:undefined;const value=Number(str);return Number.isFinite(value)&&value>=0&&Math.abs(value*100-Math.round(value*100))<1e-6?value:undefined;}
+function safeNum(id){return validMoney($(id).value)}
 function chosen(){return products.find(p=>p.sku===$('order-sku').value)}
 function costsPreview(){const p=chosen();$('cost-preview').textContent=!p?'เลือกสินค้าเพื่อดูต้นทุนที่บันทึกไว้':costs.has(p.sku)?'ต้นทุนที่บันทึกไว้: '+money(costs.get(p.sku))+' (บันทึกยอด ณ วันที่สร้างออเดอร์)':'ยังไม่บันทึกต้นทุนสินค้านี้ · กำไรจะไม่ถูกคำนวณจนกว่าจะมีต้นทุน'};
 function renderProducts(){
@@ -166,7 +167,7 @@ $('order-form').addEventListener('submit',async e=>{
  e.preventDefault();if(!authorized)return;const p=chosen();
  if(!p){notice('กรุณาเลือกสินค้าก่อน');return;}
  const price=safeNum('sell-price'),shipping=safeNum('shipping'),expenses=safeNum('expenses');
- if([price,shipping,expenses].some(x=>x===null)){notice('กรุณาตรวจสอบจำนวนเงิน');return;}
+ if([price,shipping,expenses].some(x=>x===undefined)){notice('กรุณาตรวจสอบจำนวนเงิน (ต้องมีค่าและไม่เกิน 2 ตำแหน่งทศนิยม)');return;}
  const button=$('create-order');button.disabled=true;notice('กำลังบันทึกออเดอร์...');
  const order={sku:p.sku,product_name:p.name,customer_label:$('customer').value.trim(),sell_price:price,
  cost_snapshot:costs.has(p.sku)?costs.get(p.sku):null,shipping_fee:shipping,extra_cost:expenses,
@@ -183,19 +184,21 @@ $('orders-list').addEventListener('click',async e=>{
  const field=type=>[...document.querySelectorAll('[data-order-'+type+']')].find(x=>x.dataset['order'+type[0].toUpperCase()+type.slice(1)]===id);
  const numbers={sell_price:field('price')?.value,shipping_fee:field('fee')?.value,extra_cost:field('extra')?.value,cost_snapshot:field('cost')?.value};
  if(!statusNames[status])return;
+ const validated={};
  for(const [k,v] of Object.entries(numbers)){
-  if(v===undefined||((k!=='cost_snapshot'||v!=='')&&(!Number.isFinite(Number(v))||Number(v)<0||Math.round(Number(v)*100)!==Number(v)*100))){notice('กรุณากรอกจำนวนเงินที่ถูกต้อง ไม่เกิน 2 ตำแหน่งทศนิยม');return;}
+  validated[k]=validMoney(v,k==='cost_snapshot');
+  if(validated[k]===undefined){notice('กรุณากรอกจำนวนเงินให้ครบและถูกต้อง ไม่เกิน 2 ตำแหน่งทศนิยม');return;}
  }
  b.disabled=true;notice('กำลังอัปเดตออเดอร์...');
- try{const {error}=await db.from('clicko_orders').update({status,tracking_code:tracking||'',sell_price:Number(numbers.sell_price),shipping_fee:Number(numbers.shipping_fee),extra_cost:Number(numbers.extra_cost),cost_snapshot:numbers.cost_snapshot===''?null:Number(numbers.cost_snapshot),updated_at:new Date().toISOString()}).eq('id',id);
+ try{const {error}=await db.from('clicko_orders').update({status,tracking_code:tracking||'',sell_price:validated.sell_price,shipping_fee:validated.shipping_fee,extra_cost:validated.extra_cost,cost_snapshot:validated.cost_snapshot,updated_at:new Date().toISOString()}).eq('id',id);
  if(error)throw error;await reload();notice('อัปเดตออเดอร์แล้ว');}
  catch(err){b.disabled=false;notice('อัปเดตไม่สำเร็จ: '+err.message)}
 });
 $('cost-list').addEventListener('click',async e=>{
  const b=e.target.closest('button[data-cost-save]');if(!b||!authorized)return;const sku=b.dataset.costSave;
  const input=[...document.querySelectorAll('input[data-cost-sku]')].find(x=>x.dataset.costSku===sku);
- if(!input)return;const raw=input.value.trim(),value=Number(raw);
- if(raw===''||!Number.isFinite(value)||value<0||Math.round(value*100)!==value*100){notice('กรุณาใส่ต้นทุนที่ถูกต้อง ไม่เกิน 2 ตำแหน่งทศนิยม');return;}
+ if(!input)return;const raw=input.value.trim(),value=validMoney(raw);
+ if(validMoney(raw)===undefined){notice('กรุณาใส่ต้นทุนที่ถูกต้อง ไม่เกิน 2 ตำแหน่งทศนิยม');return;}
  b.disabled=true;notice('กำลังบันทึกต้นทุน...');
  try{const {error}=await db.from('clicko_product_costs').upsert({sku,cost:value,updated_at:new Date().toISOString()},{onConflict:'sku'});if(error)throw error;
  await reload();notice('บันทึกต้นทุน '+sku+' สำเร็จ (ไม่แสดงบนหน้าร้าน)');}
