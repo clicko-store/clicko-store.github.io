@@ -90,11 +90,11 @@ function clickoSheetItems(rows){
  if(rows.length<2)throw Error('ไม่พบรายการสินค้า');
  const norm=x=>String(x||'').trim().toLowerCase().replace(/[\s_\-()\/]/g,'');
  const aliases=['ชื่อสินค้า','ชื่อรุ่น','สินค้า','productname','name','model','รายการสินค้า','ชื่อสินค้า/รุ่น','product','item','รายละเอียดสินค้า'];
- const score=row=>row.filter(x=>{const y=norm(x);return ['ชื่อสินค้า','ชื่อรุ่น','รายการสินค้า','ชื่อสินค้า/รุ่น','productname','name','model','สินค้า','product','item','ราคา','price','สถานะ','หมวดหมู่','ประกัน'].some(z=>y===norm(z))}).length;
+ const score=row=>row.filter(x=>{const y=norm(x);return ['ชื่อสินค้า','ชื่อรุ่น','รายการสินค้า','ชื่อสินค้า/รุ่น','productname','name','model','สินค้า','product','item','ราคา','price','สถานะ','หมวดหมู่','ประกัน'].some(z=>y===norm(z)||y.includes(norm(z)))}).length;
  const headerAt=rows.slice(0,Math.min(8,rows.length)).reduce((best,row,i)=>score(row)>score(rows[best])?i:best,0);
- const h=rows[headerAt].map(norm),col=(...names)=>h.findIndex(x=>names.some(n=>x===norm(n)));
+ const h=rows[headerAt].map(norm),col=(...names)=>h.findIndex(x=>names.some(n=>x===norm(n)||x.includes(norm(n))));
  const n=col(...aliases),id=col('รหัสสินค้า','รหัส','sku','id'),price=col('ราคา','price'),cat=col('หมวดหมู่','category'),sub=col('หมวดย่อย','ประเภท','subcategory','sub'),cond=col('สภาพ','มือ1มือ2','condition'),warranty=col('ประกัน','warranty'),note=col('หมายเหตุ','ตำหนิ','note'),specs=col('สเปคสินค้า','สเปกสินค้า','รายละเอียดสินค้า','specifications','specs','spec'),status=col('สถานะ','status','ขายแล้ว','sold'),img=col('รูปสินค้า','ลิงก์รูป','imageurl','image');
- if(n<0)throw Error('ไม่พบคอลัมน์ชื่อสินค้า (หัวตาราง: '+rows[headerAt].slice(0,9).join(' | ').slice(0,160)+')');
+ if(n<0)throw Error('ไม่พบคอลัมน์ชื่อสินค้า · แถวแรก: '+rows.slice(0,3).map(r=>r.slice(0,8).join(' | ')).join(' / ').slice(0,220));
  return rows.slice(headerAt+1).map((r,i)=>{
   const v=k=>k<0?'':String(r[k]??'').trim();
   if(!v(n))return null;
