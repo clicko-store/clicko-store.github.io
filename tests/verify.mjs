@@ -24,6 +24,17 @@ ok(html['backup.html'].includes('clicko_product_costs'),'Backup must include pri
 ok(html['backup.html'].includes("if(prompt('กู้คืนเฉพาะรายการที่ขาด"),'Restore must require explicit confirmation');
 ok(!html['backup.html'].includes('service_role'),'Never expose service-role credentials in backup client');
 ok(!html['admin.html'].includes(".auth.signUp("),'Admin login must not offer self-registration');
+ok(html['admin.html'].includes('manufacturer_image_verified'),'Admin must verify manufacturer image source');
+ok(html['admin.html'].includes('manufacturer_source_url'),'Admin must record manufacturer source URL');
+ok(html['index.html'].includes('ภาพจากผู้ผลิต · ภาพประกอบ'),'Product cards must label manufacturer illustrations');
+ok(html['index.html'].includes('manufacturer_image_verified?p.manufacturer_image_url'),'Only verified manufacturer photos may be used as fallback');
+ok(html['backup.html'].includes("'manufacturer_image_verified'"),'Backups must include manufacturer image verification state');
+const photoGuard=html['index.html'].match(/function clickoIsManufacturerPhoto\(p\)\{[^}]*\}/)?.[0];
+ok(Boolean(photoGuard),'Find manufacturer photo provenance guard');
+const manufacturerPhoto=vm.runInNewContext(photoGuard+';clickoIsManufacturerPhoto');
+ok(manufacturerPhoto({image:'https://factory.example/a.png',manufacturer_image_url:'https://factory.example/a.png',manufacturer_image_verified:true})===true,'Verified manufacturer photo is labeled');
+ok(manufacturerPhoto({image:'https://factory.example/a.png',manufacturer_image_url:'https://factory.example/a.png',manufacturer_image_verified:false})===false,'Unverified manufacturer photo is not labeled');
+ok(manufacturerPhoto({image:'https://shop.example/actual.jpg',manufacturer_image_url:'https://factory.example/a.png',manufacturer_image_verified:true})===false,'Actual shop photo is not mislabeled as manufacturer illustration');
 
 const storefront=html['index.html'];
 const statusCode=storefront.match(/function clickoCanOrder\(p\)\{[^}]*\}/)?.[0];
