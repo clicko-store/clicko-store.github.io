@@ -70,4 +70,35 @@ ok(money('')===undefined,'Blank required amount rejected');
 ok(money('-1')===undefined,'Negative amount rejected');
 ok(money('1.234')===undefined,'More than 2 decimals rejected');
 
+
+// Search, filter and sort regression tests from actual embedded product data.
+const dataStart=storefront.indexOf('const products=');
+const dataEnd=storefront.indexOf(';let category=',dataStart);
+ok(dataStart>=0&&dataEnd>dataStart,'Product catalog fixture available');
+const fixture=vm.runInNewContext(storefront.slice(dataStart,dataEnd)+';products');
+const filterStart=storefront.indexOf('function clickoFilterCatalogItems(');
+const filterEnd=storefront.indexOf('\nfunction draw()',filterStart);
+ok(filterStart>=0&&filterEnd>filterStart,'Unified catalog filter function exists');
+const catalogFilter=vm.runInNewContext(stockCode+storefront.slice(filterStart,filterEnd)+';clickoFilterCatalogItems');
+const baseFilter={category:'ทั้งหมด',condition:'',availability:'all',sort:'default'};
+const gpro=catalogFilter(fixture,{...baseFilter,query:'G PRO'});
+ok(gpro.length>0&&gpro.every(p=>p.name.toLowerCase().includes('g pro')),'G PRO search finds matching products');
+ok(catalogFilter(fixture,{...baseFilter,query:'G   PRO'}).length===gpro.length,'Extra search whitespace gives same results');
+const mouse=catalogFilter(fixture,{...baseFilter,category:'GAMING MOUSE'});
+ok(mouse.length>0&&mouse.every(p=>p.category==='GAMING MOUSE'),'Category chips filter by category');
+const used=catalogFilter(fixture,{...baseFilter,condition:'มือ2'});
+ok(used.length>0&&used.every(p=>p.condition==='มือ2'),'Used condition filter works');
+const newItems=catalogFilter(fixture,{...baseFilter,condition:'มือ1'});
+ok(newItems.length>0&&newItems.every(p=>p.condition==='มือ1'),'New condition filter works');
+const ready=catalogFilter(fixture,{...baseFilter,availability:'available'});
+ok(ready.every(p=>!p.sold),'Available condition filter excludes sold products');
+const low=catalogFilter(fixture,{...baseFilter,sort:'low'});
+const high=catalogFilter(fixture,{...baseFilter,sort:'high'});
+ok(low[0].price<=low[1].price&&high[0].price>=high[1].price,'Price sort works in both directions');
+ok(catalogFilter(fixture,{...baseFilter,query:'no-product-exists-123'}).length===0,'No-results query returns empty list');
+ok(catalogFilter(fixture,{...baseFilter,query:''}).length===fixture.length,'Clearing search restores full list');
+ok(storefront.includes('id="clicko-catalog-controls-fix"'),'Final catalog filter event handlers installed');
+ok(storefront.includes("search.addEventListener('input'")&&storefront.includes("chipList.addEventListener('click'"),'Search and category chip event listeners installed');
+ok(storefront.includes("controls.forEach(select=>select.addEventListener('change',refresh))"),'Dropdown filter and sort events installed');
+
 console.log('Clicko QA passed: '+assertions+' checks across '+pages.join(', '));
