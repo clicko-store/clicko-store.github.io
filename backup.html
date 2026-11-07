@@ -29,7 +29,10 @@ let db,admin=false,current=null,archive=null,missing=null;
 async function allRows(table){
  const out=[];
  for(let offset=0;offset<20000;offset+=500){
-  const {data,error}=await db.from(table).select('*').range(offset,offset+499);
+  const orderColumn=table==='clicko_orders'?'id':'sku';
+  let query=db.from(table).select('*').order(orderColumn,{ascending:true});
+  if(table==='clicko_product_photos')query=query.order('position',{ascending:true});
+  const {data,error}=await query.range(offset,offset+499);
   if(error)throw Error(table+': '+error.message);
   out.push(...(data||[]));if(!data||data.length<500)return out;
  }
