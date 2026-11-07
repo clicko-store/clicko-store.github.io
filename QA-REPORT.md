@@ -92,3 +92,13 @@ Implemented at database level via private-schema SECURITY INVOKER triggers and a
 - Reminders have been scheduled, but the first remote connector-enabled scheduled run has **not** been observed.
 - Real mobile browser Auth, photo file selection/upload, Messenger deep-link behavior, and real bank-payment confirmation are not independently end-to-end verified. Admin action marks payment paid; no bank API is linked.
 - Password protection configuration may require an action in the Supabase Dashboard or plan eligibility; it cannot be changed by the current connector.
+
+## Daily internal SQL snapshots — 2026-11-07
+
+- Created private table `clicko_private.backup_snapshots` protected from `anon` and `authenticated` roles.
+- Captured baseline snapshot of 154 products with order/cost/gallery metadata and Admin identifiers. No customer data was published to GitHub.
+- Enabled Supabase Cron (`pg_cron`) to call `clicko_private.take_daily_backup()` at 20:00 GMT = 03:00 Asia/Bangkok each day. Job `clicko-daily-private-snapshot` verified active, and a manual invocation of the same SQL function succeeded.
+- Scheduled snapshots expire after 30 days. The manual baseline snapshot remains for disaster investigation unless explicitly removed.
+- Verified unauthenticated and normally authenticated roles have no EXECUTE access to the private backup function and no access to the private snapshot schema or table.
+- **Important:** This is an automated *same-database* snapshot for accidental changes, not a separate disaster-recovery copy. A complete Supabase project/database loss could also destroy the snapshots. The Admin JSON download remains the means to create a copy stored outside Supabase; physical image file bytes are not included in JSON.
+- The first **scheduled** 03:00 run had not yet occurred when this report was written, although the function was manually tested successfully.
