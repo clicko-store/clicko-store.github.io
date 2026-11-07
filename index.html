@@ -126,11 +126,22 @@ function clickoSheetItems(rows){
 function clickoApply(items,source){
  if(!items.length)throw Error('ไม่พบสินค้า');
  const all=CLICK0_ORIGINAL.map(p=>({...p,sold:p.sold??p.price===null}));
- let updated=0,added=0;
+ let updated=0;const unmatched=[],ambiguous=[],used=new Set();
  for(const item of items){
-  const i=clickoFindExisting(all,item);
-  if(i>=0){all[i]={...all[i],...item};updated++;}
-  else{all.push(item);added++;}
+  const key=clickoMatchKey(item.name);
+  const exact=all.map((p,i)=>clickoMatchKey(p.name)===key?i:-1).filter(i=>i>=0);
+  const suppliedId=String(item.id||'').trim();
+  const idMatches=suppliedId&&!suppliedId.startsWith('SHEET-')?all.map((p,i)=>String(p.id)===suppliedId?i:-1).filter(i=>i>=0):[];
+  const candidates=idMatches.length?idMatches:exact;
+  if(candidates.length!==1){(candidates.length?ambiguous:unmatched).push(item.name);continue;}
+  const i=candidates[0];
+  if(used.has(i)){ambiguous.push(item.name);continue;}
+  used.add(i);
+  const old=all[i];
+  const patch={...item,id:old.id,name:old.name,category:old.category,sub:old.sub,condition:old.condition,search:old.search,image:old.image};
+  if(item.image&&/^https:\/\//i.test(item.image))patch.image=item.image;
+  all[i]={...old,...patch};
+  updated++;
  }
  const oldProducts=products.slice(),oldCategories=categories.slice(),oldCategory=category;
  try{
@@ -139,7 +150,13 @@ function clickoApply(items,source){
   if(!categories.includes(category))category='ทั้งหมด';
   draw();
  }catch(e){products.splice(0,products.length,...oldProducts);categories.splice(0,categories.length,...oldCategories);category=oldCategory;draw();throw e;}
- clickoSyncText.textContent=source+' · อัปเดต '+updated+' รายการ'+(added?' · เพิ่ม '+added:'')+' · รวม '+all.length+' รายการ · '+new Date().toLocaleTimeString('th-TH');
+ const missing=unmatched.length+ambiguous.length;
+ clickoSyncText.textContent=source+' · อัปเดต '+updated+' รายการ · รวม '+all.length+' รายการ'+(missing?' · จับคู่ไม่ได้ '+missing+' รายการ (ไม่เพิ่มซ้ำ)':'')+' · '+new Date().toLocaleTimeString('th-TH');
+ if(missing){
+  const names=[...unmatched,...ambiguous].join(' | ');
+  clickoSyncText.title='รายการที่จับคู่ไม่ได้: '+names;
+  console.warn('Clicko: Sheets rows not matched, skipped to prevent duplicates:',{unmatched,ambiguous});
+ }else clickoSyncText.title='';
 }
 function clickoGvizRows(data){
  const t=data?.table;if(!t?.cols||!t.rows)throw Error('ไม่พบตาราง');
