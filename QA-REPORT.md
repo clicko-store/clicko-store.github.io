@@ -36,3 +36,32 @@ This is a verified source-code, mocked-client and SQL transaction test report, *
 - https://knbowpani-wq.github.io/clicko-store/orders.html
 
 No real product data, payment, stock or customer order was altered during QA.
+
+## Atomic order ↔ inventory follow-up — 2026-11-07
+
+Implemented at database level via private-schema SECURITY INVOKER triggers and a partial unique index, and connected to the Admin Orders UI.
+
+### Inventory transitions
+- Create pending order → SKU reserved, legacy sold=false
+- Confirm paid → SKU sold, legacy sold=true
+- Paid → shipped → remains sold
+- Cancel pending or paid before shipping → SKU available (refund, if required, must be handled separately)
+- Shipped/cancelled orders are terminal; cannot automatically restock a shipped item
+- Pending → shipped is rejected; payment must be confirmed first
+- A duplicate active order for the same SKU is rejected by a unique partial index and row-level lock
+- Direct Admin product stock updates are rejected when inconsistent with an existing active order
+- Orders cannot be physically deleted; the source is retained for audit
+
+### Validation performed
+- PostgreSQL BEGIN/ROLLBACK as simulated authorized Admin: create QA SKU, insert order, observe reservation, transition paid, observe sold, attempt direct shipped, pending→shipped, duplicate pending order and shipped→cancelled (rejected), then ROLLBACK
+- Additional rollback scenario: pending → paid → cancelled returns stock to available; a new order can reserve again
+- All storefront/Admin/Orders inline JavaScript passed syntax checks
+- Database unchanged afterwards: 154 products (131 available, 0 reserved, 23 sold), 0 real orders/cost records inserted for testing, 0 QA remnants and 0 inconsistent sold flags
+- Supabase advisors: performance warnings none, security still reports leaked password protection disabled
+
+### Limitations / important business rules
+- No Messenger or bank payment API confirms payments automatically. **Only the Admin selecting “paid”** constitutes a payment confirmation inside Clicko.
+- Moving a paid order to “cancelled” releases its stock but does not perform a financial refund. Admin must check the real refund manually.
+- Orders already shipped cannot be returned to available by order cancellation. Returned merchandise requires a separate inspected manual process.
+- Live click-through tests on the owner’s authenticated browser remain outstanding.
+- Existing products sold before the order system existed remain “sold” with no historical order; no synthetic orders are created.
