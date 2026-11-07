@@ -152,3 +152,11 @@ Implemented at database level via private-schema SECURITY INVOKER triggers and a
 - https://knbowpani-wq.github.io/clicko-store/admin.html
 - https://knbowpani-wq.github.io/clicko-store/orders.html
 - https://knbowpani-wq.github.io/clicko-store/backup.html
+
+## Homepage approved visual redesign — 2026-11-07
+
+- Applied user's approved blue/white Clicko homepage design to the live GitHub main branch (`index.html`), retaining real HTML buttons and navigation rather than inserting the whole concept screenshot as one non-interactive image.
+- Created scalable vector illustrations: `assets/clicko-gear-hero.svg` and `assets/clicko-trade-gpu.svg`. These are website artwork based on the approved direction, not the exact pixels of the generated concept.
+- Added responsive header links, gaming gear + PC parts hero heading, product CTA, call CTA, three benefit cards, illustrated buyback and Facebook review card.
+- Review link maintained as `https://www.facebook.com/share/p/1Py6autXgD/`; catalog link `#catalog`, buyback `#buyback`, reviews `#reviews`, phone `tel:0959759965`.
+- Verified all inline JS compiles, existing GitHub regression suite passed 42 checks in in-memory runner, and new navigational/asset checks passed. Browser pixel-match and GitHub Pages propagation not independently verified.
