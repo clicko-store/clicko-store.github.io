@@ -110,7 +110,7 @@ function edit(p){editing=p?.sku||null;visible('editor',true);visible('mobile-add
 const STOCK_LABELS={available:'พร้อมขาย',reserved:'จองแล้ว',sold:'ขายแล้ว'};
 function stockStatus(p){return ['available','reserved','sold'].includes(p.stock_status)?p.stock_status:(p.sold?'sold':'available');}
 function stockOptions(selected){return Object.keys(STOCK_LABELS).map(k=>'<option value="'+k+'"'+(k===selected?' selected':'')+'>'+STOCK_LABELS[k]+'</option>').join('');}
-function closeEditor(){visible('editor',false);visible('mobile-add',authorized);}
+function closeEditor(){editing=null;visible('editor',false);visible('mobile-add',authorized);}
 function list(){
  const q=$('search').value.trim().toLocaleLowerCase(),filter=$('stock-filter').value;
  const stats={available:0,reserved:0,sold:0};
@@ -166,7 +166,7 @@ async function changeStock(sku,next,select){
  }catch(err){select.value=before;select.disabled=false;notice('เปลี่ยนสถานะไม่สำเร็จ: '+err.message)}
 }
 async function load(){const {data,error}=await db.from('clicko_products').select('*').order('updated_at',{ascending:false}).limit(1000);if(error)throw error;rows=data||[];list();}
-async function check(){const {data:{user}}=await db.auth.getUser();if(!user){visible('login',true);visible('workspace',false);visible('logout',false);return;}const {data,error}=await db.from('clicko_admins').select('user_id').eq('user_id',user.id).maybeSingle();authorized=!!data&&!error;visible('login',!authorized);visible('workspace',authorized);visible('logout',true);visible('mobile-add',authorized&&!editing);if(!authorized){notice('บัญชีนี้ยังไม่มีสิทธิ์ผู้ดูแล กรุณาเพิ่ม user_id ในตาราง clicko_admins');return;}await load();notice('เข้าสู่ระบบสำเร็จ');}
+async function check(){const {data:{user}}=await db.auth.getUser();if(!user){authorized=false;visible('login',true);visible('workspace',false);visible('logout',false);visible('mobile-add',false);return;}const {data,error}=await db.from('clicko_admins').select('user_id').eq('user_id',user.id).maybeSingle();authorized=!!data&&!error;visible('login',!authorized);visible('workspace',authorized);visible('logout',true);visible('mobile-add',authorized&&!editing);if(!authorized){visible('mobile-add',false);notice('บัญชีนี้ยังไม่มีสิทธิ์ผู้ดูแล กรุณาเพิ่ม user_id ในตาราง clicko_admins');return;}await load();notice('เข้าสู่ระบบสำเร็จ');}
 $('login-form').addEventListener('submit',async e=>{e.preventDefault();notice('กำลังเข้าสู่ระบบ...');const {error}=await db.auth.signInWithPassword({email:$('email').value,password:$('password').value});if(error){notice(error.message);return;}try{await check()}catch(err){notice(err.message)}});
 $('signup').onclick=async()=>{const email=$('email').value.trim(),password=$('password').value;if(!email||!password){notice('กรอกอีเมลและรหัสผ่านก่อนสมัคร');return;}if(password.length<10){notice('กรุณาตั้งรหัสผ่านอย่างน้อย 10 ตัวอักษร');return;}notice('กำลังสมัครบัญชี...');const {data,error}=await db.auth.signUp({email,password,options:{emailRedirectTo:location.origin+location.pathname}});if(error){notice('สมัครไม่สำเร็จ: '+error.message);return;}notice(data.session?'สมัครบัญชีแล้ว · รออนุมัติสิทธิ์ Admin':'สมัครบัญชีแล้ว · กรุณาตรวจสอบอีเมลและยืนยันก่อนเข้าสู่ระบบ จากนั้นรออนุมัติสิทธิ์ Admin');};
 $('logout').onclick=async()=>{await db.auth.signOut();authorized=false;closeEditor();visible('mobile-add',false);notice('ออกจากระบบแล้ว');await check()};
