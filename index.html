@@ -516,7 +516,7 @@ header{background:#ffffffed!important;border-bottom:1px solid #dceafa!important;
 .inventory-notice[data-state="error"]{background:#fff7eb;border-color:#f2d4a8;color:#986117}
 </style><style id="clicko-gallery-css">
 #product-detail .clicko-main-photo{max-width:100%;max-height:320px;object-fit:contain;display:block;margin:0 auto}
-.clicko-photo-rail{display:flex;align-items:center;gap:8px;overflow-x:auto;max-width:100%;padding:10px 2px 3px;margin-top:8px}
+.detail-visual{min-width:0;grid-template-columns:minmax(0,1fr)}.clicko-photo-rail{width:100%;min-width:0;display:flex;align-items:center;gap:8px;overflow-x:auto;max-width:100%;padding:10px 2px 3px;margin-top:8px}
 .clicko-photo-thumb{width:57px;height:57px;flex:0 0 57px;border:1px solid #cfdfef;background:#fff;border-radius:8px;cursor:pointer;padding:3px}
 .clicko-photo-thumb.selected{border:2px solid #0a80ef}
 .clicko-photo-thumb img{width:100%;height:100%;object-fit:contain}
@@ -556,7 +556,7 @@ function openProductDetail(id){
  const stockStatus=clickoStockStatus(p),sold=stockStatus==='sold',reserved=stockStatus==='reserved';
  const pic=grid.querySelector('.pic[data-pid="'+CSS.escape(String(p.id))+'"] img');
  detailVisual.replaceChildren();
- const photos=[...(p.image&&/^https:\/\//i.test(p.image)?[p.image]:[]),...(clickoGalleryPhotos.get(String(p.id))||[])];
+ const photos=[...(p.image&&(/^(https:\/\/|\.\/|images\/)/i.test(p.image))?[p.image]:[]),...(clickoGalleryPhotos.get(String(p.id))||[])];
  const gallery=[...new Set(photos)].slice(0,9);
  if(gallery.length){
   const lead=document.createElement('img');lead.src=gallery[0];lead.alt=p.name+' · รูปที่ 1';lead.className='clicko-main-photo';
