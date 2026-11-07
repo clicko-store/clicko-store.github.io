@@ -542,7 +542,7 @@ const products=[{"id": "CLK-001", "category": "PC PARTS", "sub": "CPU", "conditi
 function clickoBoxSearch(p){return 'https://www.google.com/search?tbm=isch&q='+encodeURIComponent(p.name+' retail box packaging');}
 var clickoInventoryVerified=false;
 var clickoVerifiedSkus=new Set();
-function clickoCanOrder(p){return clickoInventoryVerified&&clickoVerifiedSkus.has(String(p.id))&&clickoStockStatus(p)==='available';}
+function clickoCanOrder(p){return clickoInventoryVerified&&!p.is_hidden&&clickoVerifiedSkus.has(String(p.id))&&clickoStockStatus(p)==='available';}
 var clickoGalleryPhotos=new Map();
 function clickoStockStatus(p){return ['available','reserved','sold'].includes(p.stock_status)?p.stock_status:(p.sold||p.price===null?'sold':'available');}
 function draw(){chips.innerHTML=categories.map(c=>`<button class="chip ${category===c?'active':''}" data-cat="${esc(c)}">${esc(c)}</button>`).join('');const q=document.getElementById('q').value.trim().toLowerCase(),cond=document.getElementById('condition').value,sort=document.getElementById('sort').value,availability=document.getElementById('availability').value;let list=products.filter(p=>(category==='ทั้งหมด'||p.category===category)&&(!cond||p.condition===cond)&&(availability==='all'||clickoStockStatus(p)===availability)&&(`${p.name} ${p.category} ${p.sub} ${p.specs||''}`.toLowerCase().includes(q)));if(sort!=='default')list.sort((a,b)=>sort==='low'?(a.price??Infinity)-(b.price??Infinity):(b.price??-1)-(a.price??-1));document.getElementById('count').textContent=`${list.length} รายการ`;document.getElementById('empty').hidden=list.length>0;grid.innerHTML=list.map(p=>`<article class="card"><a class="pic" data-pid="${esc(p.id)}" href="${esc(p.search)}" target="_blank" title="ค้นหารูปสินค้ารุ่นนี้">${p.image?`<img src="${esc(p.image)}" loading="lazy" alt="${esc(p.name)}">`:icon()+'<small>ยังไม่มีรูปกล่องตรงรุ่น</small>'}</a><div class="info"><div class="tags"><span class="tag ${p.condition==='มือ2'?'used':''}">${esc(p.condition)}</span>${clickoStockStatus(p)==='sold'?'<span class="tag sold">ขายแล้ว</span>':(clickoStockStatus(p)==='reserved'?'<span class="tag reserved">จองแล้ว</span>':'')}</div><div class="sub">${esc(p.sub)}</div><div class="name">${esc(p.name)}</div><div class="specs">${esc(clickoSpecs(p))}</div><div class="warranty">${p.warranty?'ประกัน: '+esc(p.warranty):'&nbsp;'}${p.note?' · '+esc(p.note):''}</div><div class="bottom"><div class="price ${clickoStockStatus(p)==='sold'?'unpriced':''}">${clickoStockStatus(p)==='sold'?'ขายแล้ว':((typeof p.price==='number'&&Number.isFinite(p.price))?'฿'+p.price.toLocaleString('th-TH'):'สอบถามราคา')}</div>${clickoStockStatus(p)==='sold'?'<span class="ask sold-button">ขายแล้ว</span>':(clickoStockStatus(p)==='reserved'?'<span class="ask reserved-button">จองแล้ว</span>':(clickoCanOrder(p)?'<button type="button" class="ask clicko-order-btn" data-order-sku="'+esc(p.id)+'">สั่งซื้อ / สอบถาม ↗</button>':'<a class="ask" href="https://www.facebook.com/sippavit.gomarn/" target="_blank" rel="noopener noreferrer">สอบถามสต๊อกกับร้าน ↗</a>'))}</div></div></article>`).join('')}
@@ -797,10 +797,10 @@ function clickoApplyAdminRows(){
  const merged=products.map(p=>({...p}));
  for(const p of clickoAdminRows){
   const idx=merged.findIndex(x=>String(x.id)===String(p.sku));
-  const patch={id:p.sku,name:p.name,category:p.category,sub:p.sub,condition:p.condition,price:p.price===null?null:Number(p.price),warranty:p.warranty,sold:p.sold,stock_status:p.stock_status|| (p.sold?'sold':'available'),created_at:p.created_at||null,specs:p.specs,note:p.note,image:p.image||(clickoGalleryPhotos.get(String(p.sku))||[])[0]||'',search:'https://www.google.com/search?tbm=isch&q='+encodeURIComponent(p.name+' product')};
+  const patch={id:p.sku,name:p.name,category:p.category,sub:p.sub,condition:p.condition,price:p.price===null?null:Number(p.price),warranty:p.warranty,sold:p.sold,is_hidden:!!p.is_hidden,stock_status:p.stock_status|| (p.sold?'sold':'available'),created_at:p.created_at||null,specs:p.specs,note:p.note,image:p.image||(clickoGalleryPhotos.get(String(p.sku))||[])[0]||'',search:'https://www.google.com/search?tbm=isch&q='+encodeURIComponent(p.name+' product')};
   if(idx>=0)merged[idx]={...merged[idx],...patch};else merged.push(patch);
  }
- products.splice(0,products.length,...merged);
+ products.splice(0,products.length,...merged.filter(p=>!p.is_hidden));
  categories.splice(0,categories.length,'ทั้งหมด',...new Set(products.map(p=>p.category)));
  if(!categories.includes(category))category='ทั้งหมด';
  draw();
@@ -814,7 +814,7 @@ async function clickoLoadAdminRows(){
   if(error)throw error;
   if(!Array.isArray(data)||!data.length)throw Error('ไม่พบรายการสต๊อกจาก Supabase');
   clickoAdminRows=data;
-  clickoVerifiedSkus=new Set(data.map(row=>String(row.sku)));
+  clickoVerifiedSkus=new Set(data.filter(row=>!row.is_hidden).map(row=>String(row.sku)));
   try{
     const {data:photos,error:photoError}=await db.from('clicko_product_photos').select('sku,position,image_url').order('position',{ascending:true}).limit(2000);
     if(photoError)throw photoError;
