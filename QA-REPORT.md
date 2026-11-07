@@ -102,3 +102,15 @@ Implemented at database level via private-schema SECURITY INVOKER triggers and a
 - Verified unauthenticated and normally authenticated roles have no EXECUTE access to the private backup function and no access to the private snapshot schema or table.
 - **Important:** This is an automated *same-database* snapshot for accidental changes, not a separate disaster-recovery copy. A complete Supabase project/database loss could also destroy the snapshots. The Admin JSON download remains the means to create a copy stored outside Supabase; physical image file bytes are not included in JSON.
 - The first **scheduled** 03:00 run had not yet occurred when this report was written, although the function was manually tested successfully.
+
+## Additional hardening — reversible product hide and Storage RLS
+
+- Made product removal reversible: new `clicko_products.is_hidden` (default false), Admin hide/unhide UI, hidden filter, storefront excludes hidden products and denies ordering, Orders form excludes hidden SKUs.
+- Existing products were not deleted. Admin editor now preserves `created_at` and `is_hidden` when updating existing SKUs.
+- Extended `clicko_private.sync_order_inventory()` to reject creating orders for hidden SKUs while allowing an already-open order to advance from pending to paid when the product is subsequently hidden.
+- BEGIN/ROLLBACK as recognized Admin passed: hidden product cannot be ordered; unhide permits reservation; hide an existing reserved product then confirm paid; database updates to sold; all rolled back.
+- Audited `storage.objects` RLS: discovered existing Admin-only upload and public-read policies, removed redundant new policies; retained explicit Admin-only object UPDATE policy.
+- BEGIN/ROLLBACK RLS tests: anon upload denied, authenticated non-admin upload denied, simulated authorized Admin upload allowed. No Storage test rows persist.
+- Updated `tests/verify.mjs` to assert no archived products can be ordered or displayed, Admin provides reversible hide, and backup restore retains archived flag.
+- Post-change live DB counts: 154 products, 131 available, 0 reserved, 23 sold, 0 hidden, 0 inconsistent flags, 0 QA residue.
+- Supabase advisors after updates: no performance lints; leaked-password protection disabled warning remains. CI workflow is configured; independently observed successful GitHub Actions execution remains pending.
