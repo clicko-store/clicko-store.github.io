@@ -171,3 +171,13 @@ Implemented at database level via private-schema SECURITY INVOKER triggers and a
 - `backup.html` preserves manufacturer image provenance in restore workflows. Tests expanded to 51 checks in source-level runner; authorized Admin BEGIN/ROLLBACK verified correct SQL constraint behaviour, with zero QA residue.
 - Created public `manufacturer-photo-checklist.csv` enumerating 154 catalog SKUs, model names, conditions and current image status.
 - **Source acquisition blocker:** Live external manufacturer websites and image/license verification could not be accessed because web browsing was disabled. No URLs or licensed image rights were invented. **0 of the 152 missing product photos have been sourced or populated during this task.** The source-verification queue is ready for a browsing-enabled follow-up.
+
+## Catalog search and filter repair — 2026-11-08
+
+- Fixed UI controls at top of storefront catalog: search, stock/condition/sort dropdowns, category chips.
+- Removed stale early event-handler bindings that referenced an older `draw` function. Installed one final event controller after all storefront overlays and render wrappers, so the current UI redraws on search input, select change and category-chip click.
+- Search text now resets a previously selected category to `ทั้งหมด`, so changing search terms cannot silently remain constrained to an unrelated category.
+- Introduced pure `clickoFilterCatalogItems()` with whitespace-normalized token search, short-model-token word matching, selected category, condition, availability and price sorting. Test phrase `G PRO` now returns relevant G PRO product names instead of broad matches from the word GAMING in categories.
+- Added accessible, visible filter feedback and keyboard focus outlines.
+- Regression suite extended with direct tests against the existing 154-product embedded catalog and simulated input/change/chip click events: **72 checks passed** using a local in-memory Node API shim. Hosted real-browser clicks are **not** independently verified.
+- Only `index.html` and test/report files changed. Supabase products, prices, orders and stock were not modified.
