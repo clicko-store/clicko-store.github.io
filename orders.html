@@ -117,7 +117,7 @@ function chosen(){return products.find(p=>p.sku===$('order-sku').value)}
 function costsPreview(){const p=chosen();$('cost-preview').textContent=!p?'เลือกสินค้าเพื่อดูต้นทุนที่บันทึกไว้':costs.has(p.sku)?'ต้นทุนที่บันทึกไว้: '+money(costs.get(p.sku))+' (บันทึกยอด ณ วันที่สร้างออเดอร์)':'ยังไม่บันทึกต้นทุนสินค้านี้ · กำไรจะไม่ถูกคำนวณจนกว่าจะมีต้นทุน'};
 function renderProducts(){
  const previous=$('order-sku').value;
- const available=products.filter(p=>p.stock_status==='available');
+ const available=products.filter(p=>p.stock_status==='available'&&!p.is_hidden);
  $('order-sku').innerHTML='<option value="">— เลือกสินค้าพร้อมขาย —</option>'+available.map(p=>'<option value="'+esc(p.sku)+'">'+esc(p.sku+' · '+p.name)+'</option>').join('');
  if(available.some(p=>p.sku===previous))$('order-sku').value=previous;
  else $('order-sku').value='';
@@ -166,7 +166,7 @@ function renderCosts(){
 async function reload(){
  if(!authorized)return;
  const results=await Promise.all([
- db.from('clicko_products').select('sku,name,price,stock_status,created_at').order('created_at',{ascending:false}).limit(1000),
+ db.from('clicko_products').select('sku,name,price,stock_status,is_hidden,created_at').order('created_at',{ascending:false}).limit(1000),
  db.from('clicko_product_costs').select('sku,cost').limit(1000),
  db.from('clicko_orders').select('*').order('created_at',{ascending:false}).limit(1000)]);
  const error=results.find(x=>x.error)?.error;if(error)throw error;
