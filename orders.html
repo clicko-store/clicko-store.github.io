@@ -28,14 +28,14 @@ label{display:block;font-size:12px;font-weight:800;color:#526d89;margin:0 0 6px}
 .order:last-child{border:0}.order strong{line-height:1.5;overflow-wrap:anywhere}.order small{display:block;color:#758da4;font-size:11px;margin:6px 0}
 .order .summary{font-weight:850;color:#0575df;margin:8px 0;font-size:17px}.order-controls{display:grid;grid-template-columns:1fr 1fr;gap:7px}.order-controls button{grid-column:1/-1}
 .chip{display:inline-block;font-size:10px;border-radius:7px;padding:5px 8px;font-weight:900;margin-top:4px}.pending{background:#fff0d4;color:#976300}.paid{background:#e1f5ec;color:#177f50}.shipped{background:#dceeff;color:#126bc1}.cancelled{background:#e9ecf1;color:#64748b}
-.cost-row{display:grid;grid-template-columns:minmax(0,1fr) 130px auto;align-items:center;gap:10px;border-bottom:1px solid #e8f0fa;padding:10px 0}.cost-row strong{font-size:13px}.cost-row small{display:block;color:#748ba5;margin-top:4px}
+.section-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px}.section-heading h2{margin:0}nav .secondary{padding:8px;font-size:11px}.cost-row{display:grid;grid-template-columns:minmax(0,1fr) 130px auto;align-items:center;gap:10px;border-bottom:1px solid #e8f0fa;padding:10px 0}.cost-row strong{font-size:13px}.cost-row small{display:block;color:#748ba5;margin-top:4px}
 #notice{white-space:pre-wrap;font-size:13px;color:#1767b5;font-weight:700;margin:0 0 14px}#notice:not(:empty){background:#eaf5ff;border:1px solid #cee5fb;border-radius:10px;padding:11px}
 .hidden{display:none!important}.warning{color:#955d17;background:#fff7e9;border:1px solid #f1dba9;padding:11px 13px;border-radius:10px;font-size:12px}
 #login{max-width:550px}.empty{color:#7891a8;font-size:13px;padding:22px;text-align:center}
 @media(max-width:700px){header{padding:12px}header strong{font-size:18px}nav{gap:8px}nav a{font-size:11px}main{margin:12px auto;padding:0 10px}.panel{padding:15px;border-radius:15px}.form-grid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.metric{padding:12px}.metric strong{font-size:20px}.order{grid-template-columns:1fr;gap:9px}.cost-row{grid-template-columns:minmax(0,1fr) 105px;gap:8px}.cost-row button{grid-column:2}h1{font-size:22px}.toolbar{gap:6px}.toolbar select{max-width:117px}}
 </style></head>
 <body>
-<header><div><strong>Clicko<span>.</span> Back Office</strong><small>ออเดอร์ · ต้นทุน · กำไร</small></div><nav><a href="./admin.html">สินค้า</a><a href="./">หน้าร้าน ↗</a></nav></header>
+<header><div><strong>Clicko<span>.</span> Back Office</strong><small>ออเดอร์ · ต้นทุน · กำไร</small></div><nav><a href="./admin.html">สินค้า</a><a href="./">หน้าร้าน ↗</a><button type="button" id="logout" class="secondary hidden">ออกจากระบบ</button></nav></header>
 <main>
 <p id="notice" role="status" aria-live="polite"></p>
 <section id="login" class="panel"><h1>เข้าสู่ระบบผู้ดูแลร้าน</h1><p class="muted">ใช้บัญชี Admin เดียวกับหน้าจัดการสินค้า Clicko</p><form id="login-form"><div class="form-grid"><div><label for="email">อีเมล</label><input id="email" type="email" required autocomplete="username"></div><div><label for="password">รหัสผ่าน</label><input id="password" type="password" required autocomplete="current-password"></div></div><div class="actions"><button type="submit">เข้าสู่ระบบ</button></div></form></section>
@@ -58,9 +58,9 @@ label{display:block;font-size:12px;font-weight:800;color:#526d89;margin:0 0 6px}
 <div><label for="tracking">เลขพัสดุ (ถ้ามี)</label><input id="tracking" maxlength="120"></div>
 <div class="full"><label for="order-notes">บันทึกภายใน</label><textarea id="order-notes" maxlength="1000" placeholder="ข้อมูลที่ต้องติดตาม"></textarea></div>
 </div><p class="muted" id="cost-preview">เลือกสินค้าเพื่อดูต้นทุนที่บันทึกไว้</p><button id="create-order" type="submit">บันทึกออเดอร์</button></form></div>
-<div class="panel"><h2>รายการออเดอร์</h2><div class="toolbar"><input id="order-search" type="search" placeholder="ค้นหาชื่อสินค้า / รหัส / ลูกค้า"><select id="order-filter"><option value="all">ทุกสถานะ</option><option value="pending">รอชำระ</option><option value="paid">ชำระแล้ว</option><option value="shipped">จัดส่งแล้ว</option><option value="cancelled">ยกเลิก</option></select></div><div id="orders-list"></div></div>
+<div class="panel"><div class="section-heading"><h2>รายการออเดอร์</h2><button type="button" class="secondary" id="export-orders">ส่งออกออเดอร์ CSV</button></div><div class="toolbar"><input id="order-search" type="search" placeholder="ค้นหาชื่อสินค้า / รหัส / ลูกค้า"><select id="order-filter"><option value="all">ทุกสถานะ</option><option value="pending">รอชำระ</option><option value="paid">ชำระแล้ว</option><option value="shipped">จัดส่งแล้ว</option><option value="cancelled">ยกเลิก</option></select></div><div id="orders-list"></div></div>
 </section>
-<section id="costs-tab" class="hidden"><div class="panel"><h2>บันทึกต้นทุนสินค้า</h2><p class="muted">ต้นทุนอยู่ในตารางแยก ไม่แสดงในหน้าร้านสาธารณะ และไม่บังคับให้กรอกย้อนหลัง</p><div class="form-grid"><div><label for="cost-search">ค้นหาสินค้า</label><input id="cost-search" type="search" placeholder="ค้นชื่อรุ่นหรือ SKU"></div><div><label>ความคืบหน้า</label><p id="cost-count" class="muted">—</p></div></div><div id="cost-list"></div></div></section>
+<section id="costs-tab" class="hidden"><div class="panel"><div class="section-heading"><h2>บันทึกต้นทุนสินค้า</h2><button type="button" class="secondary" id="export-costs">ส่งออกต้นทุน CSV</button></div><p class="muted">ต้นทุนอยู่ในตารางแยก ไม่แสดงในหน้าร้านสาธารณะ และไม่บังคับให้กรอกย้อนหลัง</p><div class="form-grid"><div><label for="cost-search">ค้นหาสินค้า</label><input id="cost-search" type="search" placeholder="ค้นชื่อรุ่นหรือ SKU"></div><div><label>ความคืบหน้า</label><p id="cost-count" class="muted">—</p></div></div><div id="cost-list"></div></div></section>
 </section>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script src="./supabase-config.js"></script>
@@ -73,6 +73,13 @@ const statusNames={pending:'รอชำระเงิน',paid:'ชำระ�
 let db=null,products=[],orders=[],costs=new Map(),authorized=false;
 const notice=t=>$('notice').textContent=t;
 const toggle=(id,on)=>$(id).classList.toggle('hidden',!on);
+function downloadCsv(name,headers,records){
+ if(!authorized)return;
+ const sanitize=v=>{let x=String(v??'');if(/^[\s]*[=+@-]/.test(x))x="'"+x;return '"'+x.replace(/"/g,'""')+'"';};
+ const csv='\uFEFF'+[headers,...records].map(row=>row.map(sanitize).join(',')).join('\r\n');
+ const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+ const anchor=document.createElement('a');anchor.href=url;anchor.download=name;document.body.appendChild(anchor);anchor.click();anchor.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
 function safeNum(id){const v=Number($(id).value);return Number.isFinite(v)&&v>=0?v:null}
 function chosen(){return products.find(p=>p.sku===$('order-sku').value)}
 function costsPreview(){const p=chosen();$('cost-preview').textContent=!p?'เลือกสินค้าเพื่อดูต้นทุนที่บันทึกไว้':costs.has(p.sku)?'ต้นทุนที่บันทึกไว้: '+money(costs.get(p.sku))+' (บันทึกยอด ณ วันที่สร้างออเดอร์)':'ยังไม่บันทึกต้นทุนสินค้านี้ · กำไรจะไม่ถูกคำนวณจนกว่าจะมีต้นทุน'};
@@ -135,10 +142,10 @@ async function reload(){
 async function check(){
  const {data:{user},error:authError}=await db.auth.getUser();
  if(authError)throw authError;
- if(!user){authorized=false;toggle('login',true);toggle('workspace',false);return;}
+ if(!user){authorized=false;toggle('login',true);toggle('workspace',false);toggle('logout',false);return;}
  const {data,error}=await db.from('clicko_admins').select('user_id').eq('user_id',user.id).maybeSingle();
  if(error)throw error;
- authorized=!!data;toggle('login',!authorized);toggle('workspace',authorized);
+ authorized=!!data;toggle('login',!authorized);toggle('workspace',authorized);toggle('logout',authorized);
  if(!authorized){notice('บัญชีนี้ยังไม่ได้รับสิทธิ์ผู้ดูแล');return;}
  await reload();notice('เชื่อมต่อข้อมูลของ Clicko สำเร็จ');
 }
@@ -197,6 +204,11 @@ $('cost-list').addEventListener('click',async e=>{
 $('order-search').addEventListener('input',renderOrders);
 $('order-filter').addEventListener('change',renderOrders);
 $('cost-search').addEventListener('input',renderCosts);
+$('export-orders').addEventListener('click',()=>downloadCsv('clicko-orders.csv',['id','sku','product','customer','sell_price','cost_snapshot','shipping_fee','extra_cost','status','tracking','notes','created_at'],
+ orders.map(o=>[o.id,o.sku,o.product_name,o.customer_label,o.sell_price,o.cost_snapshot,o.shipping_fee,o.extra_cost,o.status,o.tracking_code,o.notes,o.created_at])));
+$('export-costs').addEventListener('click',()=>downloadCsv('clicko-costs.csv',['sku','product','cost'],
+ products.map(p=>[p.sku,p.name,costs.has(p.sku)?costs.get(p.sku):''])));
+$('logout').addEventListener('click',async()=>{await db.auth.signOut();authorized=false;products=[];orders=[];costs.clear();await check();notice('ออกจากระบบแล้ว')});
 $('refresh').addEventListener('click',async()=>{try{notice('กำลังรีเฟรช...');await reload();notice('ข้อมูลล่าสุดแล้ว')}catch(err){notice(err.message)}});
 (async()=>{
  if(!cfg.url||!cfg.anonKey||!window.supabase){notice('ยังไม่เชื่อม Supabase; กลับไปตรวจ supabase-config.js');return;}
