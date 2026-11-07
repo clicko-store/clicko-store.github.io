@@ -101,4 +101,38 @@ ok(storefront.includes('id="clicko-catalog-controls-fix"'),'Final catalog filter
 ok(storefront.includes("search.addEventListener('input'")&&storefront.includes("chipList.addEventListener('click'"),'Search and category chip event listeners installed');
 ok(storefront.includes("controls.forEach(select=>select.addEventListener('change',refresh))"),'Dropdown filter and sort events installed');
 
+
+// Execute the actual final-page event controller against mock controls to verify interactions.
+const controller=storefront.match(/<script id="clicko-catalog-controls-fix">([\s\S]*?)<\/script>/)?.[1];
+ok(Boolean(controller),'Active catalog control script exists');
+const eventFns={};
+const nodes={};
+for(const id of ['q','condition','availability','sort','chips','count']){
+ nodes[id]={
+  value:'',textContent:id==='count'?'12 รายการ':'',
+  addEventListener:(kind,callback)=>{eventFns[id+':'+kind]=callback},
+  contains:()=>true
+ };
+}
+const appended=[];
+const fakeDocument={
+ getElementById:id=>nodes[id]||null,
+ createElement:tag=>({tagName:tag,textContent:'',setAttribute(){}}),
+ querySelector:()=>({append:node=>appended.push(node)})
+};
+let rendered=0;
+const state={document:fakeDocument,category:'GAMING MOUSE',categories:['ทั้งหมด','GAMING MOUSE'],draw:()=>{rendered++}};
+vm.runInNewContext(controller,state);
+ok(rendered===1,'Filter controller renders initial state');
+nodes.q.value='G PRO';
+eventFns['q:input']();
+ok(rendered===2&&state.category==='ทั้งหมด','Search immediately draws and clears a previous category filter');
+eventFns['condition:change']();
+eventFns['availability:change']();
+eventFns['sort:change']();
+ok(rendered===5,'All three dropdowns redraw products on selection');
+eventFns['chips:click']({target:{closest:()=>({dataset:{cat:'GAMING MOUSE'}})}});
+ok(rendered===6&&state.category==='GAMING MOUSE','Clicking category chip updates category and renders');
+ok(appended.length===1&&appended[0].textContent.includes('G PRO'),'Screen-reader filter status reflects current search');
+
 console.log('Clicko QA passed: '+assertions+' checks across '+pages.join(', '));
