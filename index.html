@@ -1006,7 +1006,7 @@ var clickoGalleryPhotos=new Map();
 function clickoIsManufacturerPhoto(p){return !!(p.manufacturer_image_verified&&p.manufacturer_image_url&&(!p.image||p.image===p.manufacturer_image_url))}
 function clickoStockStatus(p){return ['available','reserved','sold'].includes(p.stock_status)?p.stock_status:(p.sold||p.price===null?'sold':'available');}
 function clickoFilterCatalogItems(items,{category='ทั้งหมด',query='',condition='',availability='available',sort='default'}={}){
- const normalized=String(query||'').normalize('NFKC').toLocaleLowerCase().replace(/\\s+/g,' ').trim();
+ const normalized=String(query||'').normalize('NFKC').toLocaleLowerCase().replace(/\s+/g,' ').trim();
  const tokens=normalized.split(' ').filter(Boolean);
  const result=items.filter(p=>{
   if(p.is_hidden)return false;
