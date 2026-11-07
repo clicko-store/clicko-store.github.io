@@ -1005,7 +1005,28 @@ function clickoCanOrder(p){return clickoInventoryVerified&&!p.is_hidden&&clickoV
 var clickoGalleryPhotos=new Map();
 function clickoIsManufacturerPhoto(p){return !!(p.manufacturer_image_verified&&p.manufacturer_image_url&&(!p.image||p.image===p.manufacturer_image_url))}
 function clickoStockStatus(p){return ['available','reserved','sold'].includes(p.stock_status)?p.stock_status:(p.sold||p.price===null?'sold':'available');}
-function draw(){chips.innerHTML=categories.map(c=>`<button class="chip ${category===c?'active':''}" data-cat="${esc(c)}">${esc(c)}</button>`).join('');const q=document.getElementById('q').value.trim().toLowerCase(),cond=document.getElementById('condition').value,sort=document.getElementById('sort').value,availability=document.getElementById('availability').value;let list=products.filter(p=>(category==='ทั้งหมด'||p.category===category)&&(!cond||p.condition===cond)&&(availability==='all'||clickoStockStatus(p)===availability)&&(`${p.name} ${p.category} ${p.sub} ${p.specs||''}`.toLowerCase().includes(q)));if(sort!=='default')list.sort((a,b)=>sort==='low'?(a.price??Infinity)-(b.price??Infinity):(b.price??-1)-(a.price??-1));document.getElementById('count').textContent=`${list.length} รายการ`;document.getElementById('empty').hidden=list.length>0;grid.innerHTML=list.map(p=>`<article class="card ${p.condition==='มือ2'?'clicko-item-used':'clicko-item-new'}"><div class="clicko-condition-banner ${p.condition==='มือ2'?'used':'new'}"><span class="condition-symbol" aria-hidden="true">${p.condition==='มือ2'?'↺':'✦'}</span><strong>${p.condition==='มือ2'?'มือ 2 · สินค้ามือสอง':'มือ 1 · สินค้าใหม่'}</strong></div><a class="pic" data-pid="${esc(p.id)}" href="${esc(p.search)}" target="_blank" title="ค้นหารูปสินค้ารุ่นนี้">${p.image?`<img src="${esc(p.image)}" loading="lazy" alt="${esc(p.name)}">${clickoIsManufacturerPhoto(p)?'<small class="manufacturer-label">ภาพจากผู้ผลิต · ภาพประกอบ</small>':''}`:icon()+'<small>ยังไม่มีภาพตรงรุ่นที่ยืนยันแล้ว</small>'}</a><div class="info"><div class="tags">${clickoStockStatus(p)==='sold'?'<span class="tag sold">ขายแล้ว</span>':(clickoStockStatus(p)==='reserved'?'<span class="tag reserved">จองแล้ว</span>':'')}</div><div class="sub">${esc(p.sub)}</div><div class="name">${esc(p.name)}</div><div class="specs">${esc(clickoSpecs(p))}</div><div class="warranty">${p.warranty?'ประกัน: '+esc(p.warranty):'&nbsp;'}${p.note?' · '+esc(p.note):''}</div><div class="bottom"><div class="price ${clickoStockStatus(p)==='sold'?'unpriced':''}">${clickoStockStatus(p)==='sold'?'ขายแล้ว':((typeof p.price==='number'&&Number.isFinite(p.price))?'฿'+p.price.toLocaleString('th-TH'):'สอบถามราคา')}</div>${clickoStockStatus(p)==='sold'?'<span class="ask sold-button">ขายแล้ว</span>':(clickoStockStatus(p)==='reserved'?'<span class="ask reserved-button">จองแล้ว</span>':(clickoCanOrder(p)?'<button type="button" class="ask clicko-order-btn" data-order-sku="'+esc(p.id)+'">สั่งซื้อ / สอบถาม ↗</button>':'<a class="ask" href="https://www.facebook.com/sippavit.gomarn/" target="_blank" rel="noopener noreferrer">สอบถามสต๊อกกับร้าน ↗</a>'))}</div></div></article>`).join('')}
+function clickoFilterCatalogItems(items,{category='ทั้งหมด',query='',condition='',availability='available',sort='default'}={}){
+ const normalized=String(query||'').normalize('NFKC').toLocaleLowerCase().replace(/\\s+/g,' ').trim();
+ const tokens=normalized.split(' ').filter(Boolean);
+ const result=items.filter(p=>{
+  if(p.is_hidden)return false;
+  if(category!=='ทั้งหมด'&&p.category!==category)return false;
+  if(condition&&p.condition!==condition)return false;
+  if(availability!=='all'&&clickoStockStatus(p)!==availability)return false;
+  const haystack=[p.name,p.category,p.sub,p.specs,p.note,p.id].map(v=>String(v??'')).join(' ').normalize('NFKC').toLocaleLowerCase();
+  return tokens.every(token=>haystack.includes(token));
+ });
+ if(sort==='low'||sort==='high')result.sort((a,b)=>{
+  const aa=typeof a.price==='number'&&Number.isFinite(a.price)?a.price:null;
+  const bb=typeof b.price==='number'&&Number.isFinite(b.price)?b.price:null;
+  if(aa===null&&bb===null)return 0;
+  if(aa===null)return 1;
+  if(bb===null)return -1;
+  return sort==='low'?aa-bb:bb-aa;
+ });
+ return result;
+}
+function draw(){chips.innerHTML=categories.map(c=>`<button class="chip ${category===c?'active':''}" data-cat="${esc(c)}">${esc(c)}</button>`).join('');const q=document.getElementById('q').value.trim().toLowerCase(),cond=document.getElementById('condition').value,sort=document.getElementById('sort').value,availability=document.getElementById('availability').value;let list=clickoFilterCatalogItems(products,{category,query:q,condition:cond,availability,sort});document.getElementById('count').textContent=`${list.length} รายการ`;document.getElementById('empty').hidden=list.length>0;grid.innerHTML=list.map(p=>`<article class="card ${p.condition==='มือ2'?'clicko-item-used':'clicko-item-new'}"><div class="clicko-condition-banner ${p.condition==='มือ2'?'used':'new'}"><span class="condition-symbol" aria-hidden="true">${p.condition==='มือ2'?'↺':'✦'}</span><strong>${p.condition==='มือ2'?'มือ 2 · สินค้ามือสอง':'มือ 1 · สินค้าใหม่'}</strong></div><a class="pic" data-pid="${esc(p.id)}" href="${esc(p.search)}" target="_blank" title="ค้นหารูปสินค้ารุ่นนี้">${p.image?`<img src="${esc(p.image)}" loading="lazy" alt="${esc(p.name)}">${clickoIsManufacturerPhoto(p)?'<small class="manufacturer-label">ภาพจากผู้ผลิต · ภาพประกอบ</small>':''}`:icon()+'<small>ยังไม่มีภาพตรงรุ่นที่ยืนยันแล้ว</small>'}</a><div class="info"><div class="tags">${clickoStockStatus(p)==='sold'?'<span class="tag sold">ขายแล้ว</span>':(clickoStockStatus(p)==='reserved'?'<span class="tag reserved">จองแล้ว</span>':'')}</div><div class="sub">${esc(p.sub)}</div><div class="name">${esc(p.name)}</div><div class="specs">${esc(clickoSpecs(p))}</div><div class="warranty">${p.warranty?'ประกัน: '+esc(p.warranty):'&nbsp;'}${p.note?' · '+esc(p.note):''}</div><div class="bottom"><div class="price ${clickoStockStatus(p)==='sold'?'unpriced':''}">${clickoStockStatus(p)==='sold'?'ขายแล้ว':((typeof p.price==='number'&&Number.isFinite(p.price))?'฿'+p.price.toLocaleString('th-TH'):'สอบถามราคา')}</div>${clickoStockStatus(p)==='sold'?'<span class="ask sold-button">ขายแล้ว</span>':(clickoStockStatus(p)==='reserved'?'<span class="ask reserved-button">จองแล้ว</span>':(clickoCanOrder(p)?'<button type="button" class="ask clicko-order-btn" data-order-sku="'+esc(p.id)+'">สั่งซื้อ / สอบถาม ↗</button>':'<a class="ask" href="https://www.facebook.com/sippavit.gomarn/" target="_blank" rel="noopener noreferrer">สอบถามสต๊อกกับร้าน ↗</a>'))}</div></div></article>`).join('')}
 
 // Product details use the current inventory record, never a guessed product specification.
 const detailDialog=document.getElementById('product-detail');
@@ -1091,7 +1112,7 @@ async function clickoLoadPhotoManifest(){
 }
 clickoLoadPhotoManifest();
 
-chips.addEventListener('click',e=>{const b=e.target.closest('button');if(b){category=b.dataset.cat;draw()}});['q','condition','availability','sort'].forEach(id=>document.getElementById(id).addEventListener(id==='q'?'input':'change',draw));draw();</script>
+draw();</script>
 <style>
 .sheet-sync{margin:14px 0;padding:12px 16px;border:1px solid #dce4ee;border-radius:12px;background:#fff;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;color:#475569}
 .sheet-sync button{background:#0d2848;color:#fff;border:0;border-radius:8px;padding:8px 12px;cursor:pointer;font-weight:700}
@@ -1411,4 +1432,44 @@ clickoLoadAdminRows();
  dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close();});
  messengerLink.addEventListener('click',()=>{if(!feedback.textContent.includes('คัดลอกสำเร็จ'))feedback.textContent='อย่าลืมคัดลอกข้อความด้านบนก่อน แล้ววางในแชต Messenger ด้วยตัวเอง';});
 })();
-</script></body></html>
+</script><script id="clicko-catalog-controls-fix">
+/* All catalog controls now invoke the final wrapped draw() after stock and spotlight setup. */
+(function(){
+ const search=document.getElementById('q');
+ const controls=['condition','availability','sort'].map(id=>document.getElementById(id));
+ const chipList=document.getElementById('chips');
+ const status=document.createElement('span');
+ status.id='clicko-filter-feedback';status.className='clicko-filter-feedback';status.setAttribute('role','status');
+ status.setAttribute('aria-live','polite');
+ document.querySelector('.catalog-area .section')?.append(status);
+ function refresh(){
+  draw();
+  const count=document.getElementById('count')?.textContent||'0 รายการ';
+  const label=category==='ทั้งหมด'?'ทุกหมวด':category;
+  const typed=search.value.trim();
+  status.textContent=(typed?'ค้นหา “'+typed+'” · ':'')+label+' · '+count;
+ }
+ search.addEventListener('input',()=>{
+  if(category!=='ทั้งหมด')category='ทั้งหมด';
+  refresh();
+ });
+ search.addEventListener('search',()=>{
+  if(category!=='ทั้งหมด')category='ทั้งหมด';
+  refresh();
+ });
+ controls.forEach(select=>select.addEventListener('change',refresh));
+ chipList.addEventListener('click',event=>{
+  const button=event.target.closest('button[data-cat]');
+  if(!button||!chipList.contains(button))return;
+  const next=button.dataset.cat;
+  if(!categories.includes(next))return;
+  category=next;
+  refresh();
+ });
+ refresh();
+})();
+</script><style id="clicko-filter-feedback-style">
+.clicko-filter-feedback{display:block;margin-top:4px;color:#34518E;font-size:11px;font-weight:700;line-height:1.5}
+#chips .chip{cursor:pointer}
+#chips .chip:focus-visible,.bar .filter:focus-visible,.bar .search:focus-visible{outline:3px solid #2339C3;outline-offset:2px}
+</style></body></html>
