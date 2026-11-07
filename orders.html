@@ -33,9 +33,14 @@ label{display:block;font-size:12px;font-weight:800;color:#526d89;margin:0 0 6px}
 .hidden{display:none!important}.warning{color:#955d17;background:#fff7e9;border:1px solid #f1dba9;padding:11px 13px;border-radius:10px;font-size:12px}
 #login{max-width:550px}.empty{color:#7891a8;font-size:13px;padding:22px;text-align:center}
 @media(max-width:700px){header{padding:12px}header strong{font-size:18px}nav{gap:8px}nav a{font-size:11px}main{margin:12px auto;padding:0 10px}.panel{padding:15px;border-radius:15px}.form-grid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.metric{padding:12px}.metric strong{font-size:20px}.order{grid-template-columns:1fr;gap:9px}.cost-row{grid-template-columns:minmax(0,1fr) 105px;gap:8px}.cost-row button{grid-column:2}h1{font-size:22px}.toolbar{gap:6px}.toolbar select{max-width:117px}}
+</style><style id="clicko-pending-alert-style">
+.pending-alerts{margin-top:12px;padding:11px 13px;background:#edf6ff;border:1px solid #d3e9ff;border-radius:11px;color:#30668f;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:12px;font-weight:750}
+.pending-alerts.needs-attention{background:#fff5de;border-color:#f1d6a0;color:#99621a}
+.pending-alerts.calm{background:#eff9f2;color:#28774f;border-color:#d4eadb}
+.pending-alerts button{font-size:11px;padding:7px 11px}.age-note{font-size:11px!important;color:#a36c17!important}
 </style></head>
 <body>
-<header><div><strong>Clicko<span>.</span> Back Office</strong><small>ออเดอร์ · ต้นทุน · กำไร</small></div><nav><a href="./admin.html">สินค้า</a><a href="./">หน้าร้าน ↗</a><button type="button" id="logout" class="secondary hidden">ออกจากระบบ</button></nav></header>
+<header><div><strong>Clicko<span>.</span> Back Office</strong><small>ออเดอร์ · ต้นทุน · กำไร</small></div><nav><a href="./admin.html">สินค้า</a><a href="./backup.html">สำรองข้อมูล</a><a href="./">หน้าร้าน ↗</a><button type="button" id="logout" class="secondary hidden">ออกจากระบบ</button></nav></header>
 <main>
 <p id="notice" role="status" aria-live="polite"></p>
 <section id="login" class="panel"><h1>เข้าสู่ระบบผู้ดูแลร้าน</h1><p class="muted">ใช้บัญชี Admin เดียวกับหน้าจัดการสินค้า Clicko</p><form id="login-form"><div class="form-grid"><div><label for="email">อีเมล</label><input id="email" type="email" required autocomplete="username"></div><div><label for="password">รหัสผ่าน</label><input id="password" type="password" required autocomplete="current-password"></div></div><div class="actions"><button type="submit">เข้าสู่ระบบ</button></div></form></section>
@@ -44,7 +49,7 @@ label{display:block;font-size:12px;font-weight:800;color:#526d89;margin:0 0 6px}
 <div class="metric"><span>ออเดอร์ทั้งหมด</span><strong id="metric-orders">0</strong></div>
 <div class="metric"><span>ยอดขายเดือนนี้</span><strong id="metric-revenue">฿0</strong></div>
 <div class="metric"><span>กำไรที่คำนวณได้</span><strong id="metric-profit">฿0</strong><small id="metric-profit-note"></small></div>
-<div class="metric"><span>รอชำระเงิน</span><strong id="metric-pending">0</strong></div></div>
+<div class="metric"><span>รอชำระเงิน</span><strong id="metric-pending">0</strong></div></div><div id="order-alerts" class="pending-alerts" role="status" aria-live="polite"></div>
 <p class="warning" style="margin-bottom:0"><strong>ระบบเชื่อมสต๊อกอัตโนมัติแล้ว:</strong> บันทึกออเดอร์ “รอชำระเงิน” = จองสินค้า, “ชำระแล้ว” = ขายแล้ว, “ยกเลิกก่อนจัดส่ง” = กลับมาพร้อมขาย และไม่สามารถจองสินค้าชิ้นเดียวซ้ำได้ · การเปลี่ยนสถานะไม่ได้ตรวจสอบยอดเงินกับธนาคารหรือดำเนินการคืนเงินจริง</p></div>
 <div class="tabs"><button class="tab active" type="button" data-tab="orders">ออเดอร์</button><button class="tab" type="button" data-tab="costs">ต้นทุนสินค้า</button></div>
 <section id="orders-tab">
@@ -70,6 +75,22 @@ const cfg=window.CLICKO_SUPABASE||{},$=id=>document.getElementById(id);
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=v=>'฿'+Number(v||0).toLocaleString('th-TH',{maximumFractionDigits:2});
 const statusNames={pending:'รอชำระเงิน / จองแล้ว',paid:'ชำระแล้ว / ขายแล้ว',shipped:'จัดส่งแล้ว',cancelled:'ยกเลิก / คืนสต๊อก'};
+function pendingAgeHours(o){return Math.max(0,(Date.now()-new Date(o.created_at).getTime())/3600000)}
+function renderPendingAlerts(){
+ const pending=orders.filter(o=>o.status==='pending'),overdue=pending.filter(o=>pendingAgeHours(o)>=24),urgent=overdue.filter(o=>pendingAgeHours(o)>=48);
+ const output=$('order-alerts');output.innerHTML='';
+ if(!pending.length){output.textContent='ไม่มีออเดอร์รอชำระเงิน';output.className='pending-alerts calm';return}
+ output.className='pending-alerts'+(overdue.length?' needs-attention':'');
+ const summary=document.createElement('span');
+ summary.textContent='กำลังจองสินค้า '+pending.length+' ออเดอร์ · เกิน 24 ชั่วโมง '+overdue.length+' รายการ'+(urgent.length?' · เกิน 48 ชั่วโมง '+urgent.length+' รายการ':'');
+ output.append(summary);
+ if(overdue.length){
+  const button=document.createElement('button');button.type='button';button.className='secondary';
+  button.textContent='ดูรายการรอติดตาม';
+  button.onclick=()=>{$('order-filter').value='pending';renderOrders();$('orders-list').scrollIntoView({behavior:'smooth',block:'start'})};
+  output.append(button);
+ }
+}
 const statusTransitions={pending:['pending','paid','cancelled'],paid:['paid','shipped','cancelled'],shipped:['shipped'],cancelled:['cancelled']};
 function allowedOrderStatusOptions(status){
  return (statusTransitions[status]||[status]).map(k=>'<option value="'+k+'"'+(k===status?' selected':'')+'>'+statusNames[k]+'</option>').join('');
@@ -115,6 +136,7 @@ function renderMetrics(){
  $('metric-revenue').textContent=money(revenue);
  $('metric-profit').textContent=known.length?money(profit):'—';
  $('metric-profit-note').textContent=known.length+' / '+realized.length+' ออเดอร์มีต้นทุน';
+ renderPendingAlerts();
 }
 function renderOrders(){
  const term=$('order-search').value.trim().toLocaleLowerCase(),state=$('order-filter').value;
@@ -123,7 +145,7 @@ function renderOrders(){
   const code=esc(o.id),cost=o.cost_snapshot===null?'ต้นทุนยังไม่ระบุ':('ต้นทุน '+money(o.cost_snapshot));
   return '<article class="order"><div><strong>'+esc(o.product_name)+'</strong><small>'+esc(o.sku)+' · '+new Date(o.created_at).toLocaleString('th-TH')+'</small>'+
   '<div class="summary">'+money(o.sell_price)+'</div><small>'+cost+' · '+esc(o.customer_label||'ไม่ระบุลูกค้า')+'</small><span class="chip '+esc(o.status)+'">'+statusNames[o.status]+'</span>'+
-  (o.notes?'<p class="muted">'+esc(o.notes)+'</p>':'')+'</div>'+
+  (o.status==='pending'?'<small class="age-note">จองมาแล้ว '+Math.floor(pendingAgeHours(o))+' ชั่วโมง'+(pendingAgeHours(o)>=24?' · ควรติดตามลูกค้า':'')+'</small>':'')+(o.notes?'<p class="muted">'+esc(o.notes)+'</p>':'')+'</div>'+
   '<div class="order-controls"><div><label for="status-'+code+'">สถานะ</label><select id="status-'+code+'" data-order-status="'+code+'">'+allowedOrderStatusOptions(o.status)+'</select></div>'+
   '<div><label for="tracking-'+code+'">เลขพัสดุ</label><input id="tracking-'+code+'" data-order-tracking="'+code+'" value="'+esc(o.tracking_code||'')+'" maxlength="120" placeholder="เลขพัสดุ"></div>'+
   '<div><label for="sell-'+code+'">ราคาขายจริง</label><input id="sell-'+code+'" type="number" min="0" step=".01" inputmode="decimal" data-order-price="'+code+'" value="'+Number(o.sell_price)+'"></div>'+ 
