@@ -27,7 +27,7 @@ This is a verified source-code, mocked-client and SQL transaction test report, *
 - GitHub Actions checks for the latest commit returned no workflow runs/status checks. GitHub Pages deployment and end-user performance were not independently verified.
 - Messenger does not automatically send messages; buyers copy and paste. Opening Messenger is not order/payment confirmation.
 - The order dashboard currently reports paid/shipped orders **created in the displayed month**; payment date is not separately recorded.
-- Order and stock updates are **not yet atomic/automatically synchronized**. Update stock separately after confirmation.
+- **Superseded:** Orders and inventory became atomic after the 2026-11-07 database migration (see the section below).
 - The Supabase Security Advisor warns **Leaked Password Protection Disabled**: https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection
 
 ## Storefront and Admin
@@ -65,3 +65,30 @@ Implemented at database level via private-schema SECURITY INVOKER triggers and a
 - Orders already shipped cannot be returned to available by order cancellation. Returned merchandise requires a separate inspected manual process.
 - Live click-through tests on the owner’s authenticated browser remain outstanding.
 - Existing products sold before the order system existed remain “sold” with no historical order; no synthetic orders are created.
+
+## Final hardening / gallery / backup / reminders — 2026-11-07
+
+### Delivered on GitHub
+- `index.html`: Clicko storefront loads publicly readable secondary photos from `clicko_product_photos`, displays clickable thumbnails in detail view, uses first uploaded photo as a card thumbnail when the main image is blank, preserves older relative local photo URLs.
+- `admin.html`: Admin-controlled upload of up to 8 additional real product images (JPEG/PNG/WEBP up to 5 MB each), manages gallery metadata; removes self-registration UI, preserves original Admin login and product functions.
+- `orders.html`: Pending reservations show age, number older than 24h and 48h, and an in-app list filter. Nothing auto-cancels.
+- `backup.html`: Requires Admin authorization; downloads JSON of products, orders, private costs and secondary photo metadata from current Supabase tables. Validates a backup before comparing it. Non-destructive restore can insert *missing* products, costs and photo metadata, but never overwrites existing records and never replays historical orders.
+- `tests/verify.mjs` and `.github/workflows/clicko-qa.yml`: source-level regression tests configured for GitHub Actions on push and pull request. Actions run result not independently verified during this task.
+- Automation: Daily 08:00 Asia/Bangkok watch checks `clicko_orders` for pending orders over 24 hours. It will attempt to notify only when overdue, without customer/cost details or stock mutations.
+
+### Supabase and QA
+- New `public.clicko_product_photos` table with RLS. Public may read photo URLs; only a recognized Admin may write metadata. Existing Storage bucket accepts public reads and Admin-only uploads.
+- An authorized Admin simulation inside BEGIN/ROLLBACK inserted and removed one QA photo, verified duplicate position and out-of-range position were rejected, then rolled back.
+- Backup JS comparison tests: identical backup => no restore enabled, missing SKU detected, malformed stock state rejected.
+- Pending notification test: an overdue pending order is detected but a paid order is not.
+- All 4 pages' inline JS parsed successfully. Separate static regression checker passed its authored source guards; GitHub Actions execution is pending independent confirmation.
+- Final DB audit after rollback: 154 products; 131 available, 0 reserved, 23 sold; 0 orphaned QA rows, 0 order/cost/photo test records; 0 legacy sold-flag inconsistencies.
+- Public anonymous access cannot read orders or costs, nor modify photo metadata.
+- Supabase Security Advisor: one outstanding **Leaked Password Protection Disabled** notice: https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection
+
+### Explicit limitations / do not overclaim
+- JSON download is an on-demand, admin-initiated backup. It is not a scheduled off-site database backup, PITR, or a full disaster-recovery restore. JSON does not contain image *file bytes*, only image URL metadata.
+- Missing-record recovery uses sequential inserts and can partially complete if network access fails. It never overwrites existing records, and historical orders are not auto-restored to avoid conflicting with atomic inventory triggers.
+- Reminders have been scheduled, but the first remote connector-enabled scheduled run has **not** been observed.
+- Real mobile browser Auth, photo file selection/upload, Messenger deep-link behavior, and real bank-payment confirmation are not independently end-to-end verified. Admin action marks payment paid; no bank API is linked.
+- Password protection configuration may require an action in the Supabase Dashboard or plan eligibility; it cannot be changed by the current connector.
