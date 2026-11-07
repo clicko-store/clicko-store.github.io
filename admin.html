@@ -17,37 +17,139 @@ button:hover:not(:disabled){filter:brightness(.96)}
 .stock-badge{font-size:10px;font-weight:800;display:inline-block;border-radius:6px;padding:4px 8px}.status-available{background:#e4f8ee;color:#178251}.status-reserved{background:#fff3d7;color:#986206}.status-sold{background:#edf1f6;color:#67798e}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 @media(max-width:650px){main{padding:0 12px;margin:16px auto}.panel{padding:15px}.stock-overview{gap:6px;grid-template-columns:repeat(2,1fr)}.stock-stat{padding:11px}.stock-stat strong{font-size:22px}.stock-toolbar{grid-template-columns:minmax(0,1fr) 125px;gap:7px}.item{gap:9px;padding:13px 0;flex-wrap:wrap}.item .meta{flex:1;min-width:150px}.item-actions{width:100%;justify-content:flex-end}.item-actions select{flex:1;max-width:none}.item-actions button{flex:0 0 auto;padding:10px 16px}}
+</style><style id="clicko-mobile-admin-2026">
+:root{--blue:#087cf5;--ink:#142844;--outline:#d9e8f8}
+html{scroll-behavior:smooth}
+body{background:linear-gradient(160deg,#f0f8ff,#f9fbff 55%,#edf6ff)}
+header{position:sticky;top:0;z-index:15;padding:12px max(16px,calc((100vw - 1110px)/2));background:#fffffff4;backdrop-filter:blur(14px)}
+header h1{font-size:22px;letter-spacing:-.8px}.admin-title-accent{color:#1289ff}header a{text-decoration:none;font-weight:800;font-size:13px}
+header>div:last-child{display:flex;gap:10px;align-items:center}
+main{max-width:1140px;margin:20px auto;padding:0 17px}
+.panel{background:#fff;border:1px solid var(--outline);box-shadow:0 10px 32px #12468110;border-radius:20px}
+.workspace-head{display:flex;justify-content:space-between;align-items:center;gap:15px}.workspace-head h2{font-size:24px;letter-spacing:-.6px;margin:5px 0 6px}.workspace-head p{margin:0}
+.workspace-head #new{background:var(--blue);white-space:nowrap;box-shadow:0 5px 13px #0078ee24}
+.overline{font-size:10px;letter-spacing:1.5px;font-weight:900;color:#0879df}
+.stock-overview{margin:21px 0 18px}
+.stock-stat{border-radius:16px;background:linear-gradient(150deg,#fff,#e9f4ff)}
+.stock-toolbar{grid-template-columns:minmax(0,1fr) 176px;gap:10px}
+.search-field{position:relative;min-width:0}.search-field #search{padding-left:39px;padding-right:34px;border-color:#d4e7fa;background:#f7fbff}
+.search-symbol{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:24px;color:#4b91dc;pointer-events:none;line-height:1}
+.search-clear{position:absolute;right:5px;top:50%;transform:translateY(-50%);width:28px;height:28px;padding:0;border-radius:50%;background:#e4f0ff;color:#356ca9;font-size:20px}
+.search-clear[hidden]{display:none}
+.stock-toolbar #stock-filter{background:#fff;border-color:#d4e7fa;font-size:13px}
+.list-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #e4edf7;margin-top:10px;padding:7px 0 13px;color:#567594;font-size:12px;font-weight:800}
+.reload-button{background:transparent;color:#0679ee;border:1px solid #cee5ff;padding:8px 12px}
+.item{display:grid;grid-template-columns:68px minmax(150px,1fr) minmax(330px,440px);gap:12px;align-items:center;padding:15px 0}
+.item img,.item-placeholder{width:66px;height:66px;border-radius:12px}
+.item-placeholder{display:grid;place-items:center;color:#7eafd7;font-size:30px;background:linear-gradient(130deg,#edf7ff,#e2efff)}
+.item .meta strong{font-size:14px;color:#173452;line-height:1.5;overflow-wrap:anywhere}
+.item .meta small{font-size:11px;margin:6px 0}
+.item-controls{display:grid;grid-template-columns:minmax(132px,1fr) minmax(120px,auto) auto;gap:9px;align-items:end}
+.item-controls label{display:block;color:#627d9b;font-size:10px;margin:0 0 5px}
+.item-controls input,.item-controls select{width:100%;min-height:42px;padding:10px;font-size:14px}
+.quick-price-row{display:flex;align-items:center;gap:5px}.quick-price-row input{min-width:0;width:100%;font-variant-numeric:tabular-nums}.quick-price-row button{min-height:42px;background:#e3f1ff;border:1px solid #c4e1ff;color:#0865c2;padding:8px 11px;font-size:11px}
+.quick-price-row button:disabled{opacity:.42}
+.item-controls .edit-mini{font-size:11px;min-height:42px;padding:10px 12px}
+.empty-results{padding:42px 14px;text-align:center;color:#7890aa}.empty-results strong{color:#244b72}.empty-results p{font-size:13px}.empty-results button{margin-top:10px}
+.editor-heading{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:10px}.editor-heading h2{margin:5px 0;font-size:23px}.editor-back{font-size:12px}
+#editor{scroll-margin-top:93px}
+#notice:not(:empty){background:#eff7ff;border:1px solid #d6e8fc;border-radius:12px;padding:12px 15px;position:relative}
+.mobile-add{display:none}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid #68baff;outline-offset:2px}
+@media(max-width:850px){
+ .item{grid-template-columns:58px minmax(0,1fr);gap:10px}
+ .item img,.item-placeholder{width:58px;height:60px}
+ .item-controls{grid-column:1/-1;grid-template-columns:minmax(0,1.2fr) minmax(0,.9fr) auto}
+}
+@media(max-width:650px){
+ body{padding-bottom:calc(78px + env(safe-area-inset-bottom))}
+ header{padding:10px 13px;min-height:60px;gap:6px}
+ header h1{font-size:19px}header .muted{font-size:10px}
+ header>div:last-child{gap:7px}
+ header a{font-size:12px}header #logout{font-size:11px;padding:8px}
+ main{margin:12px auto;padding:0 10px}
+ .panel{padding:15px;border-radius:16px}
+ .workspace-head{align-items:flex-start}
+ .workspace-head h2{font-size:22px}
+ .workspace-head #new{padding:11px 12px;font-size:12px}
+ .workspace-head p{font-size:11px;line-height:1.5}
+ .stock-overview{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin:17px 0}
+ .stock-stat{padding:10px 5px;border-radius:11px;min-width:0;text-align:center}
+ .stock-stat span{font-size:9px}.stock-stat strong{font-size:21px}
+ .stock-toolbar{grid-template-columns:minmax(0,1fr) 122px;gap:7px}
+ .stock-toolbar input,.stock-toolbar select{font-size:13px}
+ .item{grid-template-columns:55px minmax(0,1fr);padding:15px 0;gap:9px}
+ .item .meta strong{font-size:13px}
+ .item .meta small{font-size:10px}
+ .item-controls{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:8px}
+ .item-controls .edit-mini{grid-column:1/-1;width:100%;min-height:38px;padding:8px}
+ .item-controls label{font-size:10px}
+ .item-controls input,.item-controls select{font-size:14px}
+ .quick-price-row button{min-width:55px;padding:8px 6px}
+ .mobile-add:not(.hidden){display:flex;position:fixed;bottom:calc(16px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:min(calc(100% - 28px),460px);justify-content:center;align-items:center;min-height:51px;border-radius:15px;background:#087ef6;box-shadow:0 10px 30px #0751ab4d;z-index:20;font-size:14px}
+ #editor{scroll-margin-top:78px}
+ #editor .grid{grid-template-columns:1fr}
+ #product-form>p.row{display:flex;flex-direction:column;align-items:stretch}
+ #product-form>p.row>*{width:100%;flex:none;margin-bottom:3px}
+ .editor-heading h2{font-size:20px}.editor-back{padding:9px}
+}
+@media(max-width:360px){.stock-overview{grid-template-columns:repeat(2,1fr)}.item-controls{grid-template-columns:1fr}.item-controls .edit-mini{grid-column:1}.stock-toolbar{grid-template-columns:1fr}}
 </style></head><body>
-<header><div><h1>Clicko Admin</h1><span class="muted">จัดการสต๊อก สินค้า และรูปภาพ</span></div><div><a href="./">หน้าร้าน ↗</a> <button id="logout" class="secondary hidden">ออกจากระบบ</button></div></header>
+<header><div><h1>Clicko<span class="admin-title-accent">.</span> Admin</h1><span class="muted">จัดการร้านบนมือถือได้ทุกที่</span></div><div><a href="./">หน้าร้าน ↗</a> <button id="logout" class="secondary hidden">ออกจากระบบ</button></div></header>
 <main><div id="notice"></div><section id="setup" class="panel hidden"><h2>ยังไม่ได้เชื่อมฐานข้อมูล</h2><p>สร้างโปรเจกต์ Supabase แล้วใส่ Project URL และ Publishable / anon key ในไฟล์ <code>supabase-config.js</code> บน GitHub ก่อนใช้งาน ไม่ต้องใส่ service_role key</p><p><a href="https://supabase.com/dashboard" target="_blank" rel="noopener">เปิด Supabase</a></p></section>
 <section id="login" class="panel hidden"><h2>เข้าสู่ระบบเจ้าของร้าน</h2><form id="login-form"><label>อีเมล</label><input id="email" type="email" required autocomplete="username"><label>รหัสผ่าน</label><input id="password" type="password" required autocomplete="current-password"><p><button type="submit">เข้าสู่ระบบ</button> <button type="button" class="secondary" id="signup">สมัครบัญชีใหม่</button></p></form><p class="muted">ผู้ดูแลต้องได้รับสิทธิ์ในตาราง clicko_admins ก่อนแก้ไขสินค้า</p></section>
-<section id="workspace" class="hidden"><div class="panel"><div class="row"><div><h2>รายการสินค้า</h2><p class="muted">แสดงรายการจากฐานข้อมูล Admin · สินค้าเดิมบนหน้าร้านจะยังอยู่จนกว่าจะเพิ่มหรือแก้ไขรายการนั้น</p></div><button id="new">+ เพิ่มสินค้า</button></div><div class="stock-overview" id="stock-overview" aria-label="สรุปจำนวนสินค้าตามสถานะ"><div class="stock-stat"><span>ทั้งหมด</span><strong id="stock-all">0</strong></div><div class="stock-stat"><span>พร้อมขาย</span><strong id="stock-available">0</strong></div><div class="stock-stat"><span>จองแล้ว</span><strong id="stock-reserved">0</strong></div><div class="stock-stat"><span>ขายแล้ว</span><strong id="stock-sold">0</strong></div></div><div class="stock-toolbar"><input id="search" type="search" placeholder="ค้นหาชื่อสินค้า / รหัสสินค้า" aria-label="ค้นหาสินค้า"><select id="stock-filter" aria-label="กรองสถานะ"><option value="all">ทุกสถานะ</option><option value="available">พร้อมขาย</option><option value="reserved">จองแล้ว</option><option value="sold">ขายแล้ว</option></select></div><p class="muted">เปลี่ยนสถานะจากรายการได้ทันที · สินค้าที่จองหรือขายแล้วจะไม่เปิดรับคำสั่งซื้อบนหน้าร้าน</p><div id="items"></div></div>
-<section id="editor" class="panel hidden"><h2 id="editor-title">แก้ไขสินค้า</h2><form id="product-form"><div class="grid"><div><label>รหัสสินค้า (SKU)</label><input id="sku" required placeholder="CLK-001"></div><div><label>ชื่อสินค้า</label><input id="name" required></div><div><label>หมวดหมู่</label><select id="category"><option>PC PARTS</option><option>GAMING MOUSE</option><option>GAMEPAD & USB HUB</option><option>KEYBOARD</option><option>MOUSEPAD</option><option>AUDIO</option><option>MONITOR & ACCESSORIES</option></select></div><div><label>ประเภทย่อย</label><input id="sub" placeholder="CPU, RAM, ..."></div><div><label>สภาพสินค้า</label><select id="condition"><option>มือ1</option><option>มือ2</option></select></div><div><label>ราคา (บาท)</label><input id="price" type="number" min="0" step="1" placeholder="เว้นว่างเมื่อยังไม่ระบุราคา"></div><div><label>ประกัน</label><input id="warranty"></div><div><label>สถานะสต๊อก</label><select id="stock_status"><option value="available">พร้อมขาย</option><option value="reserved">จองแล้ว</option><option value="sold">ขายแล้ว</option></select></div></div><label>สเปคสินค้า</label><textarea id="specs"></textarea><label>หมายเหตุ / ตำหนิ</label><textarea id="note"></textarea><label>ลิงก์ภาพกล่องสินค้าตรงรุ่น (HTTPS)</label><p class="muted">ใช้ภาพกล่องตรงรุ่นเท่านั้น หากไม่มีภาพยืนยัน ให้เว้นว่างแทนการใช้ภาพผิดรุ่น</p><p><a id="box-search" href="https://www.google.com/search?tbm=isch&q=product%20retail%20box" target="_blank" rel="noopener">ค้นหาภาพกล่องสินค้ารุ่นนี้ ↗</a></p><input id="image" type="url" placeholder="https://..."><label>หรืออัปโหลดรูปสินค้า (JPG, PNG, WEBP ไม่เกิน 5 MB)</label><input id="photo" type="file" accept="image/jpeg,image/png,image/webp"><img id="preview" class="preview hidden" alt="ภาพสินค้า"><p class="row"><button type="submit" id="save">บันทึกสินค้า</button><button type="button" class="secondary" id="cancel">ยกเลิก</button><button type="button" class="danger" id="remove">ลบรายการจาก Admin</button></p></form></section></section></main>
+<section id="workspace" class="hidden"><div class="panel"><div class="workspace-head"><div><span class="overline">PRODUCT MANAGER</span><h2>จัดการสินค้า</h2><p class="muted">แก้ราคาและสถานะได้จากหน้ารายการทันที</p></div><button id="new" type="button">+ เพิ่มสินค้า</button></div><div class="stock-overview" id="stock-overview" aria-label="สรุปจำนวนสินค้าตามสถานะ"><div class="stock-stat"><span>ทั้งหมด</span><strong id="stock-all">0</strong></div><div class="stock-stat"><span>พร้อมขาย</span><strong id="stock-available">0</strong></div><div class="stock-stat"><span>จองแล้ว</span><strong id="stock-reserved">0</strong></div><div class="stock-stat"><span>ขายแล้ว</span><strong id="stock-sold">0</strong></div></div><div class="stock-toolbar"><div class="search-field"><span class="search-symbol" aria-hidden="true">⌕</span><input id="search" type="search" autocomplete="off" placeholder="ค้นหาชื่อรุ่น / รหัสสินค้า" aria-label="ค้นหาสินค้า"><button type="button" class="search-clear" id="search-clear" aria-label="ล้างคำค้นหา">×</button></div><select id="stock-filter" aria-label="กรองสถานะ"><option value="all">ทุกสถานะ</option><option value="available">พร้อมขาย</option><option value="reserved">จองแล้ว</option><option value="sold">ขายแล้ว</option></select></div><div class="list-heading"><span id="result-count">0 รายการ</span><button type="button" id="reload" class="reload-button">↻ รีเฟรช</button></div><div id="items"></div></div>
+<section id="editor" class="panel hidden"><div class="editor-heading"><div><span class="overline">PRODUCT EDITOR</span><h2 id="editor-title">แก้ไขสินค้า</h2></div><button type="button" class="secondary editor-back" id="editor-back">← กลับรายการ</button></div><form id="product-form"><div class="grid"><div><label>รหัสสินค้า (SKU)</label><input id="sku" required placeholder="CLK-001"></div><div><label>ชื่อสินค้า</label><input id="name" required></div><div><label>หมวดหมู่</label><select id="category"><option>PC PARTS</option><option>GAMING MOUSE</option><option>GAMEPAD & USB HUB</option><option>KEYBOARD</option><option>MOUSEPAD</option><option>AUDIO</option><option>MONITOR & ACCESSORIES</option></select></div><div><label>ประเภทย่อย</label><input id="sub" placeholder="CPU, RAM, ..."></div><div><label>สภาพสินค้า</label><select id="condition"><option>มือ1</option><option>มือ2</option></select></div><div><label>ราคา (บาท)</label><input id="price" type="number" min="0" step="1" placeholder="เว้นว่างเมื่อยังไม่ระบุราคา"></div><div><label>ประกัน</label><input id="warranty"></div><div><label>สถานะสต๊อก</label><select id="stock_status"><option value="available">พร้อมขาย</option><option value="reserved">จองแล้ว</option><option value="sold">ขายแล้ว</option></select></div></div><label>สเปคสินค้า</label><textarea id="specs"></textarea><label>หมายเหตุ / ตำหนิ</label><textarea id="note"></textarea><label>ลิงก์ภาพกล่องสินค้าตรงรุ่น (HTTPS)</label><p class="muted">ใช้ภาพกล่องตรงรุ่นเท่านั้น หากไม่มีภาพยืนยัน ให้เว้นว่างแทนการใช้ภาพผิดรุ่น</p><p><a id="box-search" href="https://www.google.com/search?tbm=isch&q=product%20retail%20box" target="_blank" rel="noopener">ค้นหาภาพกล่องสินค้ารุ่นนี้ ↗</a></p><input id="image" type="url" placeholder="https://..."><label>หรืออัปโหลดรูปสินค้า (JPG, PNG, WEBP ไม่เกิน 5 MB)</label><input id="photo" type="file" accept="image/jpeg,image/png,image/webp"><img id="preview" class="preview hidden" alt="ภาพสินค้า"><p class="row"><button type="submit" id="save">บันทึกสินค้า</button><button type="button" class="secondary" id="cancel">ยกเลิก</button><button type="button" class="danger" id="remove">ลบรายการจาก Admin</button></p></form></section></section><button id="mobile-add" type="button" class="mobile-add hidden" aria-label="เพิ่มสินค้าใหม่">+ เพิ่มสินค้า</button></main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script src="./supabase-config.js"></script><script>
 const cfg=window.CLICKO_SUPABASE||{}, $=id=>document.getElementById(id), visible=(id,on)=>$(id).classList.toggle('hidden',!on), notice=t=>$('notice').textContent=t;
-let db=null,rows=[],editing=null,authorized=false;
+let db=null,rows=[],editing=null,authorized=false,loading=false;
+const money=n=>n===null||n===undefined?'สอบถามราคา':'฿'+Number(n).toLocaleString('th-TH');
 const fields=['sku','name','category','sub','condition','price','warranty','stock_status','specs','note','image'];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function edit(p){editing=p?.sku||null;visible('editor',true);$('editor-title').textContent=editing?'แก้ไขสินค้า '+editing:'เพิ่มสินค้าใหม่';fields.forEach(k=>$(k).value=p?.[k]??(k==='stock_status'?'available':''));$('sku').readOnly=!!editing;$('stock_status').value=p?.stock_status||(p?.sold?'sold':'available');$('box-search').href='https://www.google.com/search?tbm=isch&q='+encodeURIComponent((p?.name||'')+' retail box packaging');$('photo').value='';$('preview').src=p?.image||'';visible('preview',!!p?.image);$('remove').disabled=!editing;$('editor').scrollIntoView({behavior:'smooth'});}
+function edit(p){editing=p?.sku||null;visible('editor',true);visible('mobile-add',false);$('editor-title').textContent=editing?'แก้ไขสินค้า '+editing:'เพิ่มสินค้าใหม่';fields.forEach(k=>$(k).value=p?.[k]??(k==='stock_status'?'available':''));$('sku').readOnly=!!editing;$('stock_status').value=p?.stock_status||(p?.sold?'sold':'available');$('box-search').href='https://www.google.com/search?tbm=isch&q='+encodeURIComponent((p?.name||'')+' retail box packaging');$('photo').value='';$('preview').src=p?.image||'';visible('preview',!!p?.image);$('remove').disabled=!editing;$('editor').scrollIntoView({behavior:'smooth'});}
 const STOCK_LABELS={available:'พร้อมขาย',reserved:'จองแล้ว',sold:'ขายแล้ว'};
 function stockStatus(p){return ['available','reserved','sold'].includes(p.stock_status)?p.stock_status:(p.sold?'sold':'available');}
 function stockOptions(selected){return Object.keys(STOCK_LABELS).map(k=>'<option value="'+k+'"'+(k===selected?' selected':'')+'>'+STOCK_LABELS[k]+'</option>').join('');}
+function closeEditor(){visible('editor',false);visible('mobile-add',authorized);}
 function list(){
- const q=$('search').value.trim().toLowerCase(),filter=$('stock-filter').value;
+ const q=$('search').value.trim().toLocaleLowerCase(),filter=$('stock-filter').value;
  const stats={available:0,reserved:0,sold:0};
  for(const p of rows)stats[stockStatus(p)]++;
  $('stock-all').textContent=rows.length;
- for(const k of Object.keys(stats))$('stock-'+k).textContent=stats[k];
- const shown=rows.filter(p=>(p.sku+' '+p.name).toLowerCase().includes(q)&&(filter==='all'||stockStatus(p)===filter));
+ for(const key of Object.keys(stats))$('stock-'+key).textContent=stats[key];
+ const shown=rows.filter(p=>(p.sku+' '+p.name+' '+p.category+' '+p.sub).toLocaleLowerCase().includes(q)&&(filter==='all'||stockStatus(p)===filter));
+ $('result-count').textContent=shown.length+' / '+rows.length+' รายการ';
+ $('search-clear').hidden=!$('search').value;
  $('items').innerHTML=shown.length?shown.map(p=>{
-  const status=stockStatus(p);
-  const price=p.price===null?'สอบถามราคา':'฿'+Number(p.price).toLocaleString('th-TH');
-  return '<div class="item">'+(p.image?'<img src="'+esc(p.image)+'" alt="">':'<div class="item-placeholder"></div>')+
-   '<div class="meta"><strong>'+esc(p.name)+'</strong><small>'+esc(p.sku)+' · '+esc(p.condition)+' · '+price+'</small><span class="stock-badge status-'+status+'">'+STOCK_LABELS[status]+'</span></div>'+
-   '<div class="item-actions"><label for="status-'+esc(p.sku)+'" class="sr-only">สถานะ '+esc(p.name)+'</label><select id="status-'+esc(p.sku)+'" data-stock-sku="'+esc(p.sku)+'" aria-label="เปลี่ยนสถานะ '+esc(p.name)+'">'+stockOptions(status)+'</select>'+
-   '<button class="secondary" type="button" data-sku="'+esc(p.sku)+'">แก้ไข</button></div></div>';
- }).join(''):'<p class="muted">ไม่พบสินค้าตามตัวกรองที่เลือก</p>';
+   const state=stockStatus(p);
+   const sku=esc(p.sku);
+   return '<article class="item" data-product-id="'+sku+'">'+
+     (p.image?'<img src="'+esc(p.image)+'" alt="" loading="lazy">':'<div class="item-placeholder" aria-hidden="true">⌨</div>')+
+     '<div class="meta"><strong>'+esc(p.name)+'</strong><small>'+sku+' · '+esc(p.condition)+' · '+esc(p.category)+'</small><span class="stock-badge status-'+state+'">'+STOCK_LABELS[state]+'</span></div>'+
+     '<div class="item-controls"><div class="quick-price"><label for="price-'+sku+'">ราคา (฿)</label><div class="quick-price-row"><input id="price-'+sku+'" data-price-sku="'+sku+'" type="number" inputmode="numeric" min="0" step="1" value="'+(p.price===null?'':Number(p.price))+'" placeholder="ไม่ระบุ" aria-label="ราคา '+esc(p.name)+'"><button type="button" class="quick-save" data-save-price="'+sku+'" disabled>บันทึก</button></div></div>'+
+     '<div class="quick-status"><label for="status-'+sku+'">สถานะ</label><select id="status-'+sku+'" data-stock-sku="'+sku+'" aria-label="สถานะ '+esc(p.name)+'">'+stockOptions(state)+'</select></div>'+
+     '<button type="button" class="secondary edit-mini" data-sku="'+sku+'">แก้ไขรายละเอียด ↗</button></div>'+
+     '</article>';
+ }).join(''):'<div class="empty-results"><strong>ไม่พบสินค้า</strong><p>ลองค้นหาชื่อรุ่นอื่นหรือเลือกสถานะทั้งหมด</p><button type="button" id="empty-clear" class="secondary">ล้างตัวกรอง</button></div>';
 }
+async function savePrice(sku,button){
+ if(!authorized||loading)return;
+ const p=rows.find(x=>x.sku===sku);if(!p)return;
+ const input=[...$('items').querySelectorAll('input[data-price-sku]')].find(x=>x.dataset.priceSku===sku);
+ if(!input)return;
+ const raw=input.value.trim();
+ const next=raw===''?null:Number(raw);
+ if(raw!==''&&(!Number.isSafeInteger(next)||next<0)){notice('กรุณาใส่ราคาจำนวนเต็มตั้งแต่ 0 บาทขึ้นไป');input.focus();return;}
+ if(next===p.price){button.disabled=true;return;}
+ if(next===null&&!confirm('ยืนยันล้างราคา '+p.name+' เป็นสอบถามราคา?'))return;
+ button.disabled=true;input.disabled=true;notice('กำลังบันทึกราคา '+sku+'...');
+ try{
+  const {data,error}=await db.from('clicko_products').update({price:next,updated_at:new Date().toISOString()}).eq('sku',sku).select('sku,price').single();
+  if(error)throw error;if(!data)throw Error('ไม่พบรายการหรือไม่มีสิทธิ์แก้ไข');
+  await load();notice('อัปเดตราคา '+sku+' เป็น '+money(next)+' สำเร็จ');
+ }catch(err){button.disabled=false;input.disabled=false;notice('แก้ราคาไม่สำเร็จ: '+err.message);}
+}
+
 async function changeStock(sku,next,select){
  if(!authorized)return;
  const product=rows.find(p=>p.sku===sku);
@@ -63,18 +165,39 @@ async function changeStock(sku,next,select){
   notice('บันทึก '+sku+' เป็น '+STOCK_LABELS[next]+' แล้ว · ลูกค้าเห็นสถานะใหม่เมื่อรีเฟรชหน้าร้าน');
  }catch(err){select.value=before;select.disabled=false;notice('เปลี่ยนสถานะไม่สำเร็จ: '+err.message)}
 }
-async function load(){const {data,error}=await db.from('clicko_products').select('*').order('updated_at',{ascending:false});if(error)throw error;rows=data||[];list();}
-async function check(){const {data:{user}}=await db.auth.getUser();if(!user){visible('login',true);visible('workspace',false);visible('logout',false);return;}const {data,error}=await db.from('clicko_admins').select('user_id').eq('user_id',user.id).maybeSingle();authorized=!!data&&!error;visible('login',!authorized);visible('workspace',authorized);visible('logout',true);if(!authorized){notice('บัญชีนี้ยังไม่มีสิทธิ์ผู้ดูแล กรุณาเพิ่ม user_id ในตาราง clicko_admins');return;}await load();notice('เข้าสู่ระบบสำเร็จ');}
+async function load(){const {data,error}=await db.from('clicko_products').select('*').order('updated_at',{ascending:false}).limit(1000);if(error)throw error;rows=data||[];list();}
+async function check(){const {data:{user}}=await db.auth.getUser();if(!user){visible('login',true);visible('workspace',false);visible('logout',false);return;}const {data,error}=await db.from('clicko_admins').select('user_id').eq('user_id',user.id).maybeSingle();authorized=!!data&&!error;visible('login',!authorized);visible('workspace',authorized);visible('logout',true);visible('mobile-add',authorized&&!editing);if(!authorized){notice('บัญชีนี้ยังไม่มีสิทธิ์ผู้ดูแล กรุณาเพิ่ม user_id ในตาราง clicko_admins');return;}await load();notice('เข้าสู่ระบบสำเร็จ');}
 $('login-form').addEventListener('submit',async e=>{e.preventDefault();notice('กำลังเข้าสู่ระบบ...');const {error}=await db.auth.signInWithPassword({email:$('email').value,password:$('password').value});if(error){notice(error.message);return;}try{await check()}catch(err){notice(err.message)}});
 $('signup').onclick=async()=>{const email=$('email').value.trim(),password=$('password').value;if(!email||!password){notice('กรอกอีเมลและรหัสผ่านก่อนสมัคร');return;}if(password.length<10){notice('กรุณาตั้งรหัสผ่านอย่างน้อย 10 ตัวอักษร');return;}notice('กำลังสมัครบัญชี...');const {data,error}=await db.auth.signUp({email,password,options:{emailRedirectTo:location.origin+location.pathname}});if(error){notice('สมัครไม่สำเร็จ: '+error.message);return;}notice(data.session?'สมัครบัญชีแล้ว · รออนุมัติสิทธิ์ Admin':'สมัครบัญชีแล้ว · กรุณาตรวจสอบอีเมลและยืนยันก่อนเข้าสู่ระบบ จากนั้นรออนุมัติสิทธิ์ Admin');};
-$('logout').onclick=async()=>{await db.auth.signOut();authorized=false;notice('ออกจากระบบแล้ว');await check()};
-$('new').onclick=()=>edit(null);$('cancel').onclick=()=>visible('editor',false);$('search').oninput=list;$('stock-filter').onchange=list;
-$('items').onclick=e=>{const b=e.target.closest('button[data-sku]');if(b)edit(rows.find(x=>x.sku===b.dataset.sku))};
+$('logout').onclick=async()=>{await db.auth.signOut();authorized=false;closeEditor();visible('mobile-add',false);notice('ออกจากระบบแล้ว');await check()};
+$('new').onclick=()=>edit(null);
+$('mobile-add').onclick=()=>edit(null);
+$('cancel').onclick=closeEditor;
+$('editor-back').onclick=closeEditor;
+$('search').oninput=list;
+$('stock-filter').onchange=list;
+$('search-clear').onclick=()=>{$('search').value='';$('search').focus();list()};
+$('reload').onclick=async()=>{notice('กำลังโหลดข้อมูลล่าสุด...');try{await load();notice('อัปเดตข้อมูลล่าสุดแล้ว')}catch(err){notice('รีเฟรชไม่สำเร็จ: '+err.message)}};
+$('items').addEventListener('input',e=>{
+ const input=e.target.closest('input[data-price-sku]');if(!input)return;
+ const button=[...$('items').querySelectorAll('button[data-save-price]')].find(b=>b.dataset.savePrice===input.dataset.priceSku);
+ const original=rows.find(p=>p.sku===input.dataset.priceSku);
+ if(button&&original)button.disabled=input.value.trim()===(original.price===null?'':String(Number(original.price)));
+});
+$('items').addEventListener('keydown',e=>{
+ if(e.key!=='Enter')return;const inp=e.target.closest('input[data-price-sku]');if(!inp)return;
+ e.preventDefault();const btn=[...$('items').querySelectorAll('button[data-save-price]')].find(b=>b.dataset.savePrice===inp.dataset.priceSku);if(btn&&!btn.disabled)savePrice(inp.dataset.priceSku,btn);
+});
+$('items').onclick=e=>{
+ const price=e.target.closest('button[data-save-price]');if(price){savePrice(price.dataset.savePrice,price);return;}
+ const clear=e.target.closest('#empty-clear');if(clear){$('search').value='';$('stock-filter').value='all';list();return;}
+ const b=e.target.closest('button[data-sku]');if(b)edit(rows.find(x=>x.sku===b.dataset.sku));
+};
 $('items').onchange=e=>{const sel=e.target.closest('select[data-stock-sku]');if(sel)changeStock(sel.dataset.stockSku,sel.value,sel)};
 $('name').addEventListener('input',()=>{$('box-search').href='https://www.google.com/search?tbm=isch&q='+encodeURIComponent($('name').value+' retail box packaging')});
 $('image').oninput=()=>{const url=$('image').value.trim();$('preview').src=url;visible('preview',!!url)};
 $('photo').onchange=()=>{const f=$('photo').files[0];if(!f)return;const url=URL.createObjectURL(f);$('preview').src=url;visible('preview',true)};
-$('product-form').onsubmit=async e=>{e.preventDefault();if(!authorized)return;const sku=$('sku').value.trim();if(!/^[a-zA-Z0-9_-]{2,50}$/.test(sku)){notice('รหัสสินค้าใช้ได้เฉพาะตัวอักษร ตัวเลข - และ _');return;}const p={sku,name:$('name').value.trim(),category:$('category').value,sub:$('sub').value.trim(),condition:$('condition').value,price:$('price').value===''?null:Number($('price').value),warranty:$('warranty').value.trim(),stock_status:$('stock_status').value,sold:$('stock_status').value==='sold',specs:$('specs').value.trim(),note:$('note').value.trim(),image:$('image').value.trim()};$('save').disabled=true;notice('กำลังบันทึก...');try{const file=$('photo').files[0];if(file){if(file.size>5*1024*1024||!['image/jpeg','image/png','image/webp'].includes(file.type))throw Error('รองรับเฉพาะ JPG PNG WEBP ขนาดไม่เกิน 5 MB');const ext=({'image/jpeg':'jpg','image/png':'png','image/webp':'webp'})[file.type];const path=sku+'/'+crypto.randomUUID()+'.'+ext;const {error}=await db.storage.from('product-images').upload(path,file,{contentType:file.type,upsert:false});if(error)throw error;p.image=db.storage.from('product-images').getPublicUrl(path).data.publicUrl;}const {error}=await db.from('clicko_products').upsert(p,{onConflict:'sku'});if(error)throw error;await load();visible('editor',false);notice('บันทึกสำเร็จ · หน้าร้านจะอ่านข้อมูลจาก Supabase เมื่อเปิดหรือรีเฟรช');}catch(err){notice('บันทึกไม่สำเร็จ: '+err.message)}finally{$('save').disabled=false}};
-$('remove').onclick=async()=>{if(!editing||!confirm('ลบข้อมูล '+editing+' ออกจาก Admin? สินค้าเดิมที่ฝังบนเว็บไซต์อาจกลับมาแสดง'))return;const {error}=await db.from('clicko_products').delete().eq('sku',editing);if(error){notice(error.message);return;}await load();visible('editor',false);notice('ลบรายการ Admin แล้ว')};
+$('product-form').onsubmit=async e=>{e.preventDefault();if(!authorized)return;const sku=$('sku').value.trim();if(!/^[a-zA-Z0-9_-]{2,50}$/.test(sku)){notice('รหัสสินค้าใช้ได้เฉพาะตัวอักษร ตัวเลข - และ _');return;}const p={sku,name:$('name').value.trim(),category:$('category').value,sub:$('sub').value.trim(),condition:$('condition').value,price:$('price').value===''?null:Number($('price').value),warranty:$('warranty').value.trim(),stock_status:$('stock_status').value,sold:$('stock_status').value==='sold',specs:$('specs').value.trim(),note:$('note').value.trim(),image:$('image').value.trim()};$('save').disabled=true;notice('กำลังบันทึก...');try{const file=$('photo').files[0];if(file){if(file.size>5*1024*1024||!['image/jpeg','image/png','image/webp'].includes(file.type))throw Error('รองรับเฉพาะ JPG PNG WEBP ขนาดไม่เกิน 5 MB');const ext=({'image/jpeg':'jpg','image/png':'png','image/webp':'webp'})[file.type];const path=sku+'/'+crypto.randomUUID()+'.'+ext;const {error}=await db.storage.from('product-images').upload(path,file,{contentType:file.type,upsert:false});if(error)throw error;p.image=db.storage.from('product-images').getPublicUrl(path).data.publicUrl;}const {error}=await db.from('clicko_products').upsert(p,{onConflict:'sku'});if(error)throw error;await load();closeEditor();notice('บันทึกสำเร็จ · หน้าร้านจะอ่านข้อมูลจาก Supabase เมื่อเปิดหรือรีเฟรช');}catch(err){notice('บันทึกไม่สำเร็จ: '+err.message)}finally{$('save').disabled=false}};
+$('remove').onclick=async()=>{if(!editing||!confirm('ลบข้อมูล '+editing+' ออกจาก Admin? สินค้าเดิมที่ฝังบนเว็บไซต์อาจกลับมาแสดง'))return;const {error}=await db.from('clicko_products').delete().eq('sku',editing);if(error){notice(error.message);return;}await load();closeEditor();notice('ลบรายการ Admin แล้ว')};
 (async()=>{if(!cfg.url||!cfg.anonKey||!window.supabase){visible('setup',true);notice('ยังไม่ตั้งค่า Supabase');return;}db=window.supabase.createClient(cfg.url,cfg.anonKey);try{await check()}catch(e){notice('เชื่อมต่อไม่สำเร็จ: '+e.message);visible('login',true)}})();
 </script></body></html>
