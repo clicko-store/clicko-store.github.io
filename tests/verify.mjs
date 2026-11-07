@@ -36,6 +36,11 @@ ok(inventory.clickoCanOrder({id:'QA-1',stock_status:'available',sold:false,price
 ok(inventory.clickoCanOrder({id:'QA-1',stock_status:'reserved',sold:false,price:10})===false,'Reserved stock cannot be ordered');
 ok(inventory.clickoCanOrder({id:'QA-1',stock_status:'sold',sold:true,price:null})===false,'Sold stock cannot be ordered');
 ok(inventory.clickoCanOrder({id:'QA-UNSEEN',stock_status:'available',sold:false,price:10})===false,'Unverified SKU cannot be ordered');
+ok(inventory.clickoCanOrder({id:'QA-1',stock_status:'available',sold:false,is_hidden:true,price:10})===false,'Archived SKU cannot be ordered');
+ok(html['index.html'].includes('merged.filter(p=>!p.is_hidden)'),'Hidden products must be excluded from merged storefront');
+ok(html['admin.html'].includes('toggleProductHidden'),'Admin must hide products without deleting them');
+ok(html['orders.html'].includes("p.stock_status==='available'&&!p.is_hidden"),'Order form must exclude archived products');
+ok(html['backup.html'].includes("'stock_status','is_hidden'"),'Backup recovery must preserve archived status');
 
 const orders=html['orders.html'];
 const transitions=orders.match(/const statusTransitions=(\{[^;]+\});/)?.[1];
