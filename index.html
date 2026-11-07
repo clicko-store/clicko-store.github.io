@@ -47,4 +47,77 @@ draw=function(){
  grid.querySelectorAll('.pic[data-pid]').forEach(el=>photoObserver.observe(el));
 };
 
-chips.addEventListener('click',e=>{const b=e.target.closest('button');if(b){category=b.dataset.cat;draw()}});['q','condition','sort'].forEach(id=>document.getElementById(id).addEventListener(id==='q'?'input':'change',draw));draw();</script></body></html>
+chips.addEventListener('click',e=>{const b=e.target.closest('button');if(b){category=b.dataset.cat;draw()}});['q','condition','sort'].forEach(id=>document.getElementById(id).addEventListener(id==='q'?'input':'change',draw));draw();</script>
+<style>
+.sheet-sync{margin:14px 0;padding:12px 16px;border:1px solid #dce4ee;border-radius:12px;background:#fff;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;color:#475569}
+.sheet-sync button{background:#0d2848;color:#fff;border:0;border-radius:8px;padding:8px 12px;cursor:pointer;font-weight:700}
+</style>
+<script>
+/* Public Google Sheets sync: fallback remains the original embedded catalogue. */
+const CLICK0_PUBLISHED_CSV='https://docs.google.com/spreadsheets/d/e/2PACX-1vQgRk-Y_TpnYTG18hXN8p86F_MbBfIkxCHKgZ8MhULS-CmuW7TvrHJKaXMOu3mSMdiXxksTwGRpFia4/pub?gid=781282159&single=true&output=csv';
+const CLICK0_ORIGINAL=products.map(p=>({...p}));
+const CLICK0_STATUS=document.createElement('div');
+CLICK0_STATUS.className='sheet-sync';
+CLICK0_STATUS.innerHTML='<span id="clicko-sync-text">ข้อมูลสินค้าเริ่มต้น · กำลังตรวจสอบ Google Sheets...</span><button type="button" id="clicko-sync-refresh">อัปเดตข้อมูล</button>';
+document.querySelector('.bar').insertAdjacentElement('beforebegin',CLICK0_STATUS);
+const clickoSyncText=document.getElementById('clicko-sync-text');
+function clickoCsvParse(t){
+ const out=[];let row=[],field='',quoted=false;
+ for(let i=0;i<t.length;i++){const c=t[i];if(quoted){if(c==='"'&&t[i+1]==='"'){field+='"';i++;}else if(c==='"'){quoted=false;}else field+=c;}
+ else if(c==='"')quoted=true;else if(c===','){row.push(field);field='';}
+ else if(c==='\n'||c==='\r'){if(c==='\r'&&t[i+1]==='\n')i++;row.push(field);if(row.some(x=>x.trim()))out.push(row);row=[];field='';}
+ else field+=c;}
+ row.push(field);if(row.some(x=>x.trim()))out.push(row);return out;
+}
+function clickoSheetItems(rows){
+ if(rows.length<2)return [];
+ const norm=x=>String(x||'').toLowerCase().replace(/[\s_\-()\/]/g,'');
+ const headers=rows[0].map(norm);
+ const col=(...names)=>headers.findIndex(h=>names.some(n=>h===norm(n)||h.includes(norm(n))));
+ const n=col('ชื่อสินค้า','ชื่อรุ่น','สินค้า','productname','name','model');
+ const id=col('รหัสสินค้า','รหัส','sku','id');
+ const price=col('ราคา','price');
+ const cat=col('หมวดหมู่','category');
+ const sub=col('หมวดย่อย','ประเภท','subcategory','sub');
+ const cond=col('สภาพ','มือ1มือ2','condition');
+ const warranty=col('ประกัน','warranty');
+ const note=col('หมายเหตุ','ตำหนิ','note');
+ const status=col('สถานะ','status','ขายแล้ว','sold');
+ const img=col('รูปสินค้า','ลิงก์รูป','imageurl','image');
+ if(n<0)return [];
+ return rows.slice(1).map((r,i)=>{
+  const v=k=>k<0?'':String(r[k]||'').trim();
+  const raw=v(price),amount=raw.replace(/[,฿\s]/g,'');
+  const sold=/❌|ขายแล้ว|sold|out of stock|หมดแล้ว/i.test([v(status),v(note),raw].join(' '));
+  const p=CLICK0_ORIGINAL.find(x=>x.id===v(id))||CLICK0_ORIGINAL.find(x=>x.name.trim().toLowerCase()===v(n).toLowerCase());
+  const item={...(p||{}),id:v(id)||(p&&p.id)||'SHEET-'+(i+1),name:v(n),category:v(cat)||(p&&p.category)||'อื่นๆ',sub:v(sub)||(p&&p.sub)||'',condition:v(cond)||(p&&p.condition)||'',warranty:v(warranty)||(p&&p.warranty)||'',note:v(note)||(p&&p.note)||'',price:sold?null:(/^\d+(\.\d+)?$/.test(amount)?Number(amount):null),image:v(img)||(p&&p.image)||'',search:(p&&p.search)||'https://www.google.com/search?tbm=isch&q='+encodeURIComponent(v(n)+' product image')};
+  if(sold)item.note=(item.note?item.note+' · ':'')+'❌ ขายแล้ว';
+  return item;
+ }).filter(x=>x.name);
+}
+async function clickoRefresh(){
+ clickoSyncText.textContent='กำลังตรวจสอบข้อมูลล่าสุดจาก Google Sheets...';
+ try{
+  const ctrl=new AbortController(),timeout=setTimeout(()=>ctrl.abort(),12000);
+  let res;try{res=await fetch(CLICK0_PUBLISHED_CSV+'&_='+Date.now(),{signal:ctrl.signal,cache:'no-store'});}finally{clearTimeout(timeout);}
+  if(!res.ok)throw new Error('HTTP '+res.status);
+  const rows=clickoCsvParse((await res.text()).replace(/^\uFEFF/,''));
+  const items=clickoSheetItems(rows);
+  if(!items.length)throw new Error('ไม่พบคอลัมน์ชื่อสินค้า หรือไม่มีรายการ');
+  if(items.length<CLICK0_ORIGINAL.length){
+    clickoSyncText.textContent='Google Sheets มี '+items.length+' รายการ (เว็บเดิมมี '+CLICK0_ORIGINAL.length+') · ยังใช้รายการเดิมเพื่อป้องกันสินค้าหาย';
+    return;
+  }
+  products.splice(0,products.length,...items);
+  categories.splice(0,categories.length,'ทั้งหมด',...new Set(products.map(p=>p.category)));
+  category='ทั้งหมด';draw();
+  clickoSyncText.textContent='อัปเดตจาก Google Sheets สำเร็จ · '+items.length+' รายการ · '+new Date().toLocaleTimeString('th-TH');
+ }catch(e){
+  clickoSyncText.textContent='ยังเชื่อม Google Sheets ไม่สำเร็จ · แสดงข้อมูลสำรอง '+CLICK0_ORIGINAL.length+' รายการ';
+  console.warn('Clicko sheet sync:',e);
+ }
+}
+document.getElementById('clicko-sync-refresh').addEventListener('click',clickoRefresh);
+clickoRefresh();
+</script>
+</body></html>
