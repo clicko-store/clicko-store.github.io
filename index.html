@@ -124,19 +124,36 @@ function clickoApply(items,source){
  draw();
  clickoSyncText.textContent=source+' · อัปเดต '+updated+' รายการ'+(added?' · เพิ่ม '+added:'')+' · รวม '+all.length+' รายการ · '+new Date().toLocaleTimeString('th-TH');
 }
+function clickoGvizRows(data){
+ const t=data?.table;if(!t?.cols||!t.rows)throw Error('ไม่พบตาราง');
+ return [t.cols.map(c=>c.label||c.id||''),...t.rows.map(r=>(r.c||[]).map(c=>c?.f??c?.v??''))];
+}
+function clickoJsonpSheet(){
+ return new Promise((resolve,reject)=>{
+  const cb='clickoCallback'+Date.now(),script=document.createElement('script');
+  const timeout=setTimeout(()=>finish(new Error('หมดเวลารอ Google Sheets')),12000);
+  function finish(err,data){clearTimeout(timeout);delete window[cb];script.remove();err?reject(err):resolve(data);}
+  window[cb]=data=>data?.status==='error'?finish(new Error('Google Sheets ตอบกลับเป็น error')):finish(null,data);
+  script.onerror=()=>finish(new Error('ไม่สามารถโหลด Google Sheets JSONP'));
+  script.src='https://docs.google.com/spreadsheets/d/1QSOkNKGUKw9P0_9hZgHz_5m_IlTtBNe1EucYyy0aSbY/gviz/tq?gid=781282159&tqx='+encodeURIComponent('out:json;responseHandler:'+cb)+'&_='+Date.now();
+  document.head.appendChild(script);
+ });
+}
 async function clickoRefresh(){
- clickoSyncText.textContent='กำลังโหลด Google Sheets...';
- const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),12000);
+ clickoSyncText.textContent='กำลังโหลดข้อมูลจาก Google Sheets...';
+ let csvError='';
+ const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),9000);
  try{
   const res=await fetch(CLICK0_PUBLISHED_CSV+'&_='+Date.now(),{signal:ctrl.signal,cache:'no-store'});
-  if(!res.ok)throw Error('HTTP '+res.status);
+  if(!res.ok)throw Error('CSV HTTP '+res.status);
   const csv=(await res.text()).replace(/^\uFEFF/,'');
-  if(/^\s*</.test(csv))throw Error('ได้รับ HTML แทน CSV');
-  clickoApply(clickoSheetItems(clickoCsvParse(csv)),'Google Sheets');
- }catch(e){
-  clickoSyncText.textContent='เชื่อม Google Sheets ไม่สำเร็จ · ใช้ข้อมูลสำรอง · สามารถนำเข้า CSV ได้';
-  console.warn('Clicko sheet sync:',e);
- }finally{clearTimeout(timer)}
+  if(csv.trim().startsWith('<'))throw Error('ได้รับ HTML แทน CSV');
+  clickoApply(clickoSheetItems(clickoCsvParse(csv)),'Google Sheets CSV');
+  return;
+ }catch(e){csvError=e.message||String(e);}
+ finally{clearTimeout(timer)}
+ try{clickoApply(clickoSheetItems(clickoGvizRows(await clickoJsonpSheet())),'Google Sheets');}
+ catch(e){clickoSyncText.textContent='Google Sheets ยังเชื่อมไม่ได้ · ข้อมูลสำรอง · CSV: '+csvError+' · JSONP: '+(e.message||e);}
 }
 CLICK0_STATUS.insertAdjacentHTML('beforeend','<label class="clicko-import" style="cursor:pointer;border:1px solid #b5c5d8;border-radius:8px;padding:8px 12px">นำเข้า CSV<input id="clicko-csv-file" type="file" accept=".csv,text/csv" hidden></label>');
 document.getElementById('clicko-csv-file').addEventListener('change',async e=>{
