@@ -89,8 +89,13 @@ function clickoCsvParse(t){
 function clickoMatchKey(value){
  return String(value||'').normalize('NFKC').toLowerCase().replace(/[\u200b-\u200d\ufeff]/g,'').replace(/[^a-z0-9\u0e00-\u0e7f]+/g,'').trim();
 }
+const CLICK0_SHEET_SKU_MAP=Object.freeze({
+ 'CL001':'CLK-143','CL002':'CLK-144','CL003':'CLK-147','CL004':'CLK-148',
+ 'CL005':'CLK-149','CL006':'CLK-150','CL007':'CLK-017',
+ 'CL010':'CLK-064','CL011':'CLK-066'
+});
 function clickoFindExisting(list,item){
- const id=String(item.id||'').trim();
+ const originalId=String(item.id||'').trim();const id=CLICK0_SHEET_SKU_MAP[originalId]||originalId;
  if(id&&!id.startsWith('SHEET-')){const found=list.findIndex(p=>String(p.id||'').trim()===id);if(found>=0)return found;}
  const key=clickoMatchKey(item.name);
  if(!key)return -1;
@@ -130,7 +135,7 @@ function clickoApply(items,source){
  for(const item of items){
   const key=clickoMatchKey(item.name);
   const exact=all.map((p,i)=>clickoMatchKey(p.name)===key?i:-1).filter(i=>i>=0);
-  const suppliedId=String(item.id||'').trim();
+  const originalId=String(item.id||'').trim();const suppliedId=CLICK0_SHEET_SKU_MAP[originalId]||originalId;
   const idMatches=suppliedId&&!suppliedId.startsWith('SHEET-')?all.map((p,i)=>String(p.id)===suppliedId?i:-1).filter(i=>i>=0):[];
   const candidates=idMatches.length?idMatches:exact;
   if(candidates.length!==1){(candidates.length?ambiguous:unmatched).push(item.name);continue;}
