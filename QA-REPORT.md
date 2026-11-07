@@ -160,3 +160,14 @@ Implemented at database level via private-schema SECURITY INVOKER triggers and a
 - Added responsive header links, gaming gear + PC parts hero heading, product CTA, call CTA, three benefit cards, illustrated buyback and Facebook review card.
 - Review link maintained as `https://www.facebook.com/share/p/1Py6autXgD/`; catalog link `#catalog`, buyback `#buyback`, reviews `#reviews`, phone `tel:0959759965`.
 - Verified all inline JS compiles, existing GitHub regression suite passed 42 checks in in-memory runner, and new navigational/asset checks passed. Browser pixel-match and GitHub Pages propagation not independently verified.
+
+## Manufacturer illustration program — 2026-11-08
+
+- User authorized use of **manufacturer product images for all SKUs** as illustrations, not as evidence of the condition of used items.
+- Live audit: 154 products, 2 products with pre-existing image URLs, 152 with no main image, 0 secondary photos, 0 verified manufacturer images. Existing images are not assumed to be manufacturer-owned nor relabeled.
+- Added `manufacturer_image_url`, `manufacturer_source_url`, `manufacturer_image_verified` to `clicko_products`. A verified photo must have an HTTPS image URL and HTTPS source page URL; SQL CHECK enforces both non-null and non-empty, and Admin must explicitly affirm model, color and image usage permission.
+- Admin UI now has distinct manufacturer-image fields; image uploads and existing shop photos remain separate and unchanged.
+- Customer cards use a manufacturer illustration *only when verified* and when a separate existing shop/gallery image isn't available. Manufacturer images have the visible label `ภาพจากผู้ผลิต · ภาพประกอบ`; product detail warns the image does not show actual used-item condition.
+- `backup.html` preserves manufacturer image provenance in restore workflows. Tests expanded to 51 checks in source-level runner; authorized Admin BEGIN/ROLLBACK verified correct SQL constraint behaviour, with zero QA residue.
+- Created public `manufacturer-photo-checklist.csv` enumerating 154 catalog SKUs, model names, conditions and current image status.
+- **Source acquisition blocker:** Live external manufacturer websites and image/license verification could not be accessed because web browsing was disabled. No URLs or licensed image rights were invented. **0 of the 152 missing product photos have been sourced or populated during this task.** The source-verification queue is ready for a browsing-enabled follow-up.
