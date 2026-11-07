@@ -83,8 +83,9 @@ function renderProducts(){
  costsPreview();
 }
 function renderMetrics(){
- const today=new Date(),month=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0');
- const realized=orders.filter(o=>['paid','shipped'].includes(o.status)&&String(o.created_at).slice(0,7)===month);
+ const monthOf=date=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit'}).format(new Date(date));
+ const month=monthOf(new Date());
+ const realized=orders.filter(o=>['paid','shipped'].includes(o.status)&&monthOf(o.created_at)===month);
  const revenue=realized.reduce((s,o)=>s+Number(o.sell_price)+Number(o.shipping_fee||0),0);
  const known=realized.filter(o=>o.cost_snapshot!==null);
  const profit=known.reduce((s,o)=>s+Number(o.sell_price)+Number(o.shipping_fee||0)-Number(o.cost_snapshot)-Number(o.extra_cost||0),0);
@@ -104,7 +105,11 @@ function renderOrders(){
   (o.notes?'<p class="muted">'+esc(o.notes)+'</p>':'')+'</div>'+
   '<div class="order-controls"><div><label for="status-'+code+'">สถานะ</label><select id="status-'+code+'" data-order-status="'+code+'">'+Object.entries(statusNames).map(([k,v])=>'<option value="'+k+'"'+(k===o.status?' selected':'')+'>'+v+'</option>').join('')+'</select></div>'+
   '<div><label for="tracking-'+code+'">เลขพัสดุ</label><input id="tracking-'+code+'" data-order-tracking="'+code+'" value="'+esc(o.tracking_code||'')+'" maxlength="120" placeholder="เลขพัสดุ"></div>'+
-  '<button type="button" data-order-save="'+code+'">บันทึกสถานะ / เลขพัสดุ</button></div></article>';
+  '<div><label for="sell-'+code+'">ราคาขายจริง</label><input id="sell-'+code+'" type="number" min="0" step=".01" inputmode="decimal" data-order-price="'+code+'" value="'+Number(o.sell_price)+'"></div>'+ 
+  '<div><label for="cost-'+code+'">ต้นทุน ณ วันขาย</label><input id="cost-'+code+'" type="number" min="0" step=".01" inputmode="decimal" data-order-cost="'+code+'" value="'+(o.cost_snapshot===null?'':Number(o.cost_snapshot))+'" placeholder="ไม่ทราบ"></div>'+ 
+  '<div><label for="fee-'+code+'">ค่าส่งเรียกเก็บลูกค้า</label><input id="fee-'+code+'" type="number" min="0" step=".01" inputmode="decimal" data-order-fee="'+code+'" value="'+Number(o.shipping_fee)+'"></div>'+ 
+  '<div><label for="extra-'+code+'">ค่าใช้จ่ายร้าน</label><input id="extra-'+code+'" type="number" min="0" step=".01" inputmode="decimal" data-order-extra="'+code+'" value="'+Number(o.extra_cost)+'"></div>'+ 
+  '<button type="button" data-order-save="'+code+'">บันทึกการแก้ไขออเดอร์</button></div></article>';
  }).join(''):'<p class="empty">ยังไม่มีออเดอร์ตามตัวกรองนี้</p>';
 }
 function renderCosts(){
@@ -168,9 +173,14 @@ $('orders-list').addEventListener('click',async e=>{
  const b=e.target.closest('button[data-order-save]');if(!b||!authorized)return;const id=b.dataset.orderSave;
  const status=[...document.querySelectorAll('[data-order-status]')].find(x=>x.dataset.orderStatus===id)?.value;
  const tracking=[...document.querySelectorAll('[data-order-tracking]')].find(x=>x.dataset.orderTracking===id)?.value.trim();
+ const field=type=>[...document.querySelectorAll('[data-order-'+type+']')].find(x=>x.dataset['order'+type[0].toUpperCase()+type.slice(1)]===id);
+ const numbers={sell_price:field('price')?.value,shipping_fee:field('fee')?.value,extra_cost:field('extra')?.value,cost_snapshot:field('cost')?.value};
  if(!statusNames[status])return;
+ for(const [k,v] of Object.entries(numbers)){
+  if(v===undefined||((k!=='cost_snapshot'||v!=='')&&(!Number.isFinite(Number(v))||Number(v)<0||Math.round(Number(v)*100)!==Number(v)*100))){notice('กรุณากรอกจำนวนเงินที่ถูกต้อง ไม่เกิน 2 ตำแหน่งทศนิยม');return;}
+ }
  b.disabled=true;notice('กำลังอัปเดตออเดอร์...');
- try{const {error}=await db.from('clicko_orders').update({status,tracking_code:tracking||'',updated_at:new Date().toISOString()}).eq('id',id);
+ try{const {error}=await db.from('clicko_orders').update({status,tracking_code:tracking||'',sell_price:Number(numbers.sell_price),shipping_fee:Number(numbers.shipping_fee),extra_cost:Number(numbers.extra_cost),cost_snapshot:numbers.cost_snapshot===''?null:Number(numbers.cost_snapshot),updated_at:new Date().toISOString()}).eq('id',id);
  if(error)throw error;await reload();notice('อัปเดตออเดอร์แล้ว');}
  catch(err){b.disabled=false;notice('อัปเดตไม่สำเร็จ: '+err.message)}
 });
