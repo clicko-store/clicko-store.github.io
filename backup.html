@@ -21,7 +21,7 @@ const show=(id,on)=>el(id).classList.toggle('hidden',!on);
 const tables=['clicko_products','clicko_orders','clicko_product_costs','clicko_product_photos'];
 const labels=['products','orders','costs','photos'];
 const whitelist={
-clicko_products:['sku','name','category','sub','condition','price','warranty','sold','specs','note','image','stock_status','is_hidden','created_at','updated_at'],
+clicko_products:['sku','name','category','sub','condition','price','warranty','sold','specs','note','image','manufacturer_image_url','manufacturer_source_url','manufacturer_image_verified','stock_status','is_hidden','created_at','updated_at'],
 clicko_product_costs:['sku','cost','updated_at'],
 clicko_product_photos:['sku','position','image_url','storage_path','created_at']
 };
