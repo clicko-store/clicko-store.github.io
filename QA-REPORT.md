@@ -126,3 +126,29 @@ Implemented at database level via private-schema SECURITY INVOKER triggers and a
 - `backup.html` now orders every table deterministically before ranged pagination, reducing duplicates/omissions when exporting larger catalogs.
 - `admin.html` updates `updated_at` when saving changes, rejects malformed/negative prices, and distinguishes saved product data from incomplete secondary photo uploads.
 - Outstanding: enabling leaked-password detection in Supabase Auth requires an eligible plan/dashboard action; real authenticated mobile/browser checkout and photo file uploads remain unverified. GitHub workflow source is present but its successful hosted execution was not independently observed.
+
+## Release-readiness audit — 2026-11-07
+
+### Changes made during audit
+1. **Authoritative catalog:** When live Supabase query succeeds, storefront filters the legacy embedded/Sheet catalog to SKUs actually returned by Supabase. Archived/deleted/ghost SKUs cannot reappear as customer cards solely from outdated embedded data.
+2. **Permanent deletion disabled:** Removed `DELETE` grant and policy from `public.clicko_products` for authenticated users. Existing Admin can still update and non-destructively hide products. Existing orders already had hard deletion blocked.
+3. **Regression coverage:** Extended `tests/verify.mjs` to check stale catalog removal. Executed its assertion logic with an in-memory Node API shim against the actual GitHub source; 42 checks passed. This is *not* a verified hosted GitHub Actions run.
+
+### Verifications performed
+- All inline JavaScript sources in `index.html`, `admin.html`, `orders.html`, `backup.html` compiled.
+- PostgreSQL authorized-Admin `BEGIN/ROLLBACK` passed: insert temporary QA product, cost, and gallery metadata; reserve on new pending order; reject duplicate order; reject pending→shipped without confirmation; paid→sold; paid→cancelled returns stock; re-reserve and ship; shipped→cancelled denied; rollback complete.
+- PostgreSQL `BEGIN/ROLLBACK` passed: product edit permitted but hard-delete rejected by privilege.
+- Public/unauthorized roles cannot see hidden product/photo metadata; Admin can. Supabase performance advisor has **zero findings**.
+- End-of-audit DB: 154 products (131 available, 0 reserved, 23 sold); zero inconsistent sold flags, zero QA residue; 0 order/cost/photo records created as test artifacts. 2 internal backup snapshots; daily Cron job active.
+- Checked GitHub repository is public with default branch `main`. The available GitHub workflow-run connector filters PR-triggered runs, and returned no relevant run; **GitHub-hosted CI and Pages HTTP availability remain unverified**, although test source executes successfully with an in-memory Node shim.
+
+### Remaining owner/account-only acceptance items
+- Sign in with the store's actual Admin account on phone and desktop; verify product add/edit, image upload from a device, reserve/paid/shipped/cancelled workflow, customer-facing stock display, and Messenger opening. These are not independently browser-tested by this audit.
+- Enable Supabase Auth leaked-password protection if plan allows. Security Advisor still reports `auth_leaked_password_protection` disabled; current Supabase connector cannot change Auth provider settings.
+- Create an **off-Supabase** private backup copy (the Admin `backup.html` exports JSON; internal Cron snapshots are not off-site and JSON excludes physical image bytes). Confirm hosted GitHub Actions/Pages status in the repository UI.
+
+### Links
+- https://knbowpani-wq.github.io/clicko-store/
+- https://knbowpani-wq.github.io/clicko-store/admin.html
+- https://knbowpani-wq.github.io/clicko-store/orders.html
+- https://knbowpani-wq.github.io/clicko-store/backup.html
