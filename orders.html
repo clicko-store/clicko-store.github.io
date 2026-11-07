@@ -70,7 +70,7 @@ const cfg=window.CLICKO_SUPABASE||{},$=id=>document.getElementById(id);
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=v=>'฿'+Number(v||0).toLocaleString('th-TH',{maximumFractionDigits:2});
 const statusNames={pending:'รอชำระเงิน / จองแล้ว',paid:'ชำระแล้ว / ขายแล้ว',shipped:'จัดส่งแล้ว',cancelled:'ยกเลิก / คืนสต๊อก'};
-const statusTransitions={pending:['pending','paid','shipped','cancelled'],paid:['paid','shipped','cancelled'],shipped:['shipped'],cancelled:['cancelled']};
+const statusTransitions={pending:['pending','paid','cancelled'],paid:['paid','shipped','cancelled'],shipped:['shipped'],cancelled:['cancelled']};
 function allowedOrderStatusOptions(status){
  return (statusTransitions[status]||[status]).map(k=>'<option value="'+k+'"'+(k===status?' selected':'')+'>'+statusNames[k]+'</option>').join('');
 }
