@@ -114,3 +114,15 @@ Implemented at database level via private-schema SECURITY INVOKER triggers and a
 - Updated `tests/verify.mjs` to assert no archived products can be ordered or displayed, Admin provides reversible hide, and backup restore retains archived flag.
 - Post-change live DB counts: 154 products, 131 available, 0 reserved, 23 sold, 0 hidden, 0 inconsistent flags, 0 QA residue.
 - Supabase advisors after updates: no performance lints; leaked-password protection disabled warning remains. CI workflow is configured; independently observed successful GitHub Actions execution remains pending.
+
+## Launch hardening continuation — 2026-11-07 evening
+
+### Fixed and verified
+- Restricted public Supabase API `clicko_products` SELECT to non-hidden products only. Authenticated non-admin sees visible products only; authenticated Admin can still read archived items.
+- Restricted secondary `clicko_product_photos` public reads to photos belonging to visible products; Admin still reads hidden-product galleries. Note: pre-existing public Storage image URLs remain reachable to someone holding the URL.
+- Consolidated select RLS policies for products/photos after Supabase Performance Advisor flagged multiple permissive policies. Re-ran Performance Advisor: **zero findings**.
+- Tested with temporary hidden product + photo inside SQL BEGIN/ROLLBACK under anonymous, ordinary authenticated and authorized Admin roles. Hidden item and photo were inaccessible to public/non-admin, visible to Admin, then rolled back.
+- Confirmed image Storage insert is denied to unauthenticated/non-admin and permitted to Admin in isolated rollback tests; redundant policies removed to avoid confusion.
+- `backup.html` now orders every table deterministically before ranged pagination, reducing duplicates/omissions when exporting larger catalogs.
+- `admin.html` updates `updated_at` when saving changes, rejects malformed/negative prices, and distinguishes saved product data from incomplete secondary photo uploads.
+- Outstanding: enabling leaked-password detection in Supabase Auth requires an eligible plan/dashboard action; real authenticated mobile/browser checkout and photo file uploads remain unverified. GitHub workflow source is present but its successful hosted execution was not independently observed.
