@@ -1,0 +1,122 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Clicko · Backup</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#17395e;background:#f3f8ff}*{box-sizing:border-box}body{margin:0}header{background:white;border-bottom:1px solid #dbe8f5;padding:15px 5%;display:flex;justify-content:space-between;align-items:center;gap:12px}nav{display:flex;gap:12px}a{color:#0b70dc;text-decoration:none;font-size:13px;font-weight:800}main{max-width:990px;margin:24px auto;padding:0 16px}.panel{background:white;border:1px solid #dbe7f5;border-radius:17px;padding:20px;margin-bottom:18px;box-shadow:0 8px 28px #2055a309}h1{font-size:24px;margin:0}h2{font-size:19px}.muted{color:#658099;font-size:13px;line-height:1.65}.warning{background:#fff7e9;border:1px solid #f2d8a6;padding:13px;border-radius:10px;color:#825b27;font-size:13px;line-height:1.65}button{border:0;border-radius:9px;background:#087af0;color:#fff;padding:12px 16px;font-weight:800;cursor:pointer}button.secondary{background:#eaf4ff;color:#106cc9}button.danger{background:#b53852}button:disabled{opacity:.5}input{width:100%;border:1px solid #cbdff3;border-radius:9px;padding:12px;font:inherit}label{display:block;margin:12px 0 5px;color:#4a6d8b;font-weight:750;font-size:12px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:19px 0}.stat{background:#f0f7ff;border:1px solid #d9eafc;border-radius:11px;padding:14px}.stat strong{font-size:23px;display:block;color:#0877e9}.stat small{font-size:11px;color:#68809e}.row{display:flex;align-items:center;flex-wrap:wrap;gap:10px}.hidden{display:none!important}#notice{white-space:pre-wrap;color:#0b67c8;font-size:13px;font-weight:750;padding:6px 0}#preview{white-space:pre-wrap}@media(max-width:650px){.grid{grid-template-columns:repeat(2,1fr)}main{margin:12px auto}.panel{padding:15px}header{padding:12px}nav{gap:7px}nav a{font-size:11px}}
+</style></head><body>
+<header><div><strong>Clicko Backup</strong><div class="muted">สำรองและกู้คืนอย่างปลอดภัย</div></div><nav><a href="./admin.html">สินค้า</a><a href="./orders.html">ออเดอร์</a><a href="./">หน้าร้าน</a><button class="secondary hidden" type="button" id="logout">ออก</button></nav></header>
+<main><p id="notice" role="status" aria-live="polite"></p>
+<section class="panel" id="login"><h1>เข้าสู่ระบบ Admin</h1><form id="login-form"><label for="email">อีเมล</label><input id="email" type="email" autocomplete="username" required><label for="password">รหัสผ่าน</label><input id="password" type="password" autocomplete="current-password" required><p><button type="submit">เข้าสู่ระบบ</button></p></form></section>
+<section id="workspace" class="hidden">
+<div class="panel"><h1>สำรองข้อมูลร้าน</h1><p class="muted">ดาวน์โหลดไฟล์สำรองจาก Supabase โดยตรงจากบัญชี Admin เก็บข้อมูลสินค้า ออเดอร์ ต้นทุน และลิงก์รูปเสริมครบ โดยไม่ส่งไฟล์ไปเซิร์ฟเวอร์สำรองภายนอก</p>
+<div class="grid"><div class="stat"><strong id="count-products">—</strong><small>สินค้า</small></div><div class="stat"><strong id="count-orders">—</strong><small>ออเดอร์</small></div><div class="stat"><strong id="count-costs">—</strong><small>ต้นทุน</small></div><div class="stat"><strong id="count-photos">—</strong><small>รูปเสริม</small></div></div><div class="row"><button id="download" type="button">ดาวน์โหลด JSON ทั้งหมด</button><button id="refresh" type="button" class="secondary">↻ รีเฟรช</button></div>
+<p class="warning">ไฟล์สำรองอาจมีข้อมูลลูกค้าและต้นทุน ห้ามเผยแพร่ใน GitHub สาธารณะหรือส่งต่อบุคคลอื่น ไฟล์นี้เก็บลิงก์รูปแต่ไม่รวมไฟล์ภาพจริงใน Supabase Storage</p></div>
+<div class="panel"><h2>ตรวจไฟล์สำรองและกู้คืนข้อมูลที่หายไป</h2><p class="muted">เลือกไฟล์ JSON ที่ดาวน์โหลดจากหน้านี้เพื่อเปรียบเทียบกับฐานข้อมูลจริง โดยยังไม่เปลี่ยนอะไร</p>
+<label for="upload">ไฟล์สำรอง Clicko</label><input id="upload" type="file" accept=".json,application/json"><p id="preview" class="muted">ยังไม่ได้เลือกไฟล์</p><button id="restore" type="button" class="danger" disabled>กู้คืนเฉพาะรายการที่หายไป</button>
+<p class="warning">ระบบกู้คืนเฉพาะสินค้า ต้นทุน และข้อมูลรูปเสริมที่ขาด ไม่เขียนทับรายการเดิมและไม่กู้คืนออเดอร์เก่าอัตโนมัติ เพราะอาจทำให้สถานะขายและสต๊อกผิดพลาด การกู้คืนออเดอร์หรือทั้งฐานข้อมูลต้องใช้การสำรอง/กู้คืนของ Supabase โดยผู้ดูแลฐานข้อมูล เมื่อเกิดเหตุจำเป็น</p></div>
+<div class="panel"><h2>ข้อควรทราบ</h2><p class="muted">การกู้คืนแบบเพิ่มรายการอาจสำเร็จเพียงบางรายการหากเครือข่ายขัดข้อง แต่จะไม่เขียนทับข้อมูลเดิม หากต้องการกู้คืนย้อนหลังทั้งระบบให้ใช้ระบบสำรองฐานข้อมูลของ Supabase ตามแพ็กเกจและทดสอบในโปรเจกต์แยกก่อน</p></div>
+</section></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script src="./supabase-config.js"></script><script>
+(function(){
+const cfg=window.CLICKO_SUPABASE||{}, el=id=>document.getElementById(id), say=t=>el('notice').textContent=t;
+const show=(id,on)=>el(id).classList.toggle('hidden',!on);
+const tables=['clicko_products','clicko_orders','clicko_product_costs','clicko_product_photos'];
+const labels=['products','orders','costs','photos'];
+const whitelist={
+clicko_products:['sku','name','category','sub','condition','price','warranty','sold','specs','note','image','stock_status','created_at','updated_at'],
+clicko_product_costs:['sku','cost','updated_at'],
+clicko_product_photos:['sku','position','image_url','storage_path','created_at']
+};
+let db,admin=false,current=null,archive=null,missing=null;
+async function allRows(table){
+ const out=[];
+ for(let offset=0;offset<20000;offset+=500){
+  const {data,error}=await db.from(table).select('*').range(offset,offset+499);
+  if(error)throw Error(table+': '+error.message);
+  out.push(...(data||[]));if(!data||data.length<500)return out;
+ }
+ throw Error('รายการเกินขอบเขต 20,000 แถว กรุณาใช้ Supabase สำรองโดยตรง');
+}
+async function scan(){
+ if(!admin)throw Error('ไม่ได้รับอนุญาต');
+ const arrays=await Promise.all(tables.map(allRows));
+ const content={};tables.forEach((t,i)=>content[t]=arrays[i]);
+ current=content;
+ labels.forEach((k,i)=>el('count-'+k).textContent=arrays[i].length.toLocaleString('th-TH'));
+ if(archive)compare();
+ return content;
+}
+function validate(json){
+ if(json?.format!=='clicko-backup'||json.version!==1||json.project!=='mvpxjkpnlopgitvvzsyc'||!json.data)throw Error('ไฟล์ไม่ใช่สำรองข้อมูล Clicko ที่รองรับ');
+ for(const t of tables)if(!Array.isArray(json.data[t])||json.data[t].length>20000)throw Error('ข้อมูล '+t+' ผิดรูปแบบ');
+ for(const p of json.data.clicko_products)if(!p||typeof p.sku!=='string'||p.sku.length<2||!p.name||!['available','reserved','sold'].includes(p.stock_status)||p.sold!==(p.stock_status==='sold'))throw Error('ข้อมูลสินค้าผิดรูปแบบ');
+ for(const p of json.data.clicko_product_photos)if(!p||typeof p.image_url!=='string'||!p.image_url.startsWith('https://')||!Number.isInteger(p.position)||p.position<1||p.position>8)throw Error('รายการรูปไม่ถูกต้อง');
+ for(const p of json.data.clicko_product_costs)if(!p||!p.sku||!Number.isFinite(Number(p.cost))||Number(p.cost)<0)throw Error('ข้อมูลต้นทุนผิดรูปแบบ');
+ for(const p of json.data.clicko_orders)if(!p||!p.id||!p.sku)throw Error('ข้อมูลออเดอร์ผิดรูปแบบ');
+ return json.data;
+}
+function compare(){
+ const key=(t,r)=>t==='clicko_orders'?r.id:t==='clicko_product_photos'?r.sku+'|'+r.position:r.sku;
+ missing={};
+ for(const t of tables){
+  const known=new Set(current[t].map(r=>key(t,r))),seen=new Set();
+  missing[t]=archive[t].filter(r=>{
+   const id=key(t,r);if(seen.has(id))throw Error('ไฟล์มีรายการซ้ำ: '+t);
+   seen.add(id);return !known.has(id);
+  });
+ }
+ el('preview').textContent='ไฟล์สำรองมี: '+tables.map(t=>t+' '+archive[t].length).join(' · ')+'\nรายการที่หายไป: สินค้า '+missing.clicko_products.length+' · ต้นทุน '+missing.clicko_product_costs.length+' · รูป '+missing.clicko_product_photos.length+' · ออเดอร์ '+missing.clicko_orders.length+' (ออเดอร์ไม่กู้คืนอัตโนมัติ)';
+ el('restore').disabled=!admin||!['clicko_products','clicko_product_costs','clicko_product_photos'].some(t=>missing[t].length);
+}
+async function check(){
+ const {data:{user},error}=await db.auth.getUser();if(error)throw error;
+ if(!user){admin=false;show('login',true);show('workspace',false);show('logout',false);return;}
+ const x=await db.from('clicko_admins').select('user_id').eq('user_id',user.id).maybeSingle();
+ if(x.error)throw x.error;
+ admin=!!x.data;show('login',!admin);show('workspace',admin);show('logout',admin);
+ if(!admin){say('บัญชีไม่มีสิทธิ์ Admin');return;}
+ await scan();say('ตรวจข้อมูลสำเร็จ');
+}
+el('login-form').addEventListener('submit',async e=>{
+ e.preventDefault();if(!db)return;
+ const {error}=await db.auth.signInWithPassword({email:el('email').value,password:el('password').value});
+ if(error){say('เข้าสู่ระบบไม่สำเร็จ: '+error.message);return;}
+ try{await check()}catch(err){say(err.message)}
+});
+el('logout').onclick=async()=>{await db.auth.signOut();archive=null;missing=null;current=null;el('upload').value='';el('preview').textContent='ยังไม่ได้เลือกไฟล์';el('restore').disabled=true;await check()};
+el('refresh').onclick=async()=>{try{say('กำลังโหลด...');await scan();say('ข้อมูลล่าสุดแล้ว')}catch(err){say(err.message)}};
+el('download').onclick=async()=>{
+ const b=el('download');b.disabled=true;
+ try{
+  say('กำลังสร้างไฟล์สำรอง...');const data=await scan();
+  const content={format:'clicko-backup',version:1,project:'mvpxjkpnlopgitvvzsyc',exported_at:new Date().toISOString(),data};
+  const url=URL.createObjectURL(new Blob([JSON.stringify(content,null,2)],{type:'application/json'}));
+  const a=document.createElement('a');a.href=url;a.download='clicko-private-backup-'+new Date().toISOString().replace(/[:.]/g,'-')+'.json';document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),5000);say('ดาวน์โหลดสำรองข้อมูลสำเร็จ โปรดเก็บไว้ในที่ปลอดภัย');
+ }catch(err){say('สำรองไม่สำเร็จ: '+err.message)}finally{b.disabled=false}
+};
+el('upload').onchange=async()=>{
+ archive=null;missing=null;el('restore').disabled=true;const f=el('upload').files[0];if(!f)return;
+ try{
+  if(f.size>20*1024*1024)throw Error('ขนาดไฟล์เกิน 20 MB');
+  archive=validate(JSON.parse(await f.text()));
+  if(!current)await scan();compare();say('ตรวจไฟล์สำเร็จ ยังไม่มีการแก้ฐานข้อมูล');
+ }catch(err){archive=null;el('preview').textContent='ไฟล์ไม่ถูกต้อง';say('ตรวจไฟล์ไม่ผ่าน: '+err.message)}
+};
+el('restore').onclick=async()=>{
+ if(!admin||!archive||!missing)return;
+ if(prompt('กู้คืนเฉพาะรายการที่ขาด พิมพ์ RESTORE เพื่อยืนยัน')!=='RESTORE')return;
+ const b=el('restore');b.disabled=true;
+ const added={clicko_products:0,clicko_product_costs:0,clicko_product_photos:0};
+ try{
+  await scan();compare();
+  for(const t of ['clicko_products','clicko_product_costs','clicko_product_photos'])
+   for(const src of missing[t]){
+    const row={};for(const key of whitelist[t])if(Object.prototype.hasOwnProperty.call(src,key))row[key]=src[key];
+    const {error}=await db.from(t).insert(row);if(error)throw Error(t+': '+error.message);
+    added[t]++;
+   }
+  await scan();compare();say('กู้คืนสำเร็จ: สินค้า '+added.clicko_products+' · ต้นทุน '+added.clicko_product_costs+' · รูป '+added.clicko_product_photos);
+ }catch(err){await scan().catch(()=>{});say('หยุดกู้คืน: '+err.message+' · อาจเพิ่มบางรายการไปแล้ว โปรดตรวจเปรียบเทียบใหม่')}finally{if(archive&&current)compare()}
+};
+(async()=>{if(!cfg.url||!cfg.anonKey||!window.supabase){say('ไม่พบการเชื่อมต่อ Supabase');return;}db=window.supabase.createClient(cfg.url,cfg.anonKey);try{await check()}catch(err){say('เชื่อมต่อไม่สำเร็จ: '+err.message)}})();
+})();
+</script></body></html>
