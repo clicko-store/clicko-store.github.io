@@ -93,7 +93,7 @@ draw=function(){originalDraw();renderCatalogPhotos();};
 
 // Optional photo manifest: images uploaded to the repository can be assigned by SKU.
 // The sheet's explicit image URL takes priority over this fallback.
-let clickoPhotoManifest={};
+var clickoPhotoManifest={};
 function clickoApplyPhotoManifest(){let changed=0;for(const p of products){const url=clickoPhotoManifest[p.id];if(!p.image&&typeof url==='string'&&/^(https:\/\/|\.\/|images\/)/i.test(url.trim())){p.image=url.trim();changed++}}return changed}
 async function clickoLoadPhotoManifest(){
  try{
