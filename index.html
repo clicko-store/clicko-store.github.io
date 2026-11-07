@@ -514,6 +514,12 @@ header{background:#ffffffed!important;border-bottom:1px solid #dceafa!important;
 .inventory-notice{margin:0 0 16px;border:1px solid #cddff3;border-radius:11px;padding:10px 14px;font-size:12px;font-weight:750;background:#eef7ff;color:#2568ae}
 .inventory-notice[data-state="success"]{background:#f1faf5;border-color:#ccebd8;color:#287b50}
 .inventory-notice[data-state="error"]{background:#fff7eb;border-color:#f2d4a8;color:#986117}
+</style><style id="clicko-gallery-css">
+#product-detail .clicko-main-photo{max-width:100%;max-height:320px;object-fit:contain;display:block;margin:0 auto}
+.clicko-photo-rail{display:flex;align-items:center;gap:8px;overflow-x:auto;max-width:100%;padding:10px 2px 3px;margin-top:8px}
+.clicko-photo-thumb{width:57px;height:57px;flex:0 0 57px;border:1px solid #cfdfef;background:#fff;border-radius:8px;cursor:pointer;padding:3px}
+.clicko-photo-thumb.selected{border:2px solid #0a80ef}
+.clicko-photo-thumb img{width:100%;height:100%;object-fit:contain}
 </style></head><body><header><div class="top"><a class="logo clicko-keys-logo" href="./" aria-label="Clicko Gaming Gear & PC Parts"><span class="clicko-keys" aria-hidden="true"><span>C</span><span>l</span><span>i</span><span>c</span><span>k</span><span class="mouse-key"><svg width="20" height="27" viewBox="0 0 20 27" xmlns="http://www.w3.org/2000/svg"><rect x="2.5" y="1.5" rx="8" width="15" height="24" fill="#f4f8ff" stroke="#a9b8d0" stroke-width="1.2"/><path d="M10 2.5V9" stroke="#1197ff" stroke-width="2" stroke-linecap="round"/></svg></span></span><span class="logo-subtitle">GAMING GEAR &amp; PC PARTS</span></a><div class="nav">GAMING GEAR & PC PARTS · มือ 1 / มือ 2</div><div class="top-actions"><a class="contact-phone" href="tel:0959759965">☎ 095-975-9965</a><a class="contact" href="https://www.facebook.com/sippavit.gomarn/" target="_blank" rel="noopener noreferrer">ติดต่อร้าน ↗</a></div></div></header><main class="wrap"><section class="hero"><div class="hero-copy"><div class="eyebrow"><span class="eyebrow-dot"></span> CLICKO / ONLINE CATALOG</div><h1>GEAR UP<br><em>YOUR SETUP.</em></h1><p>อุปกรณ์คอมพิวเตอร์และเกมมิ่งเกียร์ มือ 1 / มือ 2<br>เลือกรุ่นที่ใช่ ในราคาที่ชอบ</p><a class="hero-link" href="#catalog">เลือกดูสินค้า <span aria-hidden="true">↗</span></a></div><div class="hero-art" aria-hidden="true"><div class="hero-keyboard"><div class="keycaps"><span>C</span><span>l</span><span>i</span><span>c</span><span>k</span><span class="key-mouse"><svg width="36" height="46" viewBox="0 0 36 46" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="3" rx="13" width="24" height="39" fill="#ebf2ff" stroke="#b7c8df" stroke-width="2"/><path d="M18 6V20" stroke="#168fff" stroke-width="4" stroke-linecap="round"/></svg></span></div><span>GAMING GEAR &amp; PC PARTS</span><a class="hero-phone" href="tel:0959759965" aria-label="โทร 095-975-9965">☎ &nbsp;095-975-9965</a></div></div></section><div class="highlights" aria-label="จุดเด่นของร้าน"><div class="highlight"><span class="highlight-icon">✓</span><div><strong>มือ 1 &amp; มือ 2</strong><small>เลือกรุ่นตามงบได้</small></div></div><div class="highlight"><span class="highlight-icon">↗</span><div><strong>จัดส่งทั่วไทย</strong><small>Grab / Lalamove / พัสดุ</small></div></div><div class="highlight"><span class="highlight-icon">⌕</span><div><strong>ค้นหาและกรองสินค้า</strong><small>ค้นรุ่นได้ในหน้าเดียว</small></div></div></div><section class="trust-actions" aria-label="รับซื้ออุปกรณ์และเครดิตการขาย">
  <article class="tradein-promo">
   <div class="promo-copy">
@@ -537,6 +543,7 @@ function clickoBoxSearch(p){return 'https://www.google.com/search?tbm=isch&q='+e
 var clickoInventoryVerified=false;
 var clickoVerifiedSkus=new Set();
 function clickoCanOrder(p){return clickoInventoryVerified&&clickoVerifiedSkus.has(String(p.id))&&clickoStockStatus(p)==='available';}
+var clickoGalleryPhotos=new Map();
 function clickoStockStatus(p){return ['available','reserved','sold'].includes(p.stock_status)?p.stock_status:(p.sold||p.price===null?'sold':'available');}
 function draw(){chips.innerHTML=categories.map(c=>`<button class="chip ${category===c?'active':''}" data-cat="${esc(c)}">${esc(c)}</button>`).join('');const q=document.getElementById('q').value.trim().toLowerCase(),cond=document.getElementById('condition').value,sort=document.getElementById('sort').value,availability=document.getElementById('availability').value;let list=products.filter(p=>(category==='ทั้งหมด'||p.category===category)&&(!cond||p.condition===cond)&&(availability==='all'||clickoStockStatus(p)===availability)&&(`${p.name} ${p.category} ${p.sub} ${p.specs||''}`.toLowerCase().includes(q)));if(sort!=='default')list.sort((a,b)=>sort==='low'?(a.price??Infinity)-(b.price??Infinity):(b.price??-1)-(a.price??-1));document.getElementById('count').textContent=`${list.length} รายการ`;document.getElementById('empty').hidden=list.length>0;grid.innerHTML=list.map(p=>`<article class="card"><a class="pic" data-pid="${esc(p.id)}" href="${esc(p.search)}" target="_blank" title="ค้นหารูปสินค้ารุ่นนี้">${p.image?`<img src="${esc(p.image)}" loading="lazy" alt="${esc(p.name)}">`:icon()+'<small>ยังไม่มีรูปกล่องตรงรุ่น</small>'}</a><div class="info"><div class="tags"><span class="tag ${p.condition==='มือ2'?'used':''}">${esc(p.condition)}</span>${clickoStockStatus(p)==='sold'?'<span class="tag sold">ขายแล้ว</span>':(clickoStockStatus(p)==='reserved'?'<span class="tag reserved">จองแล้ว</span>':'')}</div><div class="sub">${esc(p.sub)}</div><div class="name">${esc(p.name)}</div><div class="specs">${esc(clickoSpecs(p))}</div><div class="warranty">${p.warranty?'ประกัน: '+esc(p.warranty):'&nbsp;'}${p.note?' · '+esc(p.note):''}</div><div class="bottom"><div class="price ${clickoStockStatus(p)==='sold'?'unpriced':''}">${clickoStockStatus(p)==='sold'?'ขายแล้ว':((typeof p.price==='number'&&Number.isFinite(p.price))?'฿'+p.price.toLocaleString('th-TH'):'สอบถามราคา')}</div>${clickoStockStatus(p)==='sold'?'<span class="ask sold-button">ขายแล้ว</span>':(clickoStockStatus(p)==='reserved'?'<span class="ask reserved-button">จองแล้ว</span>':(clickoCanOrder(p)?'<button type="button" class="ask clicko-order-btn" data-order-sku="'+esc(p.id)+'">สั่งซื้อ / สอบถาม ↗</button>':'<a class="ask" href="https://www.facebook.com/sippavit.gomarn/" target="_blank" rel="noopener noreferrer">สอบถามสต๊อกกับร้าน ↗</a>'))}</div></div></article>`).join('')}
 
@@ -549,8 +556,21 @@ function openProductDetail(id){
  const stockStatus=clickoStockStatus(p),sold=stockStatus==='sold',reserved=stockStatus==='reserved';
  const pic=grid.querySelector('.pic[data-pid="'+CSS.escape(String(p.id))+'"] img');
  detailVisual.replaceChildren();
- if(pic?.complete&&pic.naturalWidth>0){
-  const image=document.createElement('img');image.src=pic.currentSrc||pic.src;image.alt=p.name;image.onerror=()=>{detailVisual.textContent='ไม่สามารถโหลดภาพสินค้าได้';};detailVisual.append(image);
+ const photos=[...(p.image&&/^https:\/\//i.test(p.image)?[p.image]:[]),...(clickoGalleryPhotos.get(String(p.id))||[])];
+ const gallery=[...new Set(photos)].slice(0,9);
+ if(gallery.length){
+  const lead=document.createElement('img');lead.src=gallery[0];lead.alt=p.name+' · รูปที่ 1';lead.className='clicko-main-photo';
+  lead.onerror=()=>{lead.replaceWith(Object.assign(document.createElement('div'),{className:'detail-no-photo',textContent:'ไม่สามารถโหลดภาพสินค้าได้'}));};
+  detailVisual.append(lead);
+  if(gallery.length>1){
+   const rail=document.createElement('div');rail.className='clicko-photo-rail';rail.setAttribute('aria-label','รูปสินค้าจริงหลายมุม');
+   gallery.forEach((url,i)=>{const b=document.createElement('button');b.type='button';b.className='clicko-photo-thumb';b.setAttribute('aria-label','ดูรูปสินค้า '+(i+1));
+     const image=document.createElement('img');image.src=url;image.alt='รูป '+(i+1);image.loading='lazy';b.append(image);
+     b.onclick=()=>{lead.src=url;lead.alt=p.name+' · รูปที่ '+(i+1);rail.querySelectorAll('button').forEach(el=>el.classList.toggle('selected',el===b));};
+     if(i===0)b.classList.add('selected');rail.append(b);
+   });
+   detailVisual.append(rail);
+  }
  }else{
   const fallback=document.createElement('div');fallback.className='detail-no-photo';fallback.textContent='ยังไม่มีภาพสินค้าที่ตรวจสอบแล้ว';detailVisual.append(fallback);
  }
@@ -795,6 +815,16 @@ async function clickoLoadAdminRows(){
   if(!Array.isArray(data)||!data.length)throw Error('ไม่พบรายการสต๊อกจาก Supabase');
   clickoAdminRows=data;
   clickoVerifiedSkus=new Set(data.map(row=>String(row.sku)));
+  try{
+    const {data:photos,error:photoError}=await db.from('clicko_product_photos').select('sku,position,image_url').order('position',{ascending:true}).limit(2000);
+    if(photoError)throw photoError;
+    clickoGalleryPhotos.clear();
+    for(const item of photos||[]){
+      const key=String(item.sku),urls=clickoGalleryPhotos.get(key)||[];
+      if(typeof item.image_url==='string'&&/^https:\/\//i.test(item.image_url))urls.push(item.image_url);
+      clickoGalleryPhotos.set(key,urls);
+    }
+  }catch(photoError){console.warn('Clicko gallery unavailable',photoError.message);clickoGalleryPhotos.clear();}
   clickoInventoryVerified=true;
   clickoApplyAdminRows();
   clickoInventoryNotice('ยืนยันสต๊อกล่าสุดจาก Supabase แล้ว','success');
