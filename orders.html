@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clicko · ออเดอร์และกำไร</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#123252;background:#f3f8ff}
+*{box-sizing:border-box}body{margin:0}header{position:sticky;top:0;z-index:2;background:#fffffff2;backdrop-filter:blur(12px);border-bottom:1px solid #d8e5f3;padding:13px max(15px,calc((100vw - 1080px)/2));display:flex;align-items:center;justify-content:space-between;gap:12px}
+header strong{font-size:20px;letter-spacing:-.6px}header strong span{color:#087af1}header small{display:block;color:#718aa3;margin-top:3px}
+nav{display:flex;align-items:center;gap:12px}a{color:#066bd2;text-decoration:none;font-weight:750;font-size:13px}
+main{max-width:1100px;margin:24px auto;padding:0 15px}
+.panel{background:white;border:1px solid #d8e7f6;border-radius:18px;padding:21px;margin-bottom:17px;box-shadow:0 5px 18px #1351a50c}
+h1{font-size:25px;margin:0 0 8px;letter-spacing:-.6px}h2{font-size:20px;margin:0 0 13px}h3{font-size:15px;margin:8px 0}p{line-height:1.65}.muted{color:#6d839e;font-size:12px}
+button{border:0;border-radius:11px;background:#087af1;color:white;padding:11px 15px;cursor:pointer;font-weight:800;font-size:13px}button:disabled{opacity:.5;cursor:not-allowed}
+.secondary{background:#e9f4ff;color:#0b69c8;border:1px solid #cfe5fa}
+input,select,textarea{width:100%;border:1px solid #cadbed;border-radius:10px;padding:11px;background:#fff;color:#1c3551;font:inherit;font-size:14px;min-height:43px}
+textarea{min-height:80px;resize:vertical}
+label{display:block;font-size:12px;font-weight:800;color:#526d89;margin:0 0 6px}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.full{grid-column:1/-1}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}
+.tabs{display:flex;gap:6px;margin:14px 0}.tab{background:#edf5ff;color:#35628e;border:1px solid #d9e9fb}.tab.active{background:#087af1;color:white}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.metric{border:1px solid #dceafa;background:#f5faff;border-radius:13px;padding:14px;min-width:0}
+.metric span{display:block;color:#7388a1;font-size:11px;font-weight:750}
+.metric strong{display:block;margin-top:8px;font-size:22px;overflow-wrap:anywhere;color:#086dd2}
+.metric small{font-size:10px;color:#7a8ea6}
+.toolbar{display:flex;gap:10px;margin:13px 0;align-items:center}.toolbar input{flex:1;min-width:0}.toolbar select{max-width:165px}
+.order{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,340px);gap:15px;padding:15px 0;border-bottom:1px solid #e2ebf6}
+.order:last-child{border:0}.order strong{line-height:1.5;overflow-wrap:anywhere}.order small{display:block;color:#758da4;font-size:11px;margin:6px 0}
+.order .summary{font-weight:850;color:#0575df;margin:8px 0;font-size:17px}.order-controls{display:grid;grid-template-columns:1fr 1fr;gap:7px}.order-controls button{grid-column:1/-1}
+.chip{display:inline-block;font-size:10px;border-radius:7px;padding:5px 8px;font-weight:900;margin-top:4px}.pending{background:#fff0d4;color:#976300}.paid{background:#e1f5ec;color:#177f50}.shipped{background:#dceeff;color:#126bc1}.cancelled{background:#e9ecf1;color:#64748b}
+.cost-row{display:grid;grid-template-columns:minmax(0,1fr) 130px auto;align-items:center;gap:10px;border-bottom:1px solid #e8f0fa;padding:10px 0}.cost-row strong{font-size:13px}.cost-row small{display:block;color:#748ba5;margin-top:4px}
+#notice{white-space:pre-wrap;font-size:13px;color:#1767b5;font-weight:700;margin:0 0 14px}#notice:not(:empty){background:#eaf5ff;border:1px solid #cee5fb;border-radius:10px;padding:11px}
+.hidden{display:none!important}.warning{color:#955d17;background:#fff7e9;border:1px solid #f1dba9;padding:11px 13px;border-radius:10px;font-size:12px}
+#login{max-width:550px}.empty{color:#7891a8;font-size:13px;padding:22px;text-align:center}
+@media(max-width:700px){header{padding:12px}header strong{font-size:18px}nav{gap:8px}nav a{font-size:11px}main{margin:12px auto;padding:0 10px}.panel{padding:15px;border-radius:15px}.form-grid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.metric{padding:12px}.metric strong{font-size:20px}.order{grid-template-columns:1fr;gap:9px}.cost-row{grid-template-columns:minmax(0,1fr) 105px;gap:8px}.cost-row button{grid-column:2}h1{font-size:22px}.toolbar{gap:6px}.toolbar select{max-width:117px}}
+</style></head>
+<body>
+<header><div><strong>Clicko<span>.</span> Back Office</strong><small>ออเดอร์ · ต้นทุน · กำไร</small></div><nav><a href="./admin.html">สินค้า</a><a href="./">หน้าร้าน ↗</a></nav></header>
+<main>
+<p id="notice" role="status" aria-live="polite"></p>
+<section id="login" class="panel"><h1>เข้าสู่ระบบผู้ดูแลร้าน</h1><p class="muted">ใช้บัญชี Admin เดียวกับหน้าจัดการสินค้า Clicko</p><form id="login-form"><div class="form-grid"><div><label for="email">อีเมล</label><input id="email" type="email" required autocomplete="username"></div><div><label for="password">รหัสผ่าน</label><input id="password" type="password" required autocomplete="current-password"></div></div><div class="actions"><button type="submit">เข้าสู่ระบบ</button></div></form></section>
+<section id="workspace" class="hidden">
+<div class="panel"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div><h1>ภาพรวมการขาย</h1><p class="muted" style="margin:0">ยอดของเดือนปัจจุบัน เฉพาะออเดอร์ชำระแล้ว/จัดส่งแล้ว · กำไรคำนวณเมื่อมีต้นทุน</p></div><button id="refresh" class="secondary">↻ รีเฟรช</button></div><div class="metrics" style="margin-top:16px">
+<div class="metric"><span>ออเดอร์ทั้งหมด</span><strong id="metric-orders">0</strong></div>
+<div class="metric"><span>ยอดขายเดือนนี้</span><strong id="metric-revenue">฿0</strong></div>
+<div class="metric"><span>กำไรที่คำนวณได้</span><strong id="metric-profit">฿0</strong><small id="metric-profit-note"></small></div>
+<div class="metric"><span>รอชำระเงิน</span><strong id="metric-pending">0</strong></div></div>
+<p class="warning" style="margin-bottom:0">การสร้างออเดอร์เป็นการบันทึกภายในร้าน ไม่ใช่หลักฐานว่าลูกค้าชำระเงินแล้ว และยังไม่เปลี่ยนสถานะสต๊อกอัตโนมัติ โปรดอัปเดตสต๊อกใน Admin เมื่อจองหรือขายจริง</p></div>
+<div class="tabs"><button class="tab active" type="button" data-tab="orders">ออเดอร์</button><button class="tab" type="button" data-tab="costs">ต้นทุนสินค้า</button></div>
+<section id="orders-tab">
+<div class="panel"><h2>+ บันทึกออเดอร์ใหม่</h2><form id="order-form"><div class="form-grid">
+<div class="full"><label for="order-sku">เลือกสินค้าในระบบ</label><select id="order-sku" required><option value="">— เลือกสินค้า —</option></select></div>
+<div><label for="customer">ชื่อลูกค้า / ชื่อเรียก (ไม่บังคับ)</label><input id="customer" maxlength="120" autocomplete="off" placeholder="เช่น ลูกค้า Facebook"></div>
+<div><label for="order-status">สถานะออเดอร์</label><select id="order-status"><option value="pending">รอชำระเงิน</option><option value="paid">ชำระแล้ว</option><option value="shipped">จัดส่งแล้ว</option></select></div>
+<div><label for="sell-price">ราคาขายจริง (บาท)</label><input id="sell-price" type="number" min="0" step=".01" required inputmode="decimal"></div>
+<div><label for="shipping">ค่าจัดส่งที่เรียกเก็บลูกค้า (บาท)</label><input id="shipping" type="number" min="0" step=".01" value="0" required inputmode="decimal"></div>
+<div><label for="expenses">ค่าใช้จ่ายร้าน (รวมค่าส่งที่ร้านจ่าย)</label><input id="expenses" type="number" min="0" step=".01" value="0" required inputmode="decimal"></div>
+<div><label for="tracking">เลขพัสดุ (ถ้ามี)</label><input id="tracking" maxlength="120"></div>
+<div class="full"><label for="order-notes">บันทึกภายใน</label><textarea id="order-notes" maxlength="1000" placeholder="ข้อมูลที่ต้องติดตาม"></textarea></div>
+</div><p class="muted" id="cost-preview">เลือกสินค้าเพื่อดูต้นทุนที่บันทึกไว้</p><button id="create-order" type="submit">บันทึกออเดอร์</button></form></div>
+<div class="panel"><h2>รายการออเดอร์</h2><div class="toolbar"><input id="order-search" type="search" placeholder="ค้นหาชื่อสินค้า / รหัส / ลูกค้า"><select id="order-filter"><option value="all">ทุกสถานะ</option><option value="pending">รอชำระ</option><option value="paid">ชำระแล้ว</option><option value="shipped">จัดส่งแล้ว</option><option value="cancelled">ยกเลิก</option></select></div><div id="orders-list"></div></div>
+</section>
+<section id="costs-tab" class="hidden"><div class="panel"><h2>บันทึกต้นทุนสินค้า</h2><p class="muted">ต้นทุนอยู่ในตารางแยก ไม่แสดงในหน้าร้านสาธารณะ และไม่บังคับให้กรอกย้อนหลัง</p><div class="form-grid"><div><label for="cost-search">ค้นหาสินค้า</label><input id="cost-search" type="search" placeholder="ค้นชื่อรุ่นหรือ SKU"></div><div><label>ความคืบหน้า</label><p id="cost-count" class="muted">—</p></div></div><div id="cost-list"></div></div></section>
+</section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script src="./supabase-config.js"></script>
+<script>
+(function(){
+const cfg=window.CLICKO_SUPABASE||{},$=id=>document.getElementById(id);
+const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=v=>'฿'+Number(v||0).toLocaleString('th-TH',{maximumFractionDigits:2});
+const statusNames={pending:'รอชำระเงิน',paid:'ชำระแล้ว',shipped:'จัดส่งแล้ว',cancelled:'ยกเลิก'};
+let db=null,products=[],orders=[],costs=new Map(),authorized=false;
+const notice=t=>$('notice').textContent=t;
+const toggle=(id,on)=>$(id).classList.toggle('hidden',!on);
+function safeNum(id){const v=Number($(id).value);return Number.isFinite(v)&&v>=0?v:null}
+function chosen(){return products.find(p=>p.sku===$('order-sku').value)}
+function costsPreview(){const p=chosen();$('cost-preview').textContent=!p?'เลือกสินค้าเพื่อดูต้นทุนที่บันทึกไว้':costs.has(p.sku)?'ต้นทุนที่บันทึกไว้: '+money(costs.get(p.sku))+' (บันทึกยอด ณ วันที่สร้างออเดอร์)':'ยังไม่บันทึกต้นทุนสินค้านี้ · กำไรจะไม่ถูกคำนวณจนกว่าจะมีต้นทุน'};
+function renderProducts(){
+ const previous=$('order-sku').value;
+ $('order-sku').innerHTML='<option value="">— เลือกสินค้า —</option>'+products.map(p=>'<option value="'+esc(p.sku)+'">'+esc(p.sku+' · '+p.name+(p.stock_status==='sold'?' [ขายแล้ว]':''))+'</option>').join('');
+ if(products.some(p=>p.sku===previous))$('order-sku').value=previous;
+ costsPreview();
+}
+function renderMetrics(){
+ const today=new Date(),month=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0');
+ const realized=orders.filter(o=>['paid','shipped'].includes(o.status)&&String(o.created_at).slice(0,7)===month);
+ const revenue=realized.reduce((s,o)=>s+Number(o.sell_price)+Number(o.shipping_fee||0),0);
+ const known=realized.filter(o=>o.cost_snapshot!==null);
+ const profit=known.reduce((s,o)=>s+Number(o.sell_price)+Number(o.shipping_fee||0)-Number(o.cost_snapshot)-Number(o.extra_cost||0),0);
+ $('metric-orders').textContent=orders.length;
+ $('metric-pending').textContent=orders.filter(o=>o.status==='pending').length;
+ $('metric-revenue').textContent=money(revenue);
+ $('metric-profit').textContent=known.length?money(profit):'—';
+ $('metric-profit-note').textContent=known.length+' / '+realized.length+' ออเดอร์มีต้นทุน';
+}
+function renderOrders(){
+ const term=$('order-search').value.trim().toLocaleLowerCase(),state=$('order-filter').value;
+ const list=orders.filter(o=>(o.product_name+' '+o.sku+' '+o.customer_label).toLocaleLowerCase().includes(term)&&(state==='all'||o.status===state));
+ $('orders-list').innerHTML=list.length?list.map(o=>{
+  const code=esc(o.id),cost=o.cost_snapshot===null?'ต้นทุนยังไม่ระบุ':('ต้นทุน '+money(o.cost_snapshot));
+  return '<article class="order"><div><strong>'+esc(o.product_name)+'</strong><small>'+esc(o.sku)+' · '+new Date(o.created_at).toLocaleString('th-TH')+'</small>'+
+  '<div class="summary">'+money(o.sell_price)+'</div><small>'+cost+' · '+esc(o.customer_label||'ไม่ระบุลูกค้า')+'</small><span class="chip '+esc(o.status)+'">'+statusNames[o.status]+'</span>'+
+  (o.notes?'<p class="muted">'+esc(o.notes)+'</p>':'')+'</div>'+
+  '<div class="order-controls"><div><label for="status-'+code+'">สถานะ</label><select id="status-'+code+'" data-order-status="'+code+'">'+Object.entries(statusNames).map(([k,v])=>'<option value="'+k+'"'+(k===o.status?' selected':'')+'>'+v+'</option>').join('')+'</select></div>'+
+  '<div><label for="tracking-'+code+'">เลขพัสดุ</label><input id="tracking-'+code+'" data-order-tracking="'+code+'" value="'+esc(o.tracking_code||'')+'" maxlength="120" placeholder="เลขพัสดุ"></div>'+
+  '<button type="button" data-order-save="'+code+'">บันทึกสถานะ / เลขพัสดุ</button></div></article>';
+ }).join(''):'<p class="empty">ยังไม่มีออเดอร์ตามตัวกรองนี้</p>';
+}
+function renderCosts(){
+ const term=$('cost-search').value.trim().toLocaleLowerCase(),items=products.filter(p=>(p.sku+' '+p.name).toLocaleLowerCase().includes(term));
+ $('cost-count').textContent=costs.size+' / '+products.length+' รายการมีต้นทุนที่บันทึกแล้ว';
+ $('cost-list').innerHTML=items.length?items.map(p=>{
+  const sku=esc(p.sku),value=costs.has(p.sku)?costs.get(p.sku):'';
+  return '<div class="cost-row"><div><strong>'+esc(p.name)+'</strong><small>'+sku+'</small></div><input type="number" inputmode="decimal" min="0" step=".01" data-cost-sku="'+sku+'" value="'+value+'" placeholder="ต้นทุน (฿)" aria-label="ต้นทุน '+esc(p.name)+'"><button type="button" data-cost-save="'+sku+'">บันทึก</button></div>';
+ }).join(''):'<p class="empty">ไม่พบสินค้า</p>';
+}
+async function reload(){
+ if(!authorized)return;
+ const results=await Promise.all([
+ db.from('clicko_products').select('sku,name,price,stock_status,created_at').order('created_at',{ascending:false}).limit(1000),
+ db.from('clicko_product_costs').select('sku,cost').limit(1000),
+ db.from('clicko_orders').select('*').order('created_at',{ascending:false}).limit(1000)]);
+ const error=results.find(x=>x.error)?.error;if(error)throw error;
+ products=results[0].data||[];
+ costs=new Map((results[1].data||[]).map(x=>[x.sku,Number(x.cost)]));
+ orders=results[2].data||[];
+ renderProducts();renderOrders();renderCosts();renderMetrics();
+}
+async function check(){
+ const {data:{user},error:authError}=await db.auth.getUser();
+ if(authError)throw authError;
+ if(!user){authorized=false;toggle('login',true);toggle('workspace',false);return;}
+ const {data,error}=await db.from('clicko_admins').select('user_id').eq('user_id',user.id).maybeSingle();
+ if(error)throw error;
+ authorized=!!data;toggle('login',!authorized);toggle('workspace',authorized);
+ if(!authorized){notice('บัญชีนี้ยังไม่ได้รับสิทธิ์ผู้ดูแล');return;}
+ await reload();notice('เชื่อมต่อข้อมูลของ Clicko สำเร็จ');
+}
+$('login-form').addEventListener('submit',async e=>{
+ e.preventDefault();if(!db)return;notice('กำลังเข้าสู่ระบบ...');
+ const {error}=await db.auth.signInWithPassword({email:$('email').value,password:$('password').value});
+ if(error){notice('เข้าสู่ระบบไม่สำเร็จ: '+error.message);return;}
+ try{await check()}catch(err){notice('โหลดข้อมูลไม่สำเร็จ: '+err.message)}
+});
+document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{
+ document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));
+ toggle('orders-tab',b.dataset.tab==='orders');toggle('costs-tab',b.dataset.tab==='costs');
+}));
+$('order-sku').addEventListener('change',()=>{
+ const p=chosen();$('sell-price').value=p?.price??'';costsPreview();
+});
+$('order-form').addEventListener('submit',async e=>{
+ e.preventDefault();if(!authorized)return;const p=chosen();
+ if(!p){notice('กรุณาเลือกสินค้าก่อน');return;}
+ const price=safeNum('sell-price'),shipping=safeNum('shipping'),expenses=safeNum('expenses');
+ if([price,shipping,expenses].some(x=>x===null)){notice('กรุณาตรวจสอบจำนวนเงิน');return;}
+ const button=$('create-order');button.disabled=true;notice('กำลังบันทึกออเดอร์...');
+ const order={sku:p.sku,product_name:p.name,customer_label:$('customer').value.trim(),sell_price:price,
+ cost_snapshot:costs.has(p.sku)?costs.get(p.sku):null,shipping_fee:shipping,extra_cost:expenses,
+ status:$('order-status').value,tracking_code:$('tracking').value.trim(),notes:$('order-notes').value.trim()};
+ try{const {error}=await db.from('clicko_orders').insert(order);if(error)throw error;
+ $('order-form').reset();await reload();notice('บันทึกออเดอร์สำเร็จ · โปรดจัดการสถานะสินค้าในหน้า Admin ด้วย');}
+ catch(err){notice('บันทึกออเดอร์ไม่สำเร็จ: '+err.message)}
+ finally{button.disabled=false}
+});
+$('orders-list').addEventListener('click',async e=>{
+ const b=e.target.closest('button[data-order-save]');if(!b||!authorized)return;const id=b.dataset.orderSave;
+ const status=[...document.querySelectorAll('[data-order-status]')].find(x=>x.dataset.orderStatus===id)?.value;
+ const tracking=[...document.querySelectorAll('[data-order-tracking]')].find(x=>x.dataset.orderTracking===id)?.value.trim();
+ if(!statusNames[status])return;
+ b.disabled=true;notice('กำลังอัปเดตออเดอร์...');
+ try{const {error}=await db.from('clicko_orders').update({status,tracking_code:tracking||'',updated_at:new Date().toISOString()}).eq('id',id);
+ if(error)throw error;await reload();notice('อัปเดตออเดอร์แล้ว');}
+ catch(err){b.disabled=false;notice('อัปเดตไม่สำเร็จ: '+err.message)}
+});
+$('cost-list').addEventListener('click',async e=>{
+ const b=e.target.closest('button[data-cost-save]');if(!b||!authorized)return;const sku=b.dataset.costSave;
+ const input=[...document.querySelectorAll('input[data-cost-sku]')].find(x=>x.dataset.costSku===sku);
+ if(!input)return;const raw=input.value.trim(),value=Number(raw);
+ if(raw===''||!Number.isFinite(value)||value<0||Math.round(value*100)!==value*100){notice('กรุณาใส่ต้นทุนที่ถูกต้อง ไม่เกิน 2 ตำแหน่งทศนิยม');return;}
+ b.disabled=true;notice('กำลังบันทึกต้นทุน...');
+ try{const {error}=await db.from('clicko_product_costs').upsert({sku,cost:value,updated_at:new Date().toISOString()},{onConflict:'sku'});if(error)throw error;
+ await reload();notice('บันทึกต้นทุน '+sku+' สำเร็จ (ไม่แสดงบนหน้าร้าน)');}
+ catch(err){b.disabled=false;notice('บันทึกต้นทุนไม่สำเร็จ: '+err.message)}
+});
+$('order-search').addEventListener('input',renderOrders);
+$('order-filter').addEventListener('change',renderOrders);
+$('cost-search').addEventListener('input',renderCosts);
+$('refresh').addEventListener('click',async()=>{try{notice('กำลังรีเฟรช...');await reload();notice('ข้อมูลล่าสุดแล้ว')}catch(err){notice(err.message)}});
+(async()=>{
+ if(!cfg.url||!cfg.anonKey||!window.supabase){notice('ยังไม่เชื่อม Supabase; กลับไปตรวจ supabase-config.js');return;}
+ db=window.supabase.createClient(cfg.url,cfg.anonKey);
+ try{await check()}catch(err){notice('เชื่อมต่อไม่ได้: '+err.message)}
+})();
+})();
+</script></body></html>
