@@ -163,7 +163,7 @@ async function changeStock(sku,next,select){
   if(!data)throw Error('ไม่พบรายการหรือไม่มีสิทธิ์แก้ไข');
   await load();
   notice('บันทึก '+sku+' เป็น '+STOCK_LABELS[next]+' แล้ว · ลูกค้าเห็นสถานะใหม่เมื่อรีเฟรชหน้าร้าน');
- }catch(err){select.value=before;select.disabled=false;notice('เปลี่ยนสถานะไม่สำเร็จ: '+err.message)}
+ }catch(err){select.value=before;select.disabled=false;const message=String(err.message||err);notice(/active order|belongs to active order|check constraint/i.test(message)?'เปลี่ยนสถานะไม่สำเร็จ: สินค้านี้ผูกกับออเดอร์อยู่ กรุณาเปลี่ยนสถานะผ่านเมนู ออเดอร์ / กำไร เพื่อให้สต๊อกตรงกัน':'เปลี่ยนสถานะไม่สำเร็จ: '+message)}
 }
 async function load(){const {data,error}=await db.from('clicko_products').select('*').order('updated_at',{ascending:false}).limit(1000);if(error)throw error;rows=data||[];list();}
 async function check(){const {data:{user}}=await db.auth.getUser();if(!user){authorized=false;visible('login',true);visible('workspace',false);visible('logout',false);visible('mobile-add',false);return;}const {data,error}=await db.from('clicko_admins').select('user_id').eq('user_id',user.id).maybeSingle();authorized=!!data&&!error;visible('login',!authorized);visible('workspace',authorized);visible('logout',true);visible('mobile-add',authorized&&!editing);if(!authorized){visible('mobile-add',false);notice('บัญชีนี้ยังไม่มีสิทธิ์ผู้ดูแล กรุณาเพิ่ม user_id ในตาราง clicko_admins');return;}await load();notice('เข้าสู่ระบบสำเร็จ');}
