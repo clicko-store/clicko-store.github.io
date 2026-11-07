@@ -86,6 +86,17 @@ function clickoCsvParse(t){
  else field+=c;}
  row.push(field);if(row.some(x=>x.trim()))out.push(row);return out;
 }
+function clickoMatchKey(value){
+ return String(value||'').normalize('NFKC').toLowerCase().replace(/[\u200b-\u200d\ufeff]/g,'').replace(/[^a-z0-9\u0e00-\u0e7f]+/g,'').trim();
+}
+function clickoFindExisting(list,item){
+ const id=String(item.id||'').trim();
+ if(id&&!id.startsWith('SHEET-')){const found=list.findIndex(p=>String(p.id||'').trim()===id);if(found>=0)return found;}
+ const key=clickoMatchKey(item.name);
+ if(!key)return -1;
+ const matches=list.map((p,i)=>clickoMatchKey(p.name)===key?i:-1).filter(i=>i>=0);
+ return matches.length===1?matches[0]:-1;
+}
 function clickoSheetItems(rows){
  if(rows.length<2)throw Error('ไม่พบรายการสินค้า');
  const norm=x=>String(x||'').trim().toLowerCase().replace(/[\s_\-()\/]/g,'');
@@ -98,7 +109,7 @@ function clickoSheetItems(rows){
  return rows.slice(headerAt+1).map((r,i)=>{
   const v=k=>k<0?'':String(r[k]??'').trim();
   if(!v(n))return null;
-  const p=CLICK0_ORIGINAL.find(x=>x.id===v(id))||CLICK0_ORIGINAL.find(x=>x.name.toLowerCase()===v(n).toLowerCase());
+  const match=clickoFindExisting(CLICK0_ORIGINAL,{id:v(id),name:v(n)});const p=match>=0?CLICK0_ORIGINAL[match]:null;
   const item={...(p||{}),id:v(id)||(p&&p.id)||'SHEET-'+(i+1),name:v(n)};
   for(const [k,key] of [[cat,'category'],[sub,'sub'],[cond,'condition'],[warranty,'warranty'],[note,'note'],[specs,'specs'],[img,'image']])if(k>=0)item[key]=v(k);
   if(!item.category)item.category='อื่นๆ';
@@ -117,7 +128,7 @@ function clickoApply(items,source){
  const all=CLICK0_ORIGINAL.map(p=>({...p,sold:p.sold??p.price===null}));
  let updated=0,added=0;
  for(const item of items){
-  const i=all.findIndex(p=>p.id===item.id||p.name.toLowerCase()===item.name.toLowerCase());
+  const i=clickoFindExisting(all,item);
   if(i>=0){all[i]={...all[i],...item};updated++;}
   else{all.push(item);added++;}
  }
