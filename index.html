@@ -797,7 +797,7 @@ function clickoApplyAdminRows(){
  const merged=products.map(p=>({...p}));
  for(const p of clickoAdminRows){
   const idx=merged.findIndex(x=>String(x.id)===String(p.sku));
-  const patch={id:p.sku,name:p.name,category:p.category,sub:p.sub,condition:p.condition,price:p.price===null?null:Number(p.price),warranty:p.warranty,sold:p.sold,stock_status:p.stock_status|| (p.sold?'sold':'available'),created_at:p.created_at||null,specs:p.specs,note:p.note,image:p.image||'',search:'https://www.google.com/search?tbm=isch&q='+encodeURIComponent(p.name+' product')};
+  const patch={id:p.sku,name:p.name,category:p.category,sub:p.sub,condition:p.condition,price:p.price===null?null:Number(p.price),warranty:p.warranty,sold:p.sold,stock_status:p.stock_status|| (p.sold?'sold':'available'),created_at:p.created_at||null,specs:p.specs,note:p.note,image:p.image||(clickoGalleryPhotos.get(String(p.sku))||[])[0]||'',search:'https://www.google.com/search?tbm=isch&q='+encodeURIComponent(p.name+' product')};
   if(idx>=0)merged[idx]={...merged[idx],...patch};else merged.push(patch);
  }
  products.splice(0,products.length,...merged);
