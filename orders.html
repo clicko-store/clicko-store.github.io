@@ -45,19 +45,19 @@ label{display:block;font-size:12px;font-weight:800;color:#526d89;margin:0 0 6px}
 <div class="metric"><span>ยอดขายเดือนนี้</span><strong id="metric-revenue">฿0</strong></div>
 <div class="metric"><span>กำไรที่คำนวณได้</span><strong id="metric-profit">฿0</strong><small id="metric-profit-note"></small></div>
 <div class="metric"><span>รอชำระเงิน</span><strong id="metric-pending">0</strong></div></div>
-<p class="warning" style="margin-bottom:0">การสร้างออเดอร์เป็นการบันทึกภายในร้าน ไม่ใช่หลักฐานว่าลูกค้าชำระเงินแล้ว และยังไม่เปลี่ยนสถานะสต๊อกอัตโนมัติ โปรดอัปเดตสต๊อกใน Admin เมื่อจองหรือขายจริง</p></div>
+<p class="warning" style="margin-bottom:0"><strong>ระบบเชื่อมสต๊อกอัตโนมัติแล้ว:</strong> บันทึกออเดอร์ “รอชำระเงิน” = จองสินค้า, “ชำระแล้ว” = ขายแล้ว, “ยกเลิกก่อนจัดส่ง” = กลับมาพร้อมขาย และไม่สามารถจองสินค้าชิ้นเดียวซ้ำได้ · การเปลี่ยนสถานะไม่ได้ตรวจสอบยอดเงินกับธนาคารหรือดำเนินการคืนเงินจริง</p></div>
 <div class="tabs"><button class="tab active" type="button" data-tab="orders">ออเดอร์</button><button class="tab" type="button" data-tab="costs">ต้นทุนสินค้า</button></div>
 <section id="orders-tab">
 <div class="panel"><h2>+ บันทึกออเดอร์ใหม่</h2><form id="order-form"><div class="form-grid">
 <div class="full"><label for="order-sku">เลือกสินค้าในระบบ</label><select id="order-sku" required><option value="">— เลือกสินค้า —</option></select></div>
 <div><label for="customer">ชื่อลูกค้า / ชื่อเรียก (ไม่บังคับ)</label><input id="customer" maxlength="120" autocomplete="off" placeholder="เช่น ลูกค้า Facebook"></div>
-<div><label for="order-status">สถานะออเดอร์</label><select id="order-status"><option value="pending">รอชำระเงิน</option><option value="paid">ชำระแล้ว</option><option value="shipped">จัดส่งแล้ว</option></select></div>
+<div><label for="order-status">สถานะออเดอร์</label><select id="order-status"><option value="pending">รอชำระเงิน</option><option value="paid">ชำระแล้ว</option><option value="shipped" disabled>จัดส่งแล้ว (เปลี่ยนหลังบันทึกออเดอร์)</option></select></div>
 <div><label for="sell-price">ราคาขายจริง (บาท)</label><input id="sell-price" type="number" min="0" step=".01" required inputmode="decimal"></div>
 <div><label for="shipping">ค่าจัดส่งที่เรียกเก็บลูกค้า (บาท)</label><input id="shipping" type="number" min="0" step=".01" value="0" required inputmode="decimal"></div>
 <div><label for="expenses">ค่าใช้จ่ายร้าน (รวมค่าส่งที่ร้านจ่าย)</label><input id="expenses" type="number" min="0" step=".01" value="0" required inputmode="decimal"></div>
 <div><label for="tracking">เลขพัสดุ (ถ้ามี)</label><input id="tracking" maxlength="120"></div>
 <div class="full"><label for="order-notes">บันทึกภายใน</label><textarea id="order-notes" maxlength="1000" placeholder="ข้อมูลที่ต้องติดตาม"></textarea></div>
-</div><p class="muted" id="cost-preview">เลือกสินค้าเพื่อดูต้นทุนที่บันทึกไว้</p><button id="create-order" type="submit">บันทึกออเดอร์</button></form></div>
+</div><p class="muted" id="cost-preview">เลือกสินค้าเพื่อดูต้นทุนที่บันทึกไว้</p><p class="muted">เลือกเฉพาะสินค้าที่พร้อมขาย หากมีผู้จองแล้วระบบจะป้องกันการสร้างออเดอร์ซ้ำ</p><button id="create-order" type="submit">บันทึกออเดอร์</button></form></div>
 <div class="panel"><div class="section-heading"><h2>รายการออเดอร์</h2><button type="button" class="secondary" id="export-orders">ส่งออกออเดอร์ CSV</button></div><div class="toolbar"><input id="order-search" type="search" placeholder="ค้นหาชื่อสินค้า / รหัส / ลูกค้า"><select id="order-filter"><option value="all">ทุกสถานะ</option><option value="pending">รอชำระ</option><option value="paid">ชำระแล้ว</option><option value="shipped">จัดส่งแล้ว</option><option value="cancelled">ยกเลิก</option></select></div><div id="orders-list"></div></div>
 </section>
 <section id="costs-tab" class="hidden"><div class="panel"><div class="section-heading"><h2>บันทึกต้นทุนสินค้า</h2><button type="button" class="secondary" id="export-costs">ส่งออกต้นทุน CSV</button></div><p class="muted">ต้นทุนอยู่ในตารางแยก ไม่แสดงในหน้าร้านสาธารณะ และไม่บังคับให้กรอกย้อนหลัง</p><div class="form-grid"><div><label for="cost-search">ค้นหาสินค้า</label><input id="cost-search" type="search" placeholder="ค้นชื่อรุ่นหรือ SKU"></div><div><label>ความคืบหน้า</label><p id="cost-count" class="muted">—</p></div></div><div id="cost-list"></div></div></section>
@@ -69,7 +69,17 @@ label{display:block;font-size:12px;font-weight:800;color:#526d89;margin:0 0 6px}
 const cfg=window.CLICKO_SUPABASE||{},$=id=>document.getElementById(id);
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=v=>'฿'+Number(v||0).toLocaleString('th-TH',{maximumFractionDigits:2});
-const statusNames={pending:'รอชำระเงิน',paid:'ชำระแล้ว',shipped:'จัดส่งแล้ว',cancelled:'ยกเลิก'};
+const statusNames={pending:'รอชำระเงิน / จองแล้ว',paid:'ชำระแล้ว / ขายแล้ว',shipped:'จัดส่งแล้ว',cancelled:'ยกเลิก / คืนสต๊อก'};
+const statusTransitions={pending:['pending','paid','shipped','cancelled'],paid:['paid','shipped','cancelled'],shipped:['shipped'],cancelled:['cancelled']};
+function allowedOrderStatusOptions(status){
+ return (statusTransitions[status]||[status]).map(k=>'<option value="'+k+'"'+(k===status?' selected':'')+'>'+statusNames[k]+'</option>').join('');
+}
+function friendlyOrderError(error){
+ const message=String(error?.message||error||'เกิดข้อผิดพลาด');
+ if(/duplicate key|unique constraint|one_active_per_sku|stock|reserved|belongs to active order|cannot change order/i.test(message))
+  return 'ไม่สามารถทำรายการได้ เนื่องจากสินค้าถูกจอง/ขายแล้ว หรือสถานะเปลี่ยนไป กรุณารีเฟรชและตรวจสอบสต๊อกอีกครั้ง';
+ return message;
+}
 let db=null,products=[],orders=[],costs=new Map(),authorized=false;
 const notice=t=>$('notice').textContent=t;
 const toggle=(id,on)=>$(id).classList.toggle('hidden',!on);
@@ -86,8 +96,11 @@ function chosen(){return products.find(p=>p.sku===$('order-sku').value)}
 function costsPreview(){const p=chosen();$('cost-preview').textContent=!p?'เลือกสินค้าเพื่อดูต้นทุนที่บันทึกไว้':costs.has(p.sku)?'ต้นทุนที่บันทึกไว้: '+money(costs.get(p.sku))+' (บันทึกยอด ณ วันที่สร้างออเดอร์)':'ยังไม่บันทึกต้นทุนสินค้านี้ · กำไรจะไม่ถูกคำนวณจนกว่าจะมีต้นทุน'};
 function renderProducts(){
  const previous=$('order-sku').value;
- $('order-sku').innerHTML='<option value="">— เลือกสินค้า —</option>'+products.map(p=>'<option value="'+esc(p.sku)+'">'+esc(p.sku+' · '+p.name+(p.stock_status==='sold'?' [ขายแล้ว]':''))+'</option>').join('');
- if(products.some(p=>p.sku===previous))$('order-sku').value=previous;
+ const available=products.filter(p=>p.stock_status==='available');
+ $('order-sku').innerHTML='<option value="">— เลือกสินค้าพร้อมขาย —</option>'+available.map(p=>'<option value="'+esc(p.sku)+'">'+esc(p.sku+' · '+p.name)+'</option>').join('');
+ if(available.some(p=>p.sku===previous))$('order-sku').value=previous;
+ else $('order-sku').value='';
+ if(!$('order-sku').value)$('sell-price').value='';
  costsPreview();
 }
 function renderMetrics(){
@@ -111,7 +124,7 @@ function renderOrders(){
   return '<article class="order"><div><strong>'+esc(o.product_name)+'</strong><small>'+esc(o.sku)+' · '+new Date(o.created_at).toLocaleString('th-TH')+'</small>'+
   '<div class="summary">'+money(o.sell_price)+'</div><small>'+cost+' · '+esc(o.customer_label||'ไม่ระบุลูกค้า')+'</small><span class="chip '+esc(o.status)+'">'+statusNames[o.status]+'</span>'+
   (o.notes?'<p class="muted">'+esc(o.notes)+'</p>':'')+'</div>'+
-  '<div class="order-controls"><div><label for="status-'+code+'">สถานะ</label><select id="status-'+code+'" data-order-status="'+code+'">'+Object.entries(statusNames).map(([k,v])=>'<option value="'+k+'"'+(k===o.status?' selected':'')+'>'+v+'</option>').join('')+'</select></div>'+
+  '<div class="order-controls"><div><label for="status-'+code+'">สถานะ</label><select id="status-'+code+'" data-order-status="'+code+'">'+allowedOrderStatusOptions(o.status)+'</select></div>'+
   '<div><label for="tracking-'+code+'">เลขพัสดุ</label><input id="tracking-'+code+'" data-order-tracking="'+code+'" value="'+esc(o.tracking_code||'')+'" maxlength="120" placeholder="เลขพัสดุ"></div>'+
   '<div><label for="sell-'+code+'">ราคาขายจริง</label><input id="sell-'+code+'" type="number" min="0" step=".01" inputmode="decimal" data-order-price="'+code+'" value="'+Number(o.sell_price)+'"></div>'+ 
   '<div><label for="cost-'+code+'">ต้นทุน ณ วันขาย</label><input id="cost-'+code+'" type="number" min="0" step=".01" inputmode="decimal" data-order-cost="'+code+'" value="'+(o.cost_snapshot===null?'':Number(o.cost_snapshot))+'" placeholder="ไม่ทราบ"></div>'+ 
@@ -166,15 +179,18 @@ $('order-sku').addEventListener('change',()=>{
 $('order-form').addEventListener('submit',async e=>{
  e.preventDefault();if(!authorized)return;const p=chosen();
  if(!p){notice('กรุณาเลือกสินค้าก่อน');return;}
+ if(p.stock_status!=='available'){notice('สินค้านี้ไม่พร้อมขาย กรุณารีเฟรชสต๊อก');return;}
+ const requestedStatus=$('order-status').value;
+ if(requestedStatus==='paid'&&!confirm('ยืนยันว่าตรวจสอบการชำระเงินแล้ว? ระบบจะเปลี่ยนสต๊อกเป็นขายแล้วทันที'))return;
  const price=safeNum('sell-price'),shipping=safeNum('shipping'),expenses=safeNum('expenses');
  if([price,shipping,expenses].some(x=>x===undefined)){notice('กรุณาตรวจสอบจำนวนเงิน (ต้องมีค่าและไม่เกิน 2 ตำแหน่งทศนิยม)');return;}
  const button=$('create-order');button.disabled=true;notice('กำลังบันทึกออเดอร์...');
  const order={sku:p.sku,product_name:p.name,customer_label:$('customer').value.trim(),sell_price:price,
  cost_snapshot:costs.has(p.sku)?costs.get(p.sku):null,shipping_fee:shipping,extra_cost:expenses,
- status:$('order-status').value,tracking_code:$('tracking').value.trim(),notes:$('order-notes').value.trim()};
- try{const {error}=await db.from('clicko_orders').insert(order);if(error)throw error;
- $('order-form').reset();await reload();notice('บันทึกออเดอร์สำเร็จ · โปรดจัดการสถานะสินค้าในหน้า Admin ด้วย');}
- catch(err){notice('บันทึกออเดอร์ไม่สำเร็จ: '+err.message)}
+ status:requestedStatus,tracking_code:$('tracking').value.trim(),notes:$('order-notes').value.trim()};
+ try{const {data,error}=await db.from('clicko_orders').insert(order).select('id').single();if(error)throw error;if(!data)throw Error('การบันทึกออเดอร์ไม่สำเร็จ');
+ $('order-form').reset();await reload();notice('บันทึกออเดอร์สำเร็จ และเปลี่ยนสต๊อกใน Supabase อัตโนมัติแล้ว');}
+ catch(err){await reload().catch(()=>{});notice('บันทึกออเดอร์ไม่สำเร็จ: '+friendlyOrderError(err))}
  finally{button.disabled=false}
 });
 $('orders-list').addEventListener('click',async e=>{
@@ -183,16 +199,28 @@ $('orders-list').addEventListener('click',async e=>{
  const tracking=[...document.querySelectorAll('[data-order-tracking]')].find(x=>x.dataset.orderTracking===id)?.value.trim();
  const field=type=>[...document.querySelectorAll('[data-order-'+type+']')].find(x=>x.dataset['order'+type[0].toUpperCase()+type.slice(1)]===id);
  const numbers={sell_price:field('price')?.value,shipping_fee:field('fee')?.value,extra_cost:field('extra')?.value,cost_snapshot:field('cost')?.value};
- if(!statusNames[status])return;
+ const currentOrder=orders.find(o=>o.id===id);
+ if(!currentOrder||!statusTransitions[currentOrder.status]?.includes(status)){
+  notice('ไม่สามารถเปลี่ยนสถานะออเดอร์แบบนี้ได้ กรุณารีเฟรช');return;
+ }
+ if(status==='cancelled'&&currentOrder.status!=='cancelled'){
+  const question=currentOrder.status==='paid'
+   ?'ยืนยันยกเลิกออเดอร์ที่ชำระเงินแล้ว? ต้องตรวจสอบเรื่องคืนเงินจริงกับลูกค้าด้วย ระบบจะคืนสต๊อกโดยอัตโนมัติ แต่จะไม่โอนเงินคืน'
+   :'ยืนยันยกเลิกการจอง? ระบบจะคืนสินค้าเป็นพร้อมขายทันที';
+  if(!confirm(question))return;
+ }
+ if(['paid','shipped'].includes(status)&&status!==currentOrder.status){
+  if(!confirm(status==='paid'?'ยืนยันว่าได้รับชำระเงินจริงแล้ว? สินค้าจะถูกระบุว่าขายแล้วทันที':'ยืนยันว่าจัดส่งสินค้าจริงแล้ว? ออเดอร์ที่จัดส่งแล้วจะไม่สามารถยกเลิกเพื่อคืนสต๊อกอัตโนมัติ'))return;
+ }
  const validated={};
  for(const [k,v] of Object.entries(numbers)){
   validated[k]=validMoney(v,k==='cost_snapshot');
   if(validated[k]===undefined){notice('กรุณากรอกจำนวนเงินให้ครบและถูกต้อง ไม่เกิน 2 ตำแหน่งทศนิยม');return;}
  }
  b.disabled=true;notice('กำลังอัปเดตออเดอร์...');
- try{const {error}=await db.from('clicko_orders').update({status,tracking_code:tracking||'',sell_price:validated.sell_price,shipping_fee:validated.shipping_fee,extra_cost:validated.extra_cost,cost_snapshot:validated.cost_snapshot,updated_at:new Date().toISOString()}).eq('id',id);
- if(error)throw error;await reload();notice('อัปเดตออเดอร์แล้ว');}
- catch(err){b.disabled=false;notice('อัปเดตไม่สำเร็จ: '+err.message)}
+ try{const {data,error}=await db.from('clicko_orders').update({status,tracking_code:tracking||'',sell_price:validated.sell_price,shipping_fee:validated.shipping_fee,extra_cost:validated.extra_cost,cost_snapshot:validated.cost_snapshot,updated_at:new Date().toISOString()}).eq('id',id).select('id').single();
+ if(error)throw error;if(!data)throw Error('ออเดอร์ไม่ถูกอัปเดต');await reload();notice('อัปเดตออเดอร์และสต๊อกสำเร็จ');}
+ catch(err){await reload().catch(()=>{});b.disabled=false;notice('อัปเดตไม่สำเร็จ: '+friendlyOrderError(err))}
 });
 $('cost-list').addEventListener('click',async e=>{
  const b=e.target.closest('button[data-cost-save]');if(!b||!authorized)return;const sku=b.dataset.costSave;
