@@ -1124,6 +1124,18 @@ header{background:#fff!important;border-color:#d1edeb!important;box-shadow:0 2px
 .pic .manufacturer-label,.manufacturer-detail-note{background:#e9fff1!important;color:#293e4a!important;border-color:#bbdfc7!important}
 .product-detail{color:#293e4a!important}.detail-visual{background:#ecfaff!important}.detail-search{color:#327a9b!important}
 @media(max-width:540px){body{background:#f5fff9!important}.hero{background:linear-gradient(135deg,#51ABF9,#9FEAFD)!important}}
+</style><style id="clicko-spotlight-click-fix-2026">
+#spotlight-products .spotlight-card{position:relative;min-width:0}
+#spotlight-products .spotlight-link{display:flex;flex-direction:column;width:100%;height:100%;text-decoration:none;color:inherit;cursor:pointer;position:relative;z-index:1}
+#spotlight-products .spotlight-link:hover .spotlight-action{text-decoration:underline}
+#spotlight-products .spotlight-link:focus-visible{outline:3px solid #51ABF9;outline-offset:-3px;border-radius:14px}
+#spotlight-products .spotlight-visual{height:176px;flex-shrink:0;overflow:hidden;background:#f1fcff!important}
+#spotlight-products .spotlight-visual img{width:100%;height:100%;object-fit:contain;padding:12px;pointer-events:none}
+#spotlight-products .spotlight-details{display:flex;flex-direction:column;flex:1;gap:5px;padding:13px;background:#fff}
+#spotlight-products .spotlight-name{color:#293e4a!important;font-size:13px;line-height:1.4;min-height:38px}
+#spotlight-products .spotlight-price{color:#247db3!important;font-size:19px}
+#spotlight-products .spotlight-action{color:#286f99!important}
+@media(max-width:680px){#spotlight-products .spotlight-visual{height:130px}#spotlight-products .spotlight-details{padding:10px}#spotlight-products .spotlight-name{font-size:11px}#spotlight-products .spotlight-price{font-size:16px}}
 </style></head><body><header><div class="top"><a class="logo clicko-keys-logo" href="./" aria-label="Clicko Gaming Gear & PC Parts"><span class="clicko-keys" aria-hidden="true"><span>C</span><span>l</span><span>i</span><span>c</span><span>k</span><span class="mouse-key"><svg width="20" height="27" viewBox="0 0 20 27" xmlns="http://www.w3.org/2000/svg"><rect x="2.5" y="1.5" rx="8" width="15" height="24" fill="#f4f8ff" stroke="#a9b8d0" stroke-width="1.2"/><path d="M10 2.5V9" stroke="#1197ff" stroke-width="2" stroke-linecap="round"/></svg></span></span><span class="logo-subtitle">GAMING GEAR &amp; PC PARTS</span></a><nav class="nav clicko-main-nav" aria-label="เมนูหลัก"><a class="active" href="./">หน้าร้าน</a><a href="#catalog">สินค้า</a><a href="#buyback">รับซื้อ / เทิร์น</a><a href="#reviews">รีวิวร้าน</a><a href="https://www.facebook.com/groups/3325289464276829" target="_blank" rel="noopener noreferrer">กลุ่มซื้อขาย ↗</a><a href="#contact">ติดต่อเรา</a></nav><div class="top-actions"><a class="clicko-mobile-group" href="https://www.facebook.com/groups/3325289464276829" target="_blank" rel="noopener noreferrer">กลุ่มซื้อขาย ↗</a><a class="contact-phone" href="tel:0959759965">☎ 095-975-9965</a><a class="contact" href="https://www.facebook.com/sippavit.gomarn/" target="_blank" rel="noopener noreferrer">ติดต่อร้าน ↗</a></div></div><nav class="clicko-mobile-nav" aria-label="เมนูเว็บไซต์สำหรับมือถือ"><a href="#catalog">สินค้า</a><a href="#buyback">รับซื้อ / เทิร์น</a><a href="#reviews">รีวิวร้าน</a><a href="#contact">ติดต่อเรา</a></nav></header><main class="wrap"><section class="hero"><div class="hero-copy"><div class="eyebrow"><span class="eyebrow-dot"></span> GAMING GEAR &amp; PC PARTS</div><h1>GEAR UP<br><em>YOUR SETUP.</em></h1><p class="hero-lead">อุปกรณ์คอมพิวเตอร์และเกมมิ่งเกียร์ มือ 1 / มือ 2<br>เลือกรุ่นที่ใช่ ในราคาที่ชอบ</p><div class="hero-cta-row"><a class="hero-link" href="#catalog">เลือกดูสินค้า <span aria-hidden="true">→</span></a><a class="hero-call" href="#buyback">รับซื้อ / เทิร์น ↗</a></div></div><div class="hero-art clicko-brand-stage" aria-label="Clicko Gaming Gear &amp; PC Parts">
   <div class="brand-glow" aria-hidden="true"></div>
   <div class="clicko-stage-logo">
@@ -1194,7 +1206,7 @@ const detailContent=document.getElementById('detail-content');
 function openProductDetail(id){
  const p=products.find(x=>String(x.id)===String(id));if(!p)return;
  const stockStatus=clickoStockStatus(p),sold=stockStatus==='sold',reserved=stockStatus==='reserved';
- const pic=grid.querySelector('.pic[data-pid="'+CSS.escape(String(p.id))+'"] img');
+ // Read product photos from the record, independent of catalog DOM.
  detailVisual.replaceChildren();
  const photos=[...(p.image&&(/^(https:\/\/|\.\/|images\/)/i.test(p.image))?[p.image]:[]),...(clickoGalleryPhotos.get(String(p.id))||[])];
  const gallery=[...new Set(photos)].slice(0,9);
@@ -1521,13 +1533,39 @@ clickoLoadAdminRows();
   if(!spotlight)return;
   if(!clickoInventoryVerified){spotlight.closest('.spotlight').hidden=true;return;}
   const selected=products.filter(p=>clickoCanOrder(p)&&typeof p.price==='number'&&p.price>0).sort((a,b)=>(Date.parse(b.created_at||'')||0)-(Date.parse(a.created_at||'')||0)||String(b.id).localeCompare(String(a.id))).slice(0,4);
-  spotlight.innerHTML=selected.map(p=>'<article class="spotlight-card"><button type="button" data-sku="'+esc(p.id)+'" aria-label="ดูรายละเอียด '+esc(p.name)+'"><div class="spotlight-visual">'+(p.image?'<img src="'+esc(p.image)+'" alt="'+esc(p.name)+'" loading="lazy" onerror="this.remove()">':'<span aria-hidden="true">'+(symbols[p.category]||'▦')+'</span>')+'<small>'+esc(p.condition)+'</small></div><div class="spotlight-details"><span class="spotlight-cat">'+esc(p.category)+'</span><span class="spotlight-name">'+esc(p.name)+'</span><span class="spotlight-price">฿'+p.price.toLocaleString('th-TH')+'</span><span class="spotlight-action">ดูรายละเอียดสินค้า ↗</span></div></button></article>').join('');
+  spotlight.innerHTML=selected.map(p=>'<article class="spotlight-card"><a class="spotlight-link" href="?product='+encodeURIComponent(p.id)+'" data-sku="'+esc(p.id)+'" aria-label="ดูรายละเอียด '+esc(p.name)+'"><div class="spotlight-visual">'+(p.image?'<img src="'+esc(p.image)+'" alt="'+esc(p.name)+'" loading="lazy" onerror="this.remove()">':'<span aria-hidden="true">'+(symbols[p.category]||'▦')+'</span>')+'<small>'+esc(p.condition)+'</small></div><div class="spotlight-details"><span class="spotlight-cat">'+esc(p.category)+'</span><span class="spotlight-name">'+esc(p.name)+'</span><span class="spotlight-price">฿'+p.price.toLocaleString('th-TH')+'</span><span class="spotlight-action">ดูรายละเอียดสินค้า ↗</span></div></a></article>').join('');
   spotlight.closest('.spotlight').hidden=selected.length===0;
  }
  spotlight.addEventListener('click',e=>{
-  const button=e.target.closest('button[data-sku]');if(!button)return;
-  openProductDetail(button.dataset.sku);
+  const link=e.target.closest('a.spotlight-link[data-sku]');
+  if(!link||!spotlight.contains(link)||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey)return;
+  e.preventDefault();
+  try{
+    openProductDetail(link.dataset.sku);
+    if(!document.getElementById('product-detail').open)throw Error('Dialog failed to open');
+  }catch(error){
+    console.error('Clicko spotlight detail error:',error);
+    window.location.assign(link.href);
+  }
  });
+ // Deep links also open details when users follow a product URL or reload.
+ const requestedSku=new URLSearchParams(window.location.search).get('product');
+ if(requestedSku){
+  const showRequested=()=>{
+    const found=products.find(p=>String(p.id)===requestedSku);
+    if(!found)return;
+    try{if(!document.getElementById('product-detail').open)openProductDetail(requestedSku)}
+    catch(error){
+      console.error('Clicko details could not open:',error);
+      document.getElementById('q').value=found.name;
+      document.getElementById('availability').value='all';
+      draw();
+      document.getElementById('catalog').scrollIntoView({block:'start'});
+    }
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',showRequested,{once:true});
+  else showRequested();
+ }
  // Re-render only after catalogue state updates; no extra data sources.
  const previous=draw;
  draw=function(){previous();renderSpotlight();};
