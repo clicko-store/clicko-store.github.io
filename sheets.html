@@ -119,6 +119,10 @@ function inspect(text){
     skipped++;result.push([rawSku||'—',label,'—','—','ข้าม: SKU ตรง แต่ชื่อสินค้าไม่ตรงฐานข้อมูล']);continue;
   }
   if(!found||seen.has(found.sku)){skipped++;result.push([rawSku||'—',label,'—','—',found?'ข้าม: ซ้ำในไฟล์':'ข้าม: ไม่พบ SKU/ชื่อที่ตรงกัน']);continue}
+  // The sheet import never changes price/warranty on archived, reserved or sold items.
+  if(found.is_hidden||found.stock_status!=='available'){
+    seen.add(found.sku);skipped++;result.push([found.sku,found.name,'—','—','ข้าม: ไม่ใช่สินค้าพร้อมขาย']);continue;
+  }
   seen.add(found.sku);matched++;
   const patch={};const beforeP=found.price===null?'ไม่ระบุ':Number(found.price).toLocaleString('th-TH');
   let afterP=beforeP,afterW=found.warranty||'—';
