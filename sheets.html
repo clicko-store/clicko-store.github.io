@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clicko Admin · เชื่อม Google Sheets</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#102444;background:#f4f8fd}*{box-sizing:border-box}body{margin:0}header{display:flex;justify-content:space-between;gap:12px;align-items:center;background:#fff;border-bottom:1px solid #e0e9f6;padding:16px max(16px,calc((100vw - 1140px)/2))}header strong{font-size:22px;color:#086ee8}a{color:#146bca}header a{font-size:13px}main{max-width:1140px;margin:auto;padding:22px 16px 70px}.panel{background:white;border:1px solid #dce7f4;border-radius:17px;padding:20px;margin-bottom:15px;box-shadow:0 6px 20px #12264409}h1{font-size:24px;margin:0 0 8px}h2{font-size:18px;margin:0 0 10px}p{color:#60758e;font-size:13px;line-height:1.6}label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}input{border:1px solid #cedcec;border-radius:9px;padding:12px;width:100%;font:inherit}button{background:#116ee5;color:white;border:0;border-radius:10px;padding:12px 17px;font:inherit;font-size:13px;font-weight:750;cursor:pointer}button:disabled{opacity:.5;cursor:not-allowed}.outline{background:#eff5fe;color:#164b8d}.actions{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}.hidden{display:none!important}.muted{font-size:12px;color:#6c7d91}.stat{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}.stat div{border:1px solid #dfeafa;background:#f3f8ff;padding:12px;border-radius:11px}.stat strong{display:block;font-size:23px;color:#076ad5}.stat span{font-size:11px;color:#5f7694}table{border-collapse:collapse;width:100%;font-size:12px}th,td{border-bottom:1px solid #e5edf6;padding:9px;text-align:left;vertical-align:top}th{background:#f4f8ff;position:sticky;top:0}td{overflow-wrap:anywhere}table .changed{color:#0b68cb;font-weight:800}table .skip{color:#a36409}#notice{white-space:pre-wrap;color:#245c9a;font-size:13px;margin:12px 0}#preview-scroll{max-height:420px;overflow:auto}.hint{padding:12px;background:#fff8e8;border:1px solid #f5e4b6;border-radius:10px;color:#7c5c12}.success{color:#127445!important}@media(max-width:650px){header{align-items:flex-start}header strong{font-size:19px}h1{font-size:21px}.stat{grid-template-columns:repeat(2,1fr)}.panel{padding:14px}th,td{padding:7px;font-size:11px}}
+</style></head><body><header><strong>Clicko · Sheets Sync</strong><div><a href="./admin.html">จัดการสินค้า</a> · <a href="./orders.html">ออเดอร์</a> · <a href="./">หน้าร้าน</a></div></header>
+<main><section class="panel"><h1>นำเข้าสต๊อกจาก Google Sheets</h1>
+<p>อ่านข้อมูลจาก Google Sheets หรือไฟล์ CSV แล้วแสดงรายการเปลี่ยนแปลงให้ตรวจสอบก่อนกดบันทึกลง Supabase โดยเจ้าของร้านเท่านั้น ไม่สร้างสินค้าซ้ำ ไม่ลบสินค้า และไม่เปลี่ยนสถานะจอง/ขายแล้วโดยอัตโนมัติ</p>
+<div id="notice" role="status" aria-live="polite">กำลังตรวจสอบสิทธิ์...</div>
+<div id="login" class="hidden"><h2>เข้าสู่ระบบเจ้าของร้าน</h2><form id="login-form"><label for="email">อีเมล</label><input type="email" id="email" required autocomplete="username"><label for="password">รหัสผ่าน</label><input type="password" id="password" required autocomplete="current-password"><div class="actions"><button>เข้าสู่ระบบ</button></div></form></div>
+</section>
+<div id="workspace" class="hidden">
+<section class="panel"><h2>1. เลือกแหล่งข้อมูล</h2><p class="muted">ลิงก์ CSV จาก Google Sheets ที่ร้านเชื่อมไว้ถูกตั้งค่าเป็นค่าเริ่มต้น หาก Google จำกัดการดาวน์โหลดในเบราว์เซอร์ ให้ดาวน์โหลด CSV แล้วอัปโหลดด้านล่าง</p><label for="sheet-url">Google Sheets · Published CSV URL</label><input type="url" id="sheet-url">
+<div class="actions"><button id="fetch" type="button">ดึงข้อมูล Google Sheets</button><label class="outline" style="border-radius:10px;padding:12px 17px;cursor:pointer;margin:0">เลือกไฟล์ CSV<input id="file" type="file" accept=".csv,text/csv" style="display:none"></label><button id="download" class="outline" type="button">ส่งออกสต๊อกเป็น CSV</button><button id="logout" class="outline" type="button">ออกจากระบบ</button></div></section>
+<section class="panel"><h2>2. ตรวจสอบก่อนบันทึก</h2><div class="stat"><div><strong id="total">0</strong><span>แถวในชีต</span></div><div><strong id="matched">0</strong><span>จับคู่ SKU ได้</span></div><div><strong id="changed">0</strong><span>รายการที่จะอัปเดต</span></div><div><strong id="skipped">0</strong><span>ข้าม / ไม่ตรง</span></div></div><p class="hint">ระบบจับคู่ด้วยรหัส SKU ก่อน หรือชื่อสินค้าที่ตรงกันแบบไม่ซ้ำเท่านั้น · อัปเดตเฉพาะราคาและประกันที่ระบุชัดเจน · ไม่แก้สถานะขายแล้วหรือติดจอง · ไม่แก้รูปสินค้าหรือข้อมูลต้นทุน</p><div id="preview-scroll"><table><thead><tr><th>SKU</th><th>สินค้า</th><th>ราคาเดิม → ใหม่</th><th>ประกันเดิม → ใหม่</th><th>ผลลัพธ์</th></tr></thead><tbody id="rows"><tr><td colspan="5">ยังไม่ได้โหลดข้อมูล</td></tr></tbody></table></div>
+<div class="actions"><button id="apply" disabled type="button">ยืนยันอัปเดตข้อมูลที่เปลี่ยน</button><button id="clear" class="outline" type="button">ล้างตัวอย่าง</button></div></section>
+</div></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script src="./supabase-config.js"></script>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id),cfg=window.CLICKO_SUPABASE||{},db=cfg.url&&cfg.anonKey&&window.supabase?window.supabase.createClient(cfg.url,cfg.anonKey):null;
+const CSV='https://docs.google.com/spreadsheets/d/e/2PACX-1vQgRk-Y_TpnYTG18hXN8p86F_MbBfIkxCHKgZ8MhULS-CmuW7TvrHJKaXMOu3mSMdiXxksTwGRpFia4/pub?gid=781282159&single=true&output=csv';
+$('sheet-url').value=CSV;
+let stock=[],changes=[],authorized=false,busy=false;
+function notice(message,ok=false){$('notice').textContent=message;$('notice').classList.toggle('success',ok)}
+function csvParse(input){const result=[];let row=[],field='',quoted=false;for(let i=0;i<input.length;i++){const c=input[i];if(quoted){if(c==='"'&&input[i+1]==='"'){field+='"';i++;}else if(c==='"'){quoted=false}else field+=c}else if(c==='"')quoted=true;else if(c===','){row.push(field);field=''}else if(c==='\n'||c==='\r'){if(c==='\r'&&input[i+1]==='\n')i++;row.push(field);field='';if(row.some(x=>x.trim()))result.push(row);row=[]}else field+=c}row.push(field);if(row.some(x=>x.trim()))result.push(row);return result}
+function norm(s){return String(s??'').normalize('NFKC').toLocaleLowerCase().replace(/[\u200b-\u200d\ufeff]/g,'').replace(/\s+/g,' ').trim()}
+function head(s){return norm(s).replace(/[\s_\-()/]/g,'')}
+function csvOutput(rows){return rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n')}
+function download(text,name){const blob=new Blob(['\ufeff'+text],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),5000)}
+function format(x){return x===null||x===undefined?'—':String(x)}
+function cells(tr,vals){for(const v of vals){const td=document.createElement('td');td.textContent=format(v);tr.append(td)}return tr}
+function clear(){changes=[];for(const id of ['total','matched','changed','skipped'])$(id).textContent='0';$('rows').replaceChildren(cells(document.createElement('tr'),['ยังไม่ได้โหลดข้อมูล','','','','']));$('apply').disabled=true}
+async function loadStock(){const {data,error}=await db.from('clicko_products').select('sku,name,price,warranty,stock_status,is_hidden').order('sku').limit(1000);if(error)throw error;stock=data||[]}
+async function check(){if(!db){notice('ไม่พบ Supabase config');return}const {data:{user},error}=await db.auth.getUser();if(error&&error.name!=='AuthSessionMissingError')console.warn(error.message);
+ authorized=false;
+ if(user){const r=await db.from('clicko_admins').select('user_id').eq('user_id',user.id).maybeSingle();authorized=!!r.data&&!r.error}
+ $('workspace').classList.toggle('hidden',!authorized);$('login').classList.toggle('hidden',authorized);
+ if(authorized){await loadStock();notice('ยืนยันสิทธิ์ผู้ดูแลแล้ว · โหลดสต๊อก '+stock.length+' รายการ',true)}else notice('กรุณาเข้าสู่ระบบด้วยบัญชีผู้ดูแล Clicko');
+}
+$('login-form').onsubmit=async e=>{e.preventDefault();if(!db)return;notice('กำลังเข้าสู่ระบบ...');const {error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error)return notice('เข้าสู่ระบบไม่สำเร็จ: '+error.message);$('password').value='';await check()};
+$('logout').onclick=async()=>{clear();await db.auth.signOut();await check()};
+$('clear').onclick=()=>{clear();notice('ล้างตัวอย่างแล้ว ไม่มีการเปลี่ยนแปลงฐานข้อมูล')};
+$('download').onclick=()=>{if(!authorized)return;download(csvOutput([['SKU','ชื่อสินค้า','หมวดหมู่','ราคา','ประกัน','สถานะ'],...stock.map(p=>[p.sku,p.name,'',p.price,p.warranty,p.stock_status])]),'clicko-stock-'+new Date().toISOString().slice(0,10)+'.csv')};
+const aliases={sku:['sku','รหัสสินค้า','รหัส','id'],name:['ชื่อสินค้า','ชื่อรุ่น','productname','name','model','สินค้า','รายการสินค้า'],price:['ราคา','price'],warranty:['ประกัน','warranty']};
+function inspect(text){
+ clear();const table=csvParse(text.replace(/^\ufeff/,''));if(table.length<2)throw Error('CSV ไม่มีแถวสินค้า');
+ const getCols=row=>{const h=row.map(head);const out={};for(const k of Object.keys(aliases))out[k]=h.findIndex(v=>aliases[k].some(a=>v===head(a)));return out};
+ let pos=-1,cols;for(let i=0;i<Math.min(table.length,12);i++){const c=getCols(table[i]);if(c.name>=0&&(c.price>=0||c.warranty>=0)){cols=c;pos=i;break}}
+ if(pos<0)throw Error('ไม่พบหัวคอลัมน์ชื่อสินค้าและราคา/ประกัน');
+ const rows=table.slice(pos+1).filter(r=>r.some(x=>String(x).trim()));const bySku=new Map(stock.map(x=>[norm(x.sku),x])),byName=new Map();
+ for(const p of stock){const k=norm(p.name);byName.set(k,[...(byName.get(k)||[]),p])}
+ const plan=[],result=[],seen=new Set();let matched=0,skipped=0;
+ const skuMap={'CL001':'CLK-143','CL002':'CLK-144','CL003':'CLK-147','CL004':'CLK-148','CL005':'CLK-149','CL006':'CLK-150','CL007':'CLK-017','CL010':'CLK-064','CL011':'CLK-066'};
+ for(let i=0;i<rows.length;i++){
+  const r=rows[i],v=k=>cols[k]<0?'':String(r[cols[k]]??'').trim(),label=v('name'),rawSku=v('sku'),mapped=skuMap[rawSku]||rawSku;
+  if(!label&&!rawSku)continue;
+  const candidates=byName.get(norm(label))||[];const found=bySku.get(norm(mapped))||(candidates.length===1?candidates[0]:null);
+  if(!found||seen.has(found.sku)){skipped++;result.push([rawSku||'—',label,'—','—',found?'ข้าม: ซ้ำในไฟล์':'ข้าม: ไม่พบ SKU/ชื่อที่ตรงกัน']);continue}
+  seen.add(found.sku);matched++;
+  const patch={};const beforeP=found.price===null?'ไม่ระบุ':Number(found.price).toLocaleString('th-TH');
+  let afterP=beforeP,afterW=found.warranty||'—';
+  if(cols.price>=0){const raw=v('price').replace(/[฿,\s]/g,'');if(/^\d+(\.\d+)?$/.test(raw)){const p=Number(raw);afterP=p.toLocaleString('th-TH');if(Number(found.price)!==p||found.price===null)patch.price=p}}
+  if(cols.warranty>=0&&v('warranty')){afterW=v('warranty');if((found.warranty||'')!==afterW)patch.warranty=afterW}
+  if(Object.keys(patch).length)plan.push({sku:found.sku,patch,previous:{price:found.price,warranty:found.warranty}});
+  result.push([found.sku,found.name,beforeP+' → '+afterP,(found.warranty||'—')+' → '+afterW,Object.keys(patch).length?'อัปเดต':'ไม่เปลี่ยนแปลง']);
+ }
+ changes=plan;$('total').textContent=rows.length;$('matched').textContent=matched;$('changed').textContent=plan.length;$('skipped').textContent=skipped;
+ const body=$('rows');body.replaceChildren();for(const values of result.slice(0,500)){const tr=cells(document.createElement('tr'),values);tr.lastElementChild.className=values[4]==='อัปเดต'?'changed':values[4].startsWith('ข้าม')?'skip':'';body.append(tr)}
+ $('apply').disabled=plan.length===0;notice('แสดงตัวอย่าง '+result.length+' แถว · ยังไม่ได้บันทึกฐานข้อมูล',true);
+}
+$('file').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>5e6)throw Error('ไฟล์ CSV เกิน 5MB');inspect(await file.text())}catch(err){notice('นำเข้าไม่สำเร็จ: '+err.message)}e.target.value=''};
+$('fetch').onclick=async()=>{const url=$('sheet-url').value.trim();if(!/^https:\/\/docs\.google\.com\/spreadsheets\//i.test(url)){notice('รองรับเฉพาะลิงก์ CSV จาก Google Sheets');return}const b=$('fetch');b.disabled=true;notice('กำลังโหลด Google Sheets...');try{const ctrl=new AbortController(),t=setTimeout(()=>ctrl.abort(),13000);let res;try{res=await fetch(url,{cache:'no-store',signal:ctrl.signal})}finally{clearTimeout(t)}if(!res.ok)throw Error('HTTP '+res.status);const txt=await res.text();if(/^\s*</.test(txt))throw Error('ได้รับ HTML ไม่ใช่ CSV');inspect(txt)}catch(err){notice('โหลด Google Sheets ไม่สำเร็จ: '+err.message+' · ให้ส่งออกเป็น CSV และอัปโหลดด้วยตัวเลือกไฟล์')}finally{b.disabled=false}};
+$('apply').onclick=async()=>{if(!authorized||busy||!changes.length)return;if(!confirm('ยืนยันอัปเดต '+changes.length+' รายการในฐานข้อมูลจริง? ระบบจะไม่แก้สถานะจอง/ขายแล้ว'))return;
+ busy=true;$('apply').disabled=true;let ok=0;
+ try{
+  for(const c of changes){const live=stock.find(p=>p.sku===c.sku);if(!live)throw Error('ไม่พบ SKU '+c.sku);
+   const {data:now,error:readError}=await db.from('clicko_products').select('sku,price,warranty').eq('sku',c.sku).single();if(readError)throw readError;
+   if(Number(now.price)!==Number(c.previous.price)||(now.price===null)!==(c.previous.price===null)||(now.warranty||'')!==(c.previous.warranty||''))throw Error('ข้อมูล '+c.sku+' มีการแก้ไขระหว่างนำเข้า โปรดโหลดตัวอย่างใหม่');
+   const {error}=await db.from('clicko_products').update({...c.patch,updated_at:new Date().toISOString()}).eq('sku',c.sku);if(error)throw error;
+   ok++;
+  }
+  await loadStock();clear();notice('อัปเดตสำเร็จ '+ok+' รายการ · หน้าเว็บจะอ่านข้อมูลจาก Supabase ล่าสุด',true);
+ }catch(err){await loadStock().catch(()=>{});clear();notice('หยุดนำเข้า หลังบันทึกไปแล้ว '+ok+' รายการ · '+err.message+' · ตรวจฐานข้อมูลก่อนลองใหม่')}finally{busy=false}
+};
+(async()=>{try{await check()}catch(e){notice('เชื่อมต่อไม่ได้: '+e.message)}})();
+})();
+</script></body></html>
