@@ -1692,4 +1692,4 @@ clickoInventoryNotice('กำลังตรวจสอบ Google Sheets...','p
 .clicko-filter-feedback{display:block;margin-top:4px;color:#34518E;font-size:11px;font-weight:700;line-height:1.5}
 #chips .chip{cursor:pointer}
 #chips .chip:focus-visible,.bar .filter:focus-visible,.bar .search:focus-visible{outline:3px solid #2339C3;outline-offset:2px}
-</style><script id="clicko-live-stock-refresh">(function(){let last=Date.now(),busy=false;async function update(){if(busy||document.visibilityState==="hidden"||Date.now()-last<45000)return;busy=true;try{await clickoLoadAdminRows();last=Date.now()}finally{busy=false}}window.addEventListener("focus",update);document.addEventListener("visibilitychange",update);setInterval(update,90000)})();</script></body></html>
+</style><script id="clicko-live-stock-refresh">(function(){let last=Date.now();async function update(){if(document.visibilityState==="hidden"||Date.now()-last<45000)return;last=Date.now();await clickoRefresh()}window.addEventListener("focus",update);document.addEventListener("visibilitychange",update)})();</script></body></html>
