@@ -56,7 +56,7 @@ header{box-shadow:0 2px 16px #101f3608}
 .pic{height:195px!important;background:linear-gradient(145deg,#f0f4fa,#e8eef7)!important;border-bottom:1px solid #e8eef5}.pic svg{width:42px;height:42px;opacity:.72}.pic small{font-size:10px;color:#96a8be;max-width:180px;text-align:center}.pic img{padding:16px!important;mix-blend-mode:multiply}
 .info{padding:17px}.tag{border-radius:6px;font-size:10px}.tag.used{background:#f0f2f6;color:#64748b}.sub{font-size:10px;margin:11px 0 5px;letter-spacing:.5px}.name{font-size:14px;line-height:1.5;min-height:43px}.specs{font-size:11px!important;color:#64748b!important;line-height:1.55!important}.warranty{font-size:11px}.bottom{padding-top:15px}.price{font-size:25px!important;color:#136ef1!important;letter-spacing:-.7px}.price.unpriced{font-size:15px!important;color:#ad3141!important}.ask{background:#0d1b32!important;border-radius:10px!important;padding:12px 8px!important;color:#fff!important;font-size:12px!important;transition:background .2s}.ask:hover{background:#176bef!important}
 .empty{background:white;border:1px dashed #cdd9e8;border-radius:16px;margin:15px 0;padding:40px 10px}.empty strong{font-size:18px;color:#22314c}.empty p{font-size:13px;color:#768ba5;margin-bottom:20px}
-.sheet-sync{display:flex!important} .store-footer{border-top:1px solid #e1e8f1;margin-top:50px;padding:31px 0 22px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.store-footer strong{font-size:26px;font-style:italic;letter-spacing:-1px}.store-footer p{font-size:10px;letter-spacing:2px;margin:2px 0;color:#7b8ba1}.store-footer small{width:100%;color:#8c98aa;font-size:11px}.footer-actions{display:flex;gap:18px;flex-wrap:wrap}.footer-actions a{font-size:12px;font-weight:700;color:#2566be;text-decoration:none}
+.sheet-sync{display:none!important} .store-footer{border-top:1px solid #e1e8f1;margin-top:50px;padding:31px 0 22px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.store-footer strong{font-size:26px;font-style:italic;letter-spacing:-1px}.store-footer p{font-size:10px;letter-spacing:2px;margin:2px 0;color:#7b8ba1}.store-footer small{width:100%;color:#8c98aa;font-size:11px}.footer-actions{display:flex;gap:18px;flex-wrap:wrap}.footer-actions a{font-size:12px;font-weight:700;color:#2566be;text-decoration:none}
 .product-detail{border-radius:20px}.detail-visual{background:#f0f5fb}
 @media(max-width:970px){.hero-art{min-width:270px}.hero-key{font-size:110px}.hero-ring{width:245px;height:245px}.highlights{gap:9px}.highlight{padding:13px}}
 @media(max-width:700px){
@@ -1365,155 +1365,6 @@ async function clickoLoadPhotoManifest(){
 clickoLoadPhotoManifest();
 
 draw();</script>
-<style>
-.sheet-sync{margin:14px 0;padding:12px 16px;border:1px solid #dce4ee;border-radius:12px;background:#fff;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;color:#475569}
-.sheet-sync button{background:#0d2848;color:#fff;border:0;border-radius:8px;padding:8px 12px;cursor:pointer;font-weight:700}
-.specs{font-size:12px;line-height:1.5;color:#385575;margin:8px 0;white-space:pre-line;overflow-wrap:anywhere}.specs:empty{display:none}</style>
-<script>
-/* Public Google Sheets sync: fallback remains the original embedded catalogue. */
-const CLICK0_PUBLISHED_CSV='https://docs.google.com/spreadsheets/d/e/2PACX-1vQgRk-Y_TpnYTG18hXN8p86F_MbBfIkxCHKgZ8MhULS-CmuW7TvrHJKaXMOu3mSMdiXxksTwGRpFia4/pub?gid=781282159&single=true&output=csv';
-const CLICK0_ORIGINAL=products.map(p=>({...p}));
-const CLICK0_STATUS=document.createElement('div');
-CLICK0_STATUS.className='sheet-sync';
-CLICK0_STATUS.innerHTML='<span id="clicko-sync-text">ข้อมูลสินค้าเริ่มต้น · กำลังตรวจสอบ Google Sheets...</span><button type="button" id="clicko-sync-refresh">อัปเดตข้อมูล</button>';
-document.querySelector('.bar').insertAdjacentElement('beforebegin',CLICK0_STATUS);
-const clickoSyncText=document.getElementById('clicko-sync-text');
-function clickoCsvParse(t){
- const out=[];let row=[],field='',quoted=false;
- for(let i=0;i<t.length;i++){const c=t[i];if(quoted){if(c==='"'&&t[i+1]==='"'){field+='"';i++;}else if(c==='"'){quoted=false;}else field+=c;}
- else if(c==='"')quoted=true;else if(c===','){row.push(field);field='';}
- else if(c==='\n'||c==='\r'){if(c==='\r'&&t[i+1]==='\n')i++;row.push(field);if(row.some(x=>x.trim()))out.push(row);row=[];field='';}
- else field+=c;}
- row.push(field);if(row.some(x=>x.trim()))out.push(row);return out;
-}
-function clickoMatchKey(value){
- return String(value||'').normalize('NFKC').toLowerCase().replace(/[\u200b-\u200d\ufeff]/g,'').replace(/[^a-z0-9\u0e00-\u0e7f]+/g,'').trim();
-}
-const CLICK0_SHEET_SKU_MAP=Object.freeze({
- 'CL001':'CLK-143','CL002':'CLK-144','CL003':'CLK-147','CL004':'CLK-148',
- 'CL005':'CLK-149','CL006':'CLK-150','CL007':'CLK-017',
- 'CL010':'CLK-064','CL011':'CLK-066'
-});
-function clickoFindExisting(list,item){
- const originalId=String(item.id||'').trim();const id=CLICK0_SHEET_SKU_MAP[originalId]||originalId;
- if(id&&!id.startsWith('SHEET-')){const found=list.findIndex(p=>String(p.id||'').trim()===id);if(found>=0)return found;}
- const key=clickoMatchKey(item.name);
- if(!key)return -1;
- const matches=list.map((p,i)=>clickoMatchKey(p.name)===key?i:-1).filter(i=>i>=0);
- return matches.length===1?matches[0]:-1;
-}
-function clickoSheetItems(rows){
- if(rows.length<2)throw Error('ไม่พบรายการสินค้า');
- const norm=x=>String(x||'').trim().toLowerCase().replace(/[\s_\-()\/]/g,'');
- const aliases=['ชื่อสินค้า','ชื่อรุ่น','สินค้า','productname','name','model','รายการสินค้า','ชื่อสินค้า/รุ่น','product','item','รายละเอียดสินค้า'];
- const score=row=>row.filter(x=>{const y=norm(x);return ['ชื่อสินค้า','ชื่อรุ่น','รายการสินค้า','ชื่อสินค้า/รุ่น','productname','name','model','สินค้า','product','item','ราคา','price','สถานะ','หมวดหมู่','ประกัน'].some(z=>y===norm(z)||y.includes(norm(z)))}).length;
- const headerAt=rows.slice(0,Math.min(8,rows.length)).reduce((best,row,i)=>score(row)>score(rows[best])?i:best,0);
- const h=rows[headerAt].map(norm),col=(...names)=>h.findIndex(x=>names.some(n=>x===norm(n)||x.includes(norm(n))));
- const n=col(...aliases),id=col('รหัสสินค้า','รหัส','sku','id'),price=col('ราคา','price'),cat=col('หมวดหมู่','category'),sub=col('หมวดย่อย','ประเภท','subcategory','sub'),cond=col('สภาพ','มือ1มือ2','condition'),warranty=col('ประกัน','warranty'),note=col('หมายเหตุ','ตำหนิ','note'),specs=col('สเปคสินค้า','สเปกสินค้า','รายละเอียดสินค้า','specifications','specs','spec'),status=col('สถานะ','status','ขายแล้ว','sold'),img=col('รูปสินค้า','ลิงก์รูป','ลิงค์รูป','urlรูปสินค้า','รูปภาพ','ภาพสินค้า','imageurl','image','photo');
- if(n<0)throw Error('ไม่พบคอลัมน์ชื่อสินค้า · แถวแรก: '+rows.slice(0,3).map(r=>r.slice(0,8).join(' | ')).join(' / ').slice(0,220));
- return rows.slice(headerAt+1).map((r,i)=>{
-  const v=k=>k<0?'':String(r[k]??'').trim();
-  if(!v(n))return null;
-  const match=clickoFindExisting(CLICK0_ORIGINAL,{id:v(id),name:v(n)});const p=match>=0?CLICK0_ORIGINAL[match]:null;
-  const item={...(p||{}),id:v(id)||(p&&p.id)||'SHEET-'+(i+1),name:v(n)};
-  for(const [k,key] of [[cat,'category'],[sub,'sub'],[cond,'condition'],[warranty,'warranty'],[note,'note'],[specs,'specs'],[img,'image']])if(k>=0)item[key]=v(k);
-  if(!item.category)item.category='อื่นๆ';
-  if(!item.search)item.search='https://www.google.com/search?tbm=isch&q='+encodeURIComponent(item.name+' product image');
-  if(price>=0){const raw=v(price),num=raw.replace(/[,฿\s]/g,'');item.price=/^\d+(\.\d+)?$/.test(num)?Number(num):null;}
-  const st=v(status);
-  if(/จอง|reserved|pending/i.test(st)){item.stock_status='reserved';item.sold=false;}
-  else if(/❌|ขายแล้ว|sold|หมดแล้ว|out of stock/i.test(st)){item.stock_status='sold';item.sold=true;}
-  else if(/พร้อมขาย|มีสินค้า|available|in stock|พร้อมส่ง|ขายอยู่|active/i.test(st)){item.stock_status='available';item.sold=false;}
-  else if(/❌|ขายแล้ว/i.test(v(note))){item.stock_status='sold';item.sold=true;}
-  else {item.sold=p?(p.sold??p.price===null):false;item.stock_status=item.sold?'sold':'available';}
-  return item;
- }).filter(Boolean);
-}
-function clickoApply(items,source){
- if(!items.length)throw Error('ไม่พบสินค้าใน Google Sheets');
- // The sheet is the single source of truth for the public catalog.
- // A removed row disappears from the storefront; no embedded SKU is resurrected.
- const seen=new Set(),all=[];
- for(const item of items){
-  const originalId=String(item.id||'').trim();
-  const id=CLICK0_SHEET_SKU_MAP[originalId]||originalId;
-  if(!id||seen.has(id)){console.warn('Clicko: duplicate or missing SKU skipped',id);continue;}
-  seen.add(id);
-  const old=CLICK0_ORIGINAL.find(p=>String(p.id)===id);
-  const p={...(old||{}),...item,id,name:item.name,category:item.category||'อื่นๆ'};
-  const photoManifest=(typeof clickoPhotoManifest==='object'&&clickoPhotoManifest!==null)?clickoPhotoManifest:{};
-  if(!p.image&&typeof photoManifest[id]==='string')p.image=photoManifest[id];
-  p.stock_status=item.stock_status||(item.sold?'sold':'available');
-  all.push(p);
- }
- if(!all.length)throw Error('ไม่พบรายการสินค้าที่มีรหัสไม่ซ้ำ');
- products.splice(0,products.length,...all);
- categories.splice(0,categories.length,'ทั้งหมด',...new Set(all.map(p=>p.category)));
- if(!categories.includes(category))category='ทั้งหมด';
- clickoInventoryVerified=true;
- clickoVerifiedSkus=new Set(all.map(p=>String(p.id)));
- clickoInventoryNotice('ซิงก์ข้อมูลสินค้าจาก Google Sheets แล้ว · '+new Date().toLocaleTimeString('th-TH'),'success');
- clickoSyncText.textContent=source+' · '+all.length+' รายการ · '+new Date().toLocaleTimeString('th-TH');
- draw();
-}
-function clickoGvizRows(data){
- const t=data?.table;if(!t?.cols||!t.rows)throw Error('ไม่พบตาราง');
- const labels=t.cols.map(c=>c.label||'');const dataRows=t.rows.map(r=>(r.c||[]).map(c=>c?.f??c?.v??''));return labels.some(x=>/ชื่อสินค้า|ชื่อรุ่น|product|ราคา/i.test(x))?[labels,...dataRows]:dataRows;
-}
-function clickoJsonpSheet(){
- return new Promise((resolve,reject)=>{
-  const cb='clickoCallback'+Date.now(),script=document.createElement('script');
-  const timeout=setTimeout(()=>finish(new Error('หมดเวลารอ Google Sheets')),12000);
-  function finish(err,data){clearTimeout(timeout);delete window[cb];script.remove();err?reject(err):resolve(data);}
-  window[cb]=data=>data?.status==='error'?finish(new Error('Google Sheets ตอบกลับเป็น error')):finish(null,data);
-  script.onerror=()=>finish(new Error('ไม่สามารถโหลด Google Sheets JSONP'));
-  script.src='https://docs.google.com/spreadsheets/d/1QSOkNKGUKw9P0_9hZgHz_5m_IlTtBNe1EucYyy0aSbY/gviz/tq?gid=781282159&tqx='+encodeURIComponent('out:json;responseHandler:'+cb)+'&_='+Date.now();
-  document.head.appendChild(script);
- });
-}
-let clickoRefreshRunning=false;
-async function clickoRefresh(){
- if(clickoRefreshRunning)return;
- clickoRefreshRunning=true;
- clickoSyncText.textContent='กำลังโหลดข้อมูลจาก Google Sheets...';
- let liveError='',csvError='';
- try{
-  // Read the current spreadsheet first, not the potentially cached published snapshot.
-  try{
-   const data=await clickoJsonpSheet();
-   clickoApply(clickoSheetItems(clickoGvizRows(data)),'Google Sheets (Live)');
-   return;
-  }catch(e){liveError=e.message||String(e);}
-  const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),9000);
-  try{
-   const res=await fetch(CLICK0_PUBLISHED_CSV+'&_='+Date.now(),{signal:ctrl.signal,cache:'no-store'});
-   if(!res.ok)throw Error('CSV HTTP '+res.status);
-   const csv=(await res.text()).replace(/^\\uFEFF/,'');
-   if(csv.trim().startsWith('<'))throw Error('ได้รับ HTML แทน CSV');
-   clickoApply(clickoSheetItems(clickoCsvParse(csv)),'Google Sheets CSV (สำรอง)');
-   return;
-  }catch(e){csvError=e.message||String(e);}
-  finally{clearTimeout(timer);}
-  clickoInventoryVerified=false;
-  clickoVerifiedSkus.clear();
-  products.splice(0,products.length);
-  categories.splice(0,categories.length,'ทั้งหมด');
-  clickoInventoryNotice('ไม่สามารถโหลด Google Sheets ได้ · ไม่แสดงข้อมูลสต๊อกที่อาจล้าสมัย','error');
-  clickoSyncText.textContent='เชื่อม Google Sheets ไม่สำเร็จ · Live: '+liveError+' · CSV: '+csvError;
-  draw();
- }finally{clickoRefreshRunning=false;}
-}
-CLICK0_STATUS.insertAdjacentHTML('beforeend','<label class="clicko-import" style="cursor:pointer;border:1px solid #b5c5d8;border-radius:8px;padding:8px 12px">นำเข้า CSV<input id="clicko-csv-file" type="file" accept=".csv,text/csv" hidden></label>');
-document.getElementById('clicko-csv-file').addEventListener('change',async e=>{
- const file=e.target.files?.[0];if(!file)return;
- try{clickoApply(clickoSheetItems(clickoCsvParse((await file.text()).replace(/^\uFEFF/,''))),'CSV');}
- catch(err){clickoSyncText.textContent='นำเข้า CSV ไม่สำเร็จ: '+err.message;}
- e.target.value='';
-});
-document.getElementById('clicko-sync-refresh').addEventListener('click',clickoRefresh);
-clickoRefresh();
-setInterval(()=>{if(document.visibilityState==='visible')clickoRefresh()},120000);
-</script>
 <dialog id="clicko-order-dialog" class="clicko-order-dialog" aria-labelledby="clicko-order-heading">
  <div class="order-head"><div><span class="order-eyebrow">CLICKO · ORDER REQUEST</span><h2 id="clicko-order-heading">สั่งซื้อผ่าน Messenger</h2><p>คัดลอกข้อความด้านล่าง แล้วส่งให้ร้านทาง Messenger</p></div><button type="button" class="order-close" aria-label="ปิดหน้าต่างสั่งซื้อ" id="order-close">×</button></div>
  <div class="order-summary"><span class="order-condition" id="order-condition"></span><strong id="order-name"></strong><div class="order-meta"><span id="order-sku"></span><span id="order-price"></span></div></div>
@@ -1524,14 +1375,58 @@ setInterval(()=>{if(document.visibilityState==='visible')clickoRefresh()},120000
  <p class="order-help">เปิด Messenger แล้ววางข้อความที่คัดลอกลงในแชตและกดส่งด้วยตัวเอง · การเปิดแชตยังไม่ใช่การยืนยันคำสั่งซื้อ</p>
  <a class="order-fallback" href="https://www.facebook.com/sippavit.gomarn/" target="_blank" rel="noopener noreferrer">เปิดหน้า Facebook ร้านแทน หาก Messenger ไม่เปิด ↗</a>
 </dialog><dialog id="product-detail" class="product-detail" aria-label="รายละเอียดสินค้า"><button type="button" class="detail-close" aria-label="ปิดรายละเอียดสินค้า">×</button><div class="detail-layout"><div class="detail-visual" id="detail-visual"></div><div class="detail-content" id="detail-content"></div></div></dialog><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script src="./supabase-config.js"></script><script>
-/* Public catalog uses Google Sheets. Supabase admin data is not allowed to overwrite it. */
+/* Read-only storefront overlay; Supabase row-level security enforces admin-only writes. */
 let clickoAdminRows=[];
 function clickoInventoryNotice(message,state){
  let el=document.getElementById('clicko-inventory-notice');
- if(!el){el=document.createElement('div');el.id='clicko-inventory-notice';el.className='inventory-notice';el.setAttribute('role','status');el.setAttribute('aria-live','polite');document.querySelector('.catalog-area .catalog-heading')?.insertAdjacentElement('afterend',el);}
+ if(!el){
+  el=document.createElement('div');el.id='clicko-inventory-notice';el.className='inventory-notice';
+  el.setAttribute('role','status');el.setAttribute('aria-live','polite');
+  const target=document.querySelector('.catalog-area .catalog-heading');
+  if(target)target.insertAdjacentElement('afterend',el);
+ }
  if(el){el.textContent=message;el.dataset.state=state;}
 }
-clickoInventoryNotice('กำลังตรวจสอบ Google Sheets...','pending');
+clickoInventoryNotice('กำลังตรวจสอบสต๊อกสินค้าล่าสุด...','pending');
+function clickoApplyAdminRows(){
+ if(!clickoInventoryVerified)return;
+ const merged=[];
+ for(const p of clickoAdminRows){
+  if(p.is_hidden)continue;
+  const original=products.find(x=>String(x.id)===String(p.sku))||{};
+  merged.push({...original,id:p.sku,name:p.name,category:p.category,sub:p.sub,condition:p.condition,price:p.price===null?null:Number(p.price),warranty:p.warranty,sold:p.sold,is_hidden:!!p.is_hidden,stock_status:p.stock_status||(p.sold?'sold':'available'),created_at:p.created_at||null,specs:p.specs,note:p.note,image:p.image||(clickoGalleryPhotos.get(String(p.sku))||[])[0]||(p.manufacturer_image_verified?p.manufacturer_image_url:'')||'',manufacturer_image_url:p.manufacturer_image_url||'',manufacturer_image_verified:!!p.manufacturer_image_verified,search:'https://www.google.com/search?tbm=isch&q='+encodeURIComponent(p.name+' product')});
+ }
+ products.splice(0,products.length,...merged);
+ categories.splice(0,categories.length,'ทั้งหมด',...new Set(products.map(p=>p.category)));
+ if(!categories.includes(category))category='ทั้งหมด';
+ draw();
+}
+async function clickoLoadAdminRows(){
+ const cfg=window.CLICKO_SUPABASE||{};
+ if(!cfg.url||!cfg.anonKey||!window.supabase){clickoInventoryNotice('ไม่พบการตั้งค่า Supabase · กรุณาตรวจสอบการเชื่อมต่อ','error');return;}
+ try{
+  const db=window.supabase.createClient(cfg.url,cfg.anonKey);
+  const {data,error}=await db.from('clicko_products').select('*').limit(1000);
+  if(error)throw error;
+  if(!Array.isArray(data))throw Error('ไม่พบข้อมูลสต๊อกจาก Supabase');
+  clickoAdminRows=data;
+  clickoVerifiedSkus=new Set(data.filter(row=>!row.is_hidden).map(row=>String(row.sku)));
+  try{
+   const {data:photos,error:photoError}=await db.from('clicko_product_photos').select('sku,position,image_url').order('position',{ascending:true}).limit(2000);
+   if(photoError)throw photoError;
+   clickoGalleryPhotos.clear();
+   for(const item of photos||[]){
+    const key=String(item.sku),urls=clickoGalleryPhotos.get(key)||[];
+    if(typeof item.image_url==='string'&&/^https:\/\//i.test(item.image_url))urls.push(item.image_url);
+    clickoGalleryPhotos.set(key,urls);
+   }
+  }catch(photoError){console.warn('Clicko gallery unavailable',photoError.message);clickoGalleryPhotos.clear();}
+  clickoInventoryVerified=true;
+  clickoApplyAdminRows();
+  clickoInventoryNotice('ยืนยันสต๊อกล่าสุดจาก Supabase แล้ว','success');
+ }catch(e){clickoInventoryVerified=false;clickoVerifiedSkus.clear();clickoInventoryNotice('ไม่สามารถยืนยันสต๊อกล่าสุดได้ · กรุณาสอบถามร้านก่อนสั่งซื้อ','error');draw();console.warn('Clicko inventory verification unavailable',e.message)}
+}
+clickoLoadAdminRows();
 </script>
 <script id="clicko-storefront-ux">
 (function(){
@@ -1710,4 +1605,4 @@ clickoInventoryNotice('กำลังตรวจสอบ Google Sheets...','p
 .clicko-filter-feedback{display:block;margin-top:4px;color:#34518E;font-size:11px;font-weight:700;line-height:1.5}
 #chips .chip{cursor:pointer}
 #chips .chip:focus-visible,.bar .filter:focus-visible,.bar .search:focus-visible{outline:3px solid #2339C3;outline-offset:2px}
-</style><script id="clicko-live-stock-refresh">(function(){let last=Date.now();async function update(){if(document.visibilityState==="hidden"||Date.now()-last<45000)return;last=Date.now();await clickoRefresh()}window.addEventListener("focus",update);document.addEventListener("visibilitychange",update)})();</script></body></html>
+</style><script id="clicko-live-stock-refresh">(function(){let last=Date.now(),busy=false;async function update(){if(busy||document.visibilityState==="hidden"||Date.now()-last<45000)return;busy=true;try{await clickoLoadAdminRows();last=Date.now()}finally{busy=false}}window.addEventListener("focus",update);document.addEventListener("visibilitychange",update);setInterval(update,90000)})();</script></body></html>
