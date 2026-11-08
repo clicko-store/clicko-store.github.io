@@ -3,6 +3,35 @@
 <title>Clicko Admin · เชื่อม Google Sheets</title>
 <style>
 :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#102444;background:#f4f8fd}*{box-sizing:border-box}body{margin:0}header{display:flex;justify-content:space-between;gap:12px;align-items:center;background:#fff;border-bottom:1px solid #e0e9f6;padding:16px max(16px,calc((100vw - 1140px)/2))}header strong{font-size:22px;color:#086ee8}a{color:#146bca}header a{font-size:13px}main{max-width:1140px;margin:auto;padding:22px 16px 70px}.panel{background:white;border:1px solid #dce7f4;border-radius:17px;padding:20px;margin-bottom:15px;box-shadow:0 6px 20px #12264409}h1{font-size:24px;margin:0 0 8px}h2{font-size:18px;margin:0 0 10px}p{color:#60758e;font-size:13px;line-height:1.6}label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}input{border:1px solid #cedcec;border-radius:9px;padding:12px;width:100%;font:inherit}button{background:#116ee5;color:white;border:0;border-radius:10px;padding:12px 17px;font:inherit;font-size:13px;font-weight:750;cursor:pointer}button:disabled{opacity:.5;cursor:not-allowed}.outline{background:#eff5fe;color:#164b8d}.actions{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}.hidden{display:none!important}.muted{font-size:12px;color:#6c7d91}.stat{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}.stat div{border:1px solid #dfeafa;background:#f3f8ff;padding:12px;border-radius:11px}.stat strong{display:block;font-size:23px;color:#076ad5}.stat span{font-size:11px;color:#5f7694}table{border-collapse:collapse;width:100%;font-size:12px}th,td{border-bottom:1px solid #e5edf6;padding:9px;text-align:left;vertical-align:top}th{background:#f4f8ff;position:sticky;top:0}td{overflow-wrap:anywhere}table .changed{color:#0b68cb;font-weight:800}table .skip{color:#a36409}#notice{white-space:pre-wrap;color:#245c9a;font-size:13px;margin:12px 0}#preview-scroll{max-height:420px;overflow:auto}.hint{padding:12px;background:#fff8e8;border:1px solid #f5e4b6;border-radius:10px;color:#7c5c12}.success{color:#127445!important}@media(max-width:650px){header{align-items:flex-start}header strong{font-size:19px}h1{font-size:21px}.stat{grid-template-columns:repeat(2,1fr)}.panel{padding:14px}th,td{padding:7px;font-size:11px}}
+</style><style id="clicko-sunset-palette-2026">
+:root{--accent:#bd7130;--ink:#283949;--sun:#FF933E;--gold:#FFCB56;--cream:#F9E8B0;--sky:#7FA3C7;color-scheme:light}
+body{background:#fff9e9!important;color:#283949!important}
+header{background:#fffdf7!important;border-bottom-color:#e9d7ad!important;box-shadow:none!important}
+header h1,header strong{color:#283949!important}header .admin-title-accent{color:#FF933E!important}
+header a,nav a,a{color:#725328!important}
+.panel{background:#fffdf7!important;border-color:#ead9ae!important;box-shadow:none!important}
+h1,h2,strong{color:inherit}
+button,button:not(.secondary):not(.danger),.order-copy{background:#283949!important;color:#fffdf7!important}
+button:hover:not(:disabled){filter:brightness(1.12)}
+button.secondary,.secondary,button.outline,.outline{background:#F9E8B0!important;color:#283949!important;border-color:#e7ca8d!important}
+button.danger,.danger{background:#a84a35!important;color:white!important}
+input,select,textarea{background:#fffefb!important;border-color:#d8c69e!important;color:#283949!important}
+input:focus,select:focus,textarea:focus{outline:2px solid #7FA3C7!important;outline-offset:1px}
+label,.muted,p,small{color:#57697a}
+.stock-stat,.stat,.stat div,.metric{background:#fff3d4!important;border-color:#ead4a0!important}
+.stock-stat strong,.stat strong,.metric strong{color:#85572b!important}
+.stock-stat:nth-child(3),.warning,.hint{background:#fff0c8!important;border-color:#eac98b!important;color:#705227!important}
+.stock-badge.status-available{background:#e5f0f9!important;color:#335a79!important}
+.stock-badge.status-reserved{background:#FFCB56!important;color:#543d22!important}
+.stock-badge.status-sold,.stock-badge.status-hidden{background:#eee7d9!important;color:#5e6872!important}
+#notice{color:#5e6171!important}
+#notice:not(:empty),.pending-alerts{background:#f5e8c8!important;border-color:#e5d2a1!important;color:#4b6174!important}
+.stock-toolbar,.photo-manager,.manufacturer-photo-settings{background:#fff5dd!important;border-color:#e9d3a0!important}
+.item,.order,.cost-row,th,td{border-color:#eadfc4!important}
+th{background:#fff1ca!important}
+.quick-price,.quick-status,.item-placeholder{background:#fff4dc!important}
+.pill,.tag{background:#F9E8B0!important;color:#604b31!important}
+a:focus-visible,button:focus-visible{outline:3px solid #7FA3C7!important;outline-offset:2px}
 </style></head><body><header><strong>Clicko · Sheets Sync</strong><div><a href="./admin.html">จัดการสินค้า</a> · <a href="./orders.html">ออเดอร์</a> · <a href="./">หน้าร้าน</a></div></header>
 <main><section class="panel"><h1>นำเข้าสต๊อกจาก Google Sheets</h1>
 <p>อ่านข้อมูลจาก Google Sheets หรือไฟล์ CSV แล้วแสดงรายการเปลี่ยนแปลงให้ตรวจสอบก่อนกดบันทึกลง Supabase โดยเจ้าของร้านเท่านั้น ไม่สร้างสินค้าซ้ำ ไม่ลบสินค้า และไม่เปลี่ยนสถานะจอง/ขายแล้วโดยอัตโนมัติ</p>
