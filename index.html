@@ -1225,6 +1225,26 @@ header{background:#fff!important;border-bottom:1px solid #E7E7E7!important;box-s
 @media(max-width:790px){.top .logo.clicko-keys-logo.clicko-logo-2026{width:178px!important;min-width:140px!important}.hero-art.clicko-brand-stage.clicko-new-brand-stage{padding:8px!important}.clicko-hero-logo-image{max-height:180px!important}}
 @media(max-width:540px){.top .logo.clicko-keys-logo.clicko-logo-2026{width:154px!important;min-width:138px!important}.top .clicko-logo-image{max-height:49px!important}.hero-art.clicko-brand-stage.clicko-new-brand-stage{bottom:4%!important;width:100%!important;right:0!important}.clicko-hero-logo-image{width:100%!important;max-height:135px!important}}
 @media(max-width:365px){.top .logo.clicko-keys-logo.clicko-logo-2026{width:138px!important;min-width:126px!important}}
+</style><style id="clicko-mobile-catalog-tune">
+@media(max-width:640px){
+ .wrap{padding:14px!important}
+ .hero{padding:22px 18px!important;min-height:0!important}
+ .hero h1{font-size:clamp(23px,7vw,32px)!important}
+ .filters,.toolbar,.filter-row{gap:8px!important}
+ #brand,#condition,#availability,#sort{min-width:0!important;max-width:100%;font-size:13px!important}
+ .chips{display:flex;overflow-x:auto;gap:7px;scrollbar-width:thin}
+ .chip{white-space:nowrap;flex-shrink:0}
+ .grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+ .card{min-width:0;border-radius:13px!important}
+ .pic{height:138px!important}
+ .pic img{max-width:100%;max-height:100%;object-fit:contain}
+ .info{padding:10px!important}
+ .name{font-size:12px!important;min-height:0!important;overflow-wrap:anywhere}
+ .price{font-size:19px!important}
+ .warranty,.specs{font-size:10px!important}
+ .bottom{flex-wrap:wrap;gap:8px}
+}
+@media(max-width:360px){.grid{grid-template-columns:minmax(0,1fr)!important}.pic{height:180px!important}}
 </style></head><body><header><div class="top"><a class="logo clicko-keys-logo clicko-logo-2026" href="./" aria-label="Clicko Gaming Gear &amp; PC Parts"><img class="clicko-logo-image" src="./assets/clicko-logo-red.svg" width="800" height="212" alt="CLICKO Gaming Gear &amp; PC Parts" decoding="async" fetchpriority="high"></a><nav class="nav clicko-main-nav" aria-label="เมนูหลัก"><a class="active" href="./">หน้าร้าน</a><a href="#catalog">สินค้า</a><a href="#buyback">รับซื้อ / เทิร์น</a><a href="#reviews">รีวิวร้าน</a><a href="https://www.facebook.com/groups/3325289464276829" target="_blank" rel="noopener noreferrer">กลุ่มซื้อขาย ↗</a><a href="#contact">ติดต่อเรา</a></nav><div class="top-actions"><a class="clicko-mobile-group" href="https://www.facebook.com/groups/3325289464276829" target="_blank" rel="noopener noreferrer">กลุ่มซื้อขาย ↗</a><a class="contact-phone" href="tel:0959759965">☎ 095-975-9965</a><a class="contact" href="https://www.facebook.com/sippavit.gomarn/" target="_blank" rel="noopener noreferrer">ติดต่อร้าน ↗</a></div></div><nav class="clicko-mobile-nav" aria-label="เมนูเว็บไซต์สำหรับมือถือ"><a href="#catalog">สินค้า</a><a href="#buyback">รับซื้อ / เทิร์น</a><a href="#reviews">รีวิวร้าน</a><a href="#contact">ติดต่อเรา</a></nav></header><main class="wrap"><section class="hero"><div class="hero-copy"><div class="eyebrow"><span class="eyebrow-dot"></span> GAMING GEAR &amp; PC PARTS</div><h1>GEAR UP<br><em>YOUR SETUP.</em></h1><p class="hero-lead">อุปกรณ์คอมพิวเตอร์และเกมมิ่งเกียร์ มือ 1 / มือ 2<br>เลือกรุ่นที่ใช่ ในราคาที่ชอบ</p><div class="hero-cta-row"><a class="hero-link" href="#catalog">เลือกดูสินค้า <span aria-hidden="true">→</span></a><a class="hero-call" href="#buyback">รับซื้อ / เทิร์น ↗</a></div></div><div class="hero-art clicko-brand-stage clicko-new-brand-stage" aria-label="Clicko Gaming Gear &amp; PC Parts"><img class="clicko-hero-logo-image" src="./assets/clicko-logo-red.svg" alt="CLICKO Gaming Gear &amp; PC Parts" width="800" height="212" loading="eager" decoding="async"></div></section><div class="highlights" aria-label="จุดเด่นของร้าน"><div class="highlight"><span class="highlight-icon">✓</span><div><strong>สินค้าคัดคุณภาพ</strong><small>ตรวจสอบก่อนส่งให้ลูกค้า</small></div></div><a class="highlight" href="#buyback"><span class="highlight-icon">⇄</span><div><strong>รับซื้อ / รับเทิร์น</strong><small>สอบถามราคาและแลกเปลี่ยนได้</small></div></a><div class="highlight"><span class="highlight-icon">▣</span><div><strong>จัดส่งทั่วไทย</strong><small>Grab / Lalamove / พัสดุ</small></div></div><a class="highlight" href="#contact"><span class="highlight-icon">☏</span><div><strong>สอบถามสินค้า</strong><small>ทักแชตหรือโทรหาร้าน</small></div></a></div><section class="trust-actions" aria-label="รับซื้ออุปกรณ์และเครดิตการขาย">
  <article class="tradein-promo" id="buyback">
   <div class="promo-copy">
@@ -1258,7 +1278,7 @@ function clickoIsManufacturerPhoto(p){return !!(p.manufacturer_image_verified&&p
 function clickoStockStatus(p){return ['available','reserved','sold'].includes(p.stock_status)?p.stock_status:(p.sold||p.price===null?'sold':'available');}
 function clickoBrand(p){
  const name=String(p.name||'').trim().toUpperCase();
- const brands=['LOGITECH','RAZER','WLMOUSE','PULSAR','BENQ','ZOWIE','DELL','ALIENWARE','MSI','ASUS','ROG','HYPERX','STEELSERIES','WOOTING','ARTISAN','VAXEE','WALLHACK','FINALMOUSE','HITSCAN','CORSAIR','AMD','INTEL','GIGABYTE','SIMGOT','KIWI EARS','SENNHEISER','BEYERDYNAMIC','JONSBO','LEXAR','KLEVV','AULA','ATK','IROK','GRAVASTAR','ENDGAME GEAR','ID-COOLING'];
+ const brands=['LOGITECH','RAZER','WLMOUSE','PULSAR','BENQ','ZOWIE','DELL','ALIENWARE','MSI','ASUS','ROG','HYPERX','STEELSERIES','WOOTING','ARTISAN','VAXEE','WALLHACK','FINALMOUSE','HITSCAN','CORSAIR','AMD','INTEL','GIGABYTE','SIMGOT','KIWI EARS','SENNHEISER','BEYERDYNAMIC','JONSBO','LEXAR','KLEVV','AULA','ATK','IROK','GRAVASTAR','ENDGAME GEAR','ID-COOLING','GLSSWRKS','ARBITER','WOBKEY','QK','DEKAY','ONIXY','HACHIWARE','X-RAYPAD','ZIGGAAT','KEFINE','SOKU','INFINITYMICE','AVUSGEAR','MITSUKI','EVERGLIDE','TEEVO','DREAME'];
  return brands.find(b=>name===b||name.startsWith(b+' ')||name.startsWith(b+'-'))||'อื่นๆ';
 }
 function clickoUpdateBrands(){
@@ -1630,4 +1650,17 @@ clickoLoadAdminRows();
 .clicko-filter-feedback{display:block;margin-top:4px;color:#34518E;font-size:11px;font-weight:700;line-height:1.5}
 #chips .chip{cursor:pointer}
 #chips .chip:focus-visible,.bar .filter:focus-visible,.bar .search:focus-visible{outline:3px solid #2339C3;outline-offset:2px}
-</style><script id="clicko-live-stock-refresh">(function(){let last=Date.now(),busy=false;async function update(){if(busy||document.visibilityState==="hidden"||Date.now()-last<45000)return;busy=true;try{await clickoLoadAdminRows();last=Date.now()}finally{busy=false}}window.addEventListener("focus",update);document.addEventListener("visibilitychange",update);setInterval(update,90000)})();</script></body></html>
+</style><script id="clicko-live-stock-refresh">(function(){let last=Date.now(),busy=false;async function update(){if(busy||document.visibilityState==="hidden"||Date.now()-last<45000)return;busy=true;try{await clickoLoadAdminRows();last=Date.now()}finally{busy=false}}window.addEventListener("focus",update);document.addEventListener("visibilitychange",update);setInterval(update,90000)})();</script><script id="clicko-anonymous-pageview">
+(function(){
+ // Count approximate visits, once per browser tab session; no IP, cookies, or identity stored.
+ try{
+  if(sessionStorage.getItem('clicko_view_counted_v1'))return;
+  const cfg=window.CLICKO_SUPABASE||{};
+  if(!cfg.url||!cfg.anonKey||!window.supabase)return;
+  const client=window.supabase.createClient(cfg.url,cfg.anonKey);
+  client.from('clicko_pageviews').insert({page:'storefront'}).then(({error})=>{
+   if(!error)sessionStorage.setItem('clicko_view_counted_v1','1');
+  }).catch(()=>{});
+ }catch(e){console.warn('Pageview unavailable',e.message)}
+})();
+</script></body></html>
