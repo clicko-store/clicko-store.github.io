@@ -1,6 +1,35 @@
 <!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Clicko · Backup</title>
 <style>
 :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#17395e;background:#f3f8ff}*{box-sizing:border-box}body{margin:0}header{background:white;border-bottom:1px solid #dbe8f5;padding:15px 5%;display:flex;justify-content:space-between;align-items:center;gap:12px}nav{display:flex;gap:12px}a{color:#0b70dc;text-decoration:none;font-size:13px;font-weight:800}main{max-width:990px;margin:24px auto;padding:0 16px}.panel{background:white;border:1px solid #dbe7f5;border-radius:17px;padding:20px;margin-bottom:18px;box-shadow:0 8px 28px #2055a309}h1{font-size:24px;margin:0}h2{font-size:19px}.muted{color:#658099;font-size:13px;line-height:1.65}.warning{background:#fff7e9;border:1px solid #f2d8a6;padding:13px;border-radius:10px;color:#825b27;font-size:13px;line-height:1.65}button{border:0;border-radius:9px;background:#087af0;color:#fff;padding:12px 16px;font-weight:800;cursor:pointer}button.secondary{background:#eaf4ff;color:#106cc9}button.danger{background:#b53852}button:disabled{opacity:.5}input{width:100%;border:1px solid #cbdff3;border-radius:9px;padding:12px;font:inherit}label{display:block;margin:12px 0 5px;color:#4a6d8b;font-weight:750;font-size:12px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:19px 0}.stat{background:#f0f7ff;border:1px solid #d9eafc;border-radius:11px;padding:14px}.stat strong{font-size:23px;display:block;color:#0877e9}.stat small{font-size:11px;color:#68809e}.row{display:flex;align-items:center;flex-wrap:wrap;gap:10px}.hidden{display:none!important}#notice{white-space:pre-wrap;color:#0b67c8;font-size:13px;font-weight:750;padding:6px 0}#preview{white-space:pre-wrap}@media(max-width:650px){.grid{grid-template-columns:repeat(2,1fr)}main{margin:12px auto}.panel{padding:15px}header{padding:12px}nav{gap:7px}nav a{font-size:11px}}
+</style><style id="clicko-sunset-palette-2026">
+:root{--accent:#bd7130;--ink:#283949;--sun:#FF933E;--gold:#FFCB56;--cream:#F9E8B0;--sky:#7FA3C7;color-scheme:light}
+body{background:#fff9e9!important;color:#283949!important}
+header{background:#fffdf7!important;border-bottom-color:#e9d7ad!important;box-shadow:none!important}
+header h1,header strong{color:#283949!important}header .admin-title-accent{color:#FF933E!important}
+header a,nav a,a{color:#725328!important}
+.panel{background:#fffdf7!important;border-color:#ead9ae!important;box-shadow:none!important}
+h1,h2,strong{color:inherit}
+button,button:not(.secondary):not(.danger),.order-copy{background:#283949!important;color:#fffdf7!important}
+button:hover:not(:disabled){filter:brightness(1.12)}
+button.secondary,.secondary,button.outline,.outline{background:#F9E8B0!important;color:#283949!important;border-color:#e7ca8d!important}
+button.danger,.danger{background:#a84a35!important;color:white!important}
+input,select,textarea{background:#fffefb!important;border-color:#d8c69e!important;color:#283949!important}
+input:focus,select:focus,textarea:focus{outline:2px solid #7FA3C7!important;outline-offset:1px}
+label,.muted,p,small{color:#57697a}
+.stock-stat,.stat,.stat div,.metric{background:#fff3d4!important;border-color:#ead4a0!important}
+.stock-stat strong,.stat strong,.metric strong{color:#85572b!important}
+.stock-stat:nth-child(3),.warning,.hint{background:#fff0c8!important;border-color:#eac98b!important;color:#705227!important}
+.stock-badge.status-available{background:#e5f0f9!important;color:#335a79!important}
+.stock-badge.status-reserved{background:#FFCB56!important;color:#543d22!important}
+.stock-badge.status-sold,.stock-badge.status-hidden{background:#eee7d9!important;color:#5e6872!important}
+#notice{color:#5e6171!important}
+#notice:not(:empty),.pending-alerts{background:#f5e8c8!important;border-color:#e5d2a1!important;color:#4b6174!important}
+.stock-toolbar,.photo-manager,.manufacturer-photo-settings{background:#fff5dd!important;border-color:#e9d3a0!important}
+.item,.order,.cost-row,th,td{border-color:#eadfc4!important}
+th{background:#fff1ca!important}
+.quick-price,.quick-status,.item-placeholder{background:#fff4dc!important}
+.pill,.tag{background:#F9E8B0!important;color:#604b31!important}
+a:focus-visible,button:focus-visible{outline:3px solid #7FA3C7!important;outline-offset:2px}
 </style></head><body>
 <header><div><strong>Clicko Backup</strong><div class="muted">สำรองและกู้คืนอย่างปลอดภัย</div></div><nav><a href="./admin.html">สินค้า</a><a href="./sheets.html">Google Sheets</a><a href="./orders.html">ออเดอร์</a><a href="./">หน้าร้าน</a><button class="secondary hidden" type="button" id="logout">ออก</button></nav></header>
 <main><p id="notice" role="status" aria-live="polite"></p>
