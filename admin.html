@@ -110,7 +110,36 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .manufacturer-photo-settings strong{font-size:13px;color:#091540}
 .manufacturer-check{display:flex!important;align-items:flex-start;gap:9px;margin:13px 0 1px!important;line-height:1.5;font-weight:650!important}
 .manufacturer-check input{width:18px!important;height:18px;flex:0 0 18px;margin:2px 0 0}
-</style><style id="clicko-admin-ops-stats">.stock-overview{grid-template-columns:repeat(3,minmax(0,1fr))!important}.stock-overview .stock-stat:nth-child(5) strong{color:#a66b08}.stock-overview .stock-stat:nth-child(6) strong{color:#bd4b34}@media(max-width:650px){.stock-overview{grid-template-columns:repeat(2,minmax(0,1fr))!important}}</style></head><body>
+</style><style id="clicko-admin-ops-stats">.stock-overview{grid-template-columns:repeat(3,minmax(0,1fr))!important}.stock-overview .stock-stat:nth-child(5) strong{color:#a66b08}.stock-overview .stock-stat:nth-child(6) strong{color:#bd4b34}@media(max-width:650px){.stock-overview{grid-template-columns:repeat(2,minmax(0,1fr))!important}}</style><style id="clicko-sunset-palette-2026">
+:root{--accent:#bd7130;--ink:#283949;--sun:#FF933E;--gold:#FFCB56;--cream:#F9E8B0;--sky:#7FA3C7;color-scheme:light}
+body{background:#fff9e9!important;color:#283949!important}
+header{background:#fffdf7!important;border-bottom-color:#e9d7ad!important;box-shadow:none!important}
+header h1,header strong{color:#283949!important}header .admin-title-accent{color:#FF933E!important}
+header a,nav a,a{color:#725328!important}
+.panel{background:#fffdf7!important;border-color:#ead9ae!important;box-shadow:none!important}
+h1,h2,strong{color:inherit}
+button,button:not(.secondary):not(.danger),.order-copy{background:#283949!important;color:#fffdf7!important}
+button:hover:not(:disabled){filter:brightness(1.12)}
+button.secondary,.secondary,button.outline,.outline{background:#F9E8B0!important;color:#283949!important;border-color:#e7ca8d!important}
+button.danger,.danger{background:#a84a35!important;color:white!important}
+input,select,textarea{background:#fffefb!important;border-color:#d8c69e!important;color:#283949!important}
+input:focus,select:focus,textarea:focus{outline:2px solid #7FA3C7!important;outline-offset:1px}
+label,.muted,p,small{color:#57697a}
+.stock-stat,.stat,.stat div,.metric{background:#fff3d4!important;border-color:#ead4a0!important}
+.stock-stat strong,.stat strong,.metric strong{color:#85572b!important}
+.stock-stat:nth-child(3),.warning,.hint{background:#fff0c8!important;border-color:#eac98b!important;color:#705227!important}
+.stock-badge.status-available{background:#e5f0f9!important;color:#335a79!important}
+.stock-badge.status-reserved{background:#FFCB56!important;color:#543d22!important}
+.stock-badge.status-sold,.stock-badge.status-hidden{background:#eee7d9!important;color:#5e6872!important}
+#notice{color:#5e6171!important}
+#notice:not(:empty),.pending-alerts{background:#f5e8c8!important;border-color:#e5d2a1!important;color:#4b6174!important}
+.stock-toolbar,.photo-manager,.manufacturer-photo-settings{background:#fff5dd!important;border-color:#e9d3a0!important}
+.item,.order,.cost-row,th,td{border-color:#eadfc4!important}
+th{background:#fff1ca!important}
+.quick-price,.quick-status,.item-placeholder{background:#fff4dc!important}
+.pill,.tag{background:#F9E8B0!important;color:#604b31!important}
+a:focus-visible,button:focus-visible{outline:3px solid #7FA3C7!important;outline-offset:2px}
+</style></head><body>
 <header><div><h1>Clicko<span class="admin-title-accent">.</span> Admin</h1><span class="muted">จัดการร้านบนมือถือได้ทุกที่</span></div><div><a href="./orders.html">ออเดอร์ / กำไร</a> <a href="./sheets.html">Google Sheets</a> <a href="./backup.html">สำรองข้อมูล</a> <a href="./">หน้าร้าน ↗</a> <button id="logout" class="secondary hidden">ออกจากระบบ</button></div></header>
 <main><div id="notice"></div><section id="setup" class="panel hidden"><h2>ยังไม่ได้เชื่อมฐานข้อมูล</h2><p>สร้างโปรเจกต์ Supabase แล้วใส่ Project URL และ Publishable / anon key ในไฟล์ <code>supabase-config.js</code> บน GitHub ก่อนใช้งาน ไม่ต้องใส่ service_role key</p><p><a href="https://supabase.com/dashboard" target="_blank" rel="noopener">เปิด Supabase</a></p></section>
 <section id="login" class="panel hidden"><h2>เข้าสู่ระบบเจ้าของร้าน</h2><form id="login-form"><label>อีเมล</label><input id="email" type="email" required autocomplete="username"><label>รหัสผ่าน</label><input id="password" type="password" required autocomplete="current-password"><p><button type="submit">เข้าสู่ระบบ</button></p></form><p class="muted">ผู้ดูแลต้องได้รับสิทธิ์ในตาราง clicko_admins ก่อนแก้ไขสินค้า</p></section>
