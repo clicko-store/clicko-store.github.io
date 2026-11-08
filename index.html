@@ -1351,7 +1351,7 @@ draw=function(){originalDraw();renderCatalogPhotos();};
 // Optional photo manifest: images uploaded to the repository can be assigned by SKU.
 // The sheet's explicit image URL takes priority over this fallback.
 var clickoPhotoManifest={};
-function clickoApplyPhotoManifest(){let changed=0;for(const p of products){const url=clickoPhotoManifest[p.id];if(!p.image&&typeof url==='string'&&/^(https:\/\/|\.\/|images\/)/i.test(url.trim())){p.image=url.trim();changed++}}return changed}
+function clickoApplyPhotoManifest(){let changed=0;for(const p of products){const url=(clickoPhotoManifest&&typeof clickoPhotoManifest==='object'?clickoPhotoManifest:{})[p.id];if(!p.image&&typeof url==='string'&&/^(https:\/\/|\.\/|images\/)/i.test(url.trim())){p.image=url.trim();changed++}}return changed}
 async function clickoLoadPhotoManifest(){
  try{
   const response=await fetch('./images.json?cache='+Date.now(),{cache:'no-store'});
@@ -1441,7 +1441,8 @@ function clickoApply(items,source){
   seen.add(id);
   const old=CLICK0_ORIGINAL.find(p=>String(p.id)===id);
   const p={...(old||{}),...item,id,name:item.name,category:item.category||'อื่นๆ'};
-  if(!p.image&&clickoPhotoManifest[id])p.image=clickoPhotoManifest[id];
+  const photoManifest=(typeof clickoPhotoManifest==='object'&&clickoPhotoManifest!==null)?clickoPhotoManifest:{};
+  if(!p.image&&typeof photoManifest[id]==='string')p.image=photoManifest[id];
   p.stock_status=item.stock_status||(item.sold?'sold':'available');
   all.push(p);
  }
