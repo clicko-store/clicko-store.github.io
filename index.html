@@ -1421,10 +1421,11 @@ function clickoSheetItems(rows){
   if(!item.search)item.search='https://www.google.com/search?tbm=isch&q='+encodeURIComponent(item.name+' product image');
   if(price>=0){const raw=v(price),num=raw.replace(/[,฿\s]/g,'');item.price=/^\d+(\.\d+)?$/.test(num)?Number(num):null;}
   const st=v(status);
-  if(status>=0&&/❌|ขายแล้ว|sold|หมดแล้ว/i.test(st))item.sold=true;
-  else if(status>=0&&/พร้อมขาย|มีสินค้า|available|in stock|พร้อมส่ง|ขายอยู่|active/i.test(st))item.sold=false;
-  else if(/❌|ขายแล้ว/i.test(v(note)))item.sold=true;
-  else item.sold=p?(p.sold??p.price===null):false;
+  if(/จอง|reserved|pending/i.test(st)){item.stock_status='reserved';item.sold=false;}
+  else if(/❌|ขายแล้ว|sold|หมดแล้ว|out of stock/i.test(st)){item.stock_status='sold';item.sold=true;}
+  else if(/พร้อมขาย|มีสินค้า|available|in stock|พร้อมส่ง|ขายอยู่|active/i.test(st)){item.stock_status='available';item.sold=false;}
+  else if(/❌|ขายแล้ว/i.test(v(note))){item.stock_status='sold';item.sold=true;}
+  else {item.sold=p?(p.sold??p.price===null):false;item.stock_status=item.sold?'sold':'available';}
   return item;
  }).filter(Boolean);
 }
@@ -1469,21 +1470,37 @@ function clickoJsonpSheet(){
   document.head.appendChild(script);
  });
 }
+let clickoRefreshRunning=false;
 async function clickoRefresh(){
+ if(clickoRefreshRunning)return;
+ clickoRefreshRunning=true;
  clickoSyncText.textContent='กำลังโหลดข้อมูลจาก Google Sheets...';
- let csvError='';
- const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),9000);
+ let liveError='',csvError='';
  try{
-  const res=await fetch(CLICK0_PUBLISHED_CSV+'&_='+Date.now(),{signal:ctrl.signal,cache:'no-store'});
-  if(!res.ok)throw Error('CSV HTTP '+res.status);
-  const csv=(await res.text()).replace(/^\uFEFF/,'');
-  if(csv.trim().startsWith('<'))throw Error('ได้รับ HTML แทน CSV');
-  clickoApply(clickoSheetItems(clickoCsvParse(csv)),'Google Sheets CSV');
-  return;
- }catch(e){csvError=e.message||String(e);}
- finally{clearTimeout(timer)}
- try{clickoApply(clickoSheetItems(clickoGvizRows(await clickoJsonpSheet())),'Google Sheets');}
- catch(e){clickoInventoryVerified=false;clickoVerifiedSkus.clear();clickoInventoryNotice('ไม่สามารถโหลด Google Sheets ได้ · กรุณาตรวจสอบสิทธิ์การเผยแพร่ชีต','error');clickoSyncText.textContent='Google Sheets ยังเชื่อมไม่ได้ · CSV: '+csvError+' · JSONP: '+(e.message||e);draw();}
+  // Read the current spreadsheet first, not the potentially cached published snapshot.
+  try{
+   const data=await clickoJsonpSheet();
+   clickoApply(clickoSheetItems(clickoGvizRows(data)),'Google Sheets (Live)');
+   return;
+  }catch(e){liveError=e.message||String(e);}
+  const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),9000);
+  try{
+   const res=await fetch(CLICK0_PUBLISHED_CSV+'&_='+Date.now(),{signal:ctrl.signal,cache:'no-store'});
+   if(!res.ok)throw Error('CSV HTTP '+res.status);
+   const csv=(await res.text()).replace(/^\\uFEFF/,'');
+   if(csv.trim().startsWith('<'))throw Error('ได้รับ HTML แทน CSV');
+   clickoApply(clickoSheetItems(clickoCsvParse(csv)),'Google Sheets CSV (สำรอง)');
+   return;
+  }catch(e){csvError=e.message||String(e);}
+  finally{clearTimeout(timer);}
+  clickoInventoryVerified=false;
+  clickoVerifiedSkus.clear();
+  products.splice(0,products.length);
+  categories.splice(0,categories.length,'ทั้งหมด');
+  clickoInventoryNotice('ไม่สามารถโหลด Google Sheets ได้ · ไม่แสดงข้อมูลสต๊อกที่อาจล้าสมัย','error');
+  clickoSyncText.textContent='เชื่อม Google Sheets ไม่สำเร็จ · Live: '+liveError+' · CSV: '+csvError;
+  draw();
+ }finally{clickoRefreshRunning=false;}
 }
 CLICK0_STATUS.insertAdjacentHTML('beforeend','<label class="clicko-import" style="cursor:pointer;border:1px solid #b5c5d8;border-radius:8px;padding:8px 12px">นำเข้า CSV<input id="clicko-csv-file" type="file" accept=".csv,text/csv" hidden></label>');
 document.getElementById('clicko-csv-file').addEventListener('change',async e=>{
