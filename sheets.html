@@ -88,7 +88,7 @@ function download(text,name){const blob=new Blob(['\ufeff'+text],{type:'text/csv
 function format(x){return x===null||x===undefined?'—':String(x)}
 function cells(tr,vals){for(const v of vals){const td=document.createElement('td');td.textContent=format(v);tr.append(td)}return tr}
 function clear(){changes=[];for(const id of ['total','matched','changed','skipped'])$(id).textContent='0';$('rows').replaceChildren(cells(document.createElement('tr'),['ยังไม่ได้โหลดข้อมูล','','','','']));$('apply').disabled=true}
-async function loadStock(){const {data,error}=await db.from('clicko_products').select('sku,name,price,warranty,stock_status,is_hidden').order('sku').limit(1000);if(error)throw error;stock=data||[]}
+async function loadStock(){const {data,error}=await db.from('clicko_products').select('sku,name,price,warranty,stock_status,is_hidden,updated_at').order('sku').limit(1000);if(error)throw error;stock=data||[]}
 async function check(){if(!db){notice('ไม่พบ Supabase config');return}const {data:{user},error}=await db.auth.getUser();if(error&&error.name!=='AuthSessionMissingError')console.warn(error.message);
  authorized=false;
  if(user){const r=await db.from('clicko_admins').select('user_id').eq('user_id',user.id).maybeSingle();authorized=!!r.data&&!r.error}
@@ -112,14 +112,19 @@ function inspect(text){
  for(let i=0;i<rows.length;i++){
   const r=rows[i],v=k=>cols[k]<0?'':String(r[cols[k]]??'').trim(),label=v('name'),rawSku=v('sku'),mapped=skuMap[rawSku]||rawSku;
   if(!label&&!rawSku)continue;
-  const candidates=byName.get(norm(label))||[];const found=bySku.get(norm(mapped))||(candidates.length===1?candidates[0]:null);
+  const candidates=byName.get(norm(label))||[];
+  // A provided SKU must match exactly; falling back to name could silently overwrite a different product.
+  const found=rawSku?bySku.get(norm(mapped)):(candidates.length===1?candidates[0]:null);
+  if(found&&label&&norm(found.name)!==norm(label)){
+    skipped++;result.push([rawSku||'—',label,'—','—','ข้าม: SKU ตรง แต่ชื่อสินค้าไม่ตรงฐานข้อมูล']);continue;
+  }
   if(!found||seen.has(found.sku)){skipped++;result.push([rawSku||'—',label,'—','—',found?'ข้าม: ซ้ำในไฟล์':'ข้าม: ไม่พบ SKU/ชื่อที่ตรงกัน']);continue}
   seen.add(found.sku);matched++;
   const patch={};const beforeP=found.price===null?'ไม่ระบุ':Number(found.price).toLocaleString('th-TH');
   let afterP=beforeP,afterW=found.warranty||'—';
   if(cols.price>=0){const raw=v('price').replace(/[฿,\s]/g,'');if(/^\d+(\.\d+)?$/.test(raw)){const p=Number(raw);afterP=p.toLocaleString('th-TH');if(Number(found.price)!==p||found.price===null)patch.price=p}}
   if(cols.warranty>=0&&v('warranty')){afterW=v('warranty');if((found.warranty||'')!==afterW)patch.warranty=afterW}
-  if(Object.keys(patch).length)plan.push({sku:found.sku,patch,previous:{price:found.price,warranty:found.warranty}});
+  if(Object.keys(patch).length)plan.push({sku:found.sku,patch,previous:{price:found.price,warranty:found.warranty,updated_at:found.updated_at}});
   result.push([found.sku,found.name,beforeP+' → '+afterP,(found.warranty||'—')+' → '+afterW,Object.keys(patch).length?'อัปเดต':'ไม่เปลี่ยนแปลง']);
  }
  changes=plan;$('total').textContent=rows.length;$('matched').textContent=matched;$('changed').textContent=plan.length;$('skipped').textContent=skipped;
@@ -134,7 +139,12 @@ $('apply').onclick=async()=>{if(!authorized||busy||!changes.length)return;if(!co
   for(const c of changes){const live=stock.find(p=>p.sku===c.sku);if(!live)throw Error('ไม่พบ SKU '+c.sku);
    const {data:now,error:readError}=await db.from('clicko_products').select('sku,price,warranty').eq('sku',c.sku).single();if(readError)throw readError;
    if(Number(now.price)!==Number(c.previous.price)||(now.price===null)!==(c.previous.price===null)||(now.warranty||'')!==(c.previous.warranty||''))throw Error('ข้อมูล '+c.sku+' มีการแก้ไขระหว่างนำเข้า โปรดโหลดตัวอย่างใหม่');
-   const {error}=await db.from('clicko_products').update({...c.patch,updated_at:new Date().toISOString()}).eq('sku',c.sku);if(error)throw error;
+   // Optimistic concurrency check prevents overwriting a row changed after the preview was loaded.
+   const {data:saved,error}=await db.from('clicko_products')
+    .update({...c.patch,updated_at:new Date().toISOString()})
+    .eq('sku',c.sku).eq('updated_at',c.previous.updated_at).select('sku');
+   if(error)throw error;
+   if(!saved||saved.length!==1)throw Error('ข้อมูล '+c.sku+' เปลี่ยนระหว่างนำเข้า หรือไม่มีสิทธิ์แก้ไข โปรดโหลดตัวอย่างใหม่');
    ok++;
   }
   await loadStock();clear();notice('อัปเดตสำเร็จ '+ok+' รายการ · หน้าเว็บจะอ่านข้อมูลจาก Supabase ล่าสุด',true);
