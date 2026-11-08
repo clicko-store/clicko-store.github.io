@@ -258,12 +258,12 @@ async function savePrice(sku,button){
  const raw=input.value.trim();
  const next=raw===''?null:Number(raw);
  if(raw!==''&&(!Number.isSafeInteger(next)||next<0)){notice('กรุณาใส่ราคาจำนวนเต็มตั้งแต่ 0 บาทขึ้นไป');input.focus();return;}
- if(next===p.price){button.disabled=true;return;}
+ if(next===(p.price===null?null:Number(p.price))){button.disabled=true;return;}
  if(next===null&&!confirm('ยืนยันล้างราคา '+p.name+' เป็นสอบถามราคา?'))return;
  button.disabled=true;input.disabled=true;notice('กำลังบันทึกราคา '+sku+'...');
  try{
-  const {data,error}=await db.from('clicko_products').update({price:next,updated_at:new Date().toISOString()}).eq('sku',sku).select('sku,price').single();
-  if(error)throw error;if(!data)throw Error('ไม่พบรายการหรือไม่มีสิทธิ์แก้ไข');
+  const {data,error}=await db.from('clicko_products').update({price:next,updated_at:new Date().toISOString()}).eq('sku',sku).eq('updated_at',p.updated_at).select('sku,price').maybeSingle();
+  if(error)throw error;if(!data)throw Error('ข้อมูลสินค้าถูกแก้ไขจากอีกหน้าต่าง กรุณารีเฟรชก่อนบันทึกราคา');
   await load();notice('อัปเดตราคา '+sku+' เป็น '+money(next)+' สำเร็จ');
  }catch(err){button.disabled=false;input.disabled=false;notice('แก้ราคาไม่สำเร็จ: '+err.message);}
 }
@@ -273,12 +273,13 @@ async function changeStock(sku,next,select){
  const product=rows.find(p=>p.sku===sku);
  if(!product||!STOCK_LABELS[next])return;
  const before=stockStatus(product);if(before===next)return;
+ if(next==='sold'&&!confirm('ยืนยันว่าขาย '+product.name+' แล้ว? การเปลี่ยนสถานะจากหน้านี้จะไม่สร้างออเดอร์หรือบันทึกยอดขายในรายงาน หากต้องการบันทึกกำไรให้ทำผ่านเมนู ออเดอร์ / กำไร')){select.value=before;return;}
  select.disabled=true;
  notice('กำลังเปลี่ยนสถานะ '+sku+'...');
  try{
-  const {data,error}=await db.from('clicko_products').update({stock_status:next,sold:next==='sold',updated_at:new Date().toISOString()}).eq('sku',sku).select('sku').single();
+  const {data,error}=await db.from('clicko_products').update({stock_status:next,sold:next==='sold',updated_at:new Date().toISOString()}).eq('sku',sku).eq('updated_at',product.updated_at).select('sku').maybeSingle();
   if(error)throw error;
-  if(!data)throw Error('ไม่พบรายการหรือไม่มีสิทธิ์แก้ไข');
+  if(!data)throw Error('ข้อมูลสินค้านี้เปลี่ยนแปลงไปแล้ว กรุณารีเฟรชและตรวจสอบสถานะก่อนลองอีกครั้ง');
   await load();
   notice('บันทึก '+sku+' เป็น '+STOCK_LABELS[next]+' แล้ว · ลูกค้าเห็นสถานะใหม่เมื่อรีเฟรชหน้าร้าน');
  }catch(err){select.value=before;select.disabled=false;const message=String(err.message||err);notice(/active order|belongs to active order|check constraint/i.test(message)?'เปลี่ยนสถานะไม่สำเร็จ: สินค้านี้ผูกกับออเดอร์อยู่ กรุณาเปลี่ยนสถานะผ่านเมนู ออเดอร์ / กำไร เพื่อให้สต๊อกตรงกัน':'เปลี่ยนสถานะไม่สำเร็จ: '+message)}
@@ -338,7 +339,14 @@ $('photo-gallery-admin').addEventListener('click',async e=>{
 $('product-form').onsubmit=async e=>{e.preventDefault();if(!authorized)return;const sku=$('sku').value.trim();if(!/^[a-zA-Z0-9_-]{2,50}$/.test(sku)){notice('รหัสสินค้าใช้ได้เฉพาะตัวอักษร ตัวเลข - และ _');return;}const current=editing?rows.find(row=>row.sku===sku):null;const priceValue=$('price').value.trim();if(priceValue!==''&&(!Number.isFinite(Number(priceValue))||Number(priceValue)<0||Math.abs(Number(priceValue)*100-Math.round(Number(priceValue)*100))>0.000001)){notice('ราคาไม่ถูกต้อง ต้องเป็นจำนวนบวกและทศนิยมไม่เกิน 2 ตำแหน่ง');return;}const manufacturerUrl=$('manufacturer_image_url').value.trim(),manufacturerSource=$('manufacturer_source_url').value.trim();
  const manufacturerVerified=$('manufacturer_image_verified').checked;
  if(manufacturerVerified&&(!/^https:\/\/\S+$/i.test(manufacturerUrl)||!/^https:\/\/\S+$/i.test(manufacturerSource))){notice('ภาพผู้ผลิตที่ยืนยันแล้วต้องมีลิงก์ภาพและหน้าต้นทาง HTTPS ครบทั้งคู่');return;}
- const p={sku,manufacturer_image_url:manufacturerUrl||null,manufacturer_source_url:manufacturerSource||null,manufacturer_image_verified:manufacturerVerified,updated_at:new Date().toISOString(),name:$('name').value.trim(),category:$('category').value,sub:$('sub').value.trim(),condition:$('condition').value,price:$('price').value===''?null:Number($('price').value),warranty:$('warranty').value.trim(),stock_status:$('stock_status').value,sold:$('stock_status').value==='sold',is_hidden:!!current?.is_hidden,...(current?.created_at?{created_at:current.created_at}:{}),specs:$('specs').value.trim(),note:$('note').value.trim(),image:$('image').value.trim()};$('save').disabled=true;notice('กำลังบันทึก...');try{const file=$('photo').files[0];if(file){if(file.size>5*1024*1024||!['image/jpeg','image/png','image/webp'].includes(file.type))throw Error('รองรับเฉพาะ JPG PNG WEBP ขนาดไม่เกิน 5 MB');const ext=({'image/jpeg':'jpg','image/png':'png','image/webp':'webp'})[file.type];const path=sku+'/'+crypto.randomUUID()+'.'+ext;const {error}=await db.storage.from('product-images').upload(path,file,{contentType:file.type,upsert:false});if(error)throw error;p.image=db.storage.from('product-images').getPublicUrl(path).data.publicUrl;}const {error}=await db.from('clicko_products').upsert(p,{onConflict:'sku'});if(error)throw error;let added=0,photoWarning='';try{added=await uploadExtras(sku)}catch(photoErr){photoWarning=' · แต่เพิ่มรูปเสริมไม่ครบ: '+photoErr.message;}await load();closeEditor();notice('บันทึกข้อมูลสินค้าแล้ว'+(added?' · เพิ่มรูป '+added+' รูป':'')+photoWarning+' · หน้าร้านจะแสดงข้อมูลใหม่เมื่อรีเฟรช');}catch(err){notice('บันทึกไม่สำเร็จ: '+err.message)}finally{$('save').disabled=false}};
+ const p={sku,manufacturer_image_url:manufacturerUrl||null,manufacturer_source_url:manufacturerSource||null,manufacturer_image_verified:manufacturerVerified,updated_at:new Date().toISOString(),name:$('name').value.trim(),category:$('category').value,sub:$('sub').value.trim(),condition:$('condition').value,price:$('price').value===''?null:Number($('price').value),warranty:$('warranty').value.trim(),stock_status:$('stock_status').value,sold:$('stock_status').value==='sold',is_hidden:!!current?.is_hidden,...(current?.created_at?{created_at:current.created_at}:{}),specs:$('specs').value.trim(),note:$('note').value.trim(),image:$('image').value.trim()};$('save').disabled=true;notice('กำลังบันทึก...');try{const file=$('photo').files[0];if(file){if(file.size>5*1024*1024||!['image/jpeg','image/png','image/webp'].includes(file.type))throw Error('รองรับเฉพาะ JPG PNG WEBP ขนาดไม่เกิน 5 MB');const ext=({'image/jpeg':'jpg','image/png':'png','image/webp':'webp'})[file.type];const path=sku+'/'+crypto.randomUUID()+'.'+ext;const {error}=await db.storage.from('product-images').upload(path,file,{contentType:file.type,upsert:false});if(error)throw error;p.image=db.storage.from('product-images').getPublicUrl(path).data.publicUrl;}let result;
+ if(current){
+   result=await db.from('clicko_products').update(p).eq('sku',sku).eq('updated_at',current.updated_at).select('sku').maybeSingle();
+ }else{
+   result=await db.from('clicko_products').insert(p).select('sku').single();
+ }
+ if(result.error)throw result.error;
+ if(!result.data)throw Error('ข้อมูลรายการนี้เปลี่ยนไปจากตอนเริ่มแก้ไข กรุณารีเฟรชก่อนบันทึกอีกครั้ง');let added=0,photoWarning='';try{added=await uploadExtras(sku)}catch(photoErr){photoWarning=' · แต่เพิ่มรูปเสริมไม่ครบ: '+photoErr.message;}await load();closeEditor();notice('บันทึกข้อมูลสินค้าแล้ว'+(added?' · เพิ่มรูป '+added+' รูป':'')+photoWarning+' · หน้าร้านจะแสดงข้อมูลใหม่เมื่อรีเฟรช');}catch(err){notice('บันทึกไม่สำเร็จ: '+err.message)}finally{$('save').disabled=false}};
 async function toggleProductHidden(sku,hidden){
  if(!authorized)return;
  const p=rows.find(row=>row.sku===sku);if(!p)return;
@@ -346,7 +354,7 @@ async function toggleProductHidden(sku,hidden){
  if(!confirm(action+' '+p.name+'? ระบบจะเก็บข้อมูล ราคา และประวัติเดิมไว้ทั้งหมด'))return;
  notice('กำลัง'+action+'...');
  const {data,error}=await db.from('clicko_products')
-  .update({is_hidden:hidden,updated_at:new Date().toISOString()}).eq('sku',sku).select('sku').single();
+  .update({is_hidden:hidden,updated_at:new Date().toISOString()}).eq('sku',sku).eq('updated_at',p.updated_at).select('sku').maybeSingle();
  if(error||!data){notice(action+'ไม่สำเร็จ: '+(error?.message||'ไม่มีสิทธิ์'));return;}
  await load();closeEditor();notice(action+'สำเร็จ · ข้อมูลเดิมยังอยู่ครบ');
 }
