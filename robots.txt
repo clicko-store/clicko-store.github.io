@@ -1,7 +1,7 @@
 User-agent: *
-Allow: /clicko-store/
-Disallow: /clicko-store/admin.html
-Disallow: /clicko-store/orders.html
-Disallow: /clicko-store/backup.html
-Disallow: /clicko-store/sheets.html
-Sitemap: https://knbowpani-wq.github.io/clicko-store/sitemap.xml
+Allow: /
+Disallow: /admin.html
+Disallow: /orders.html
+Disallow: /backup.html
+Disallow: /sheets.html
+Sitemap: https://clicko-store.github.io/sitemap.xml
