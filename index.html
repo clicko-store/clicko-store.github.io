@@ -1245,6 +1245,17 @@ header{background:#fff!important;border-bottom:1px solid #E7E7E7!important;box-s
  .bottom{flex-wrap:wrap;gap:8px}
 }
 @media(max-width:360px){.grid{grid-template-columns:minmax(0,1fr)!important}.pic{height:180px!important}}
+</style><style id="clicko-buyer-tools-style">
+.clicko-card-tools{display:flex;gap:7px;padding:0 12px 12px}
+.clicko-card-tools button,.clicko-detail-tools button,.clicko-favorite-toggle{background:#fff;color:#19324c;border:1px solid #dce5ef;border-radius:9px;padding:9px 11px;font-size:12px;font-weight:700;cursor:pointer}
+.clicko-card-tools button{flex:1}
+.clicko-card-tools button[aria-pressed="true"]{color:#c42742;background:#fff0f3;border-color:#ffcbd5}
+.clicko-favorite-toggle[aria-pressed="true"]{background:#fff0f3;color:#b8203e}
+.clicko-detail-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+#clicko-favorites-bar{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:12px 0}
+#clicko-favorites-bar button{border:1px solid #dce5ef;background:white;border-radius:10px;padding:9px 13px;font-weight:700;cursor:pointer}
+#clicko-favorites-bar button[aria-pressed="true"]{background:#152a44;color:white}
+@media(max-width:640px){.clicko-card-tools{padding:0 8px 9px;gap:5px}.clicko-card-tools button{font-size:11px;padding:8px 5px}}
 </style></head><body><header><div class="top"><a class="logo clicko-keys-logo clicko-logo-2026" href="./" aria-label="Clicko Gaming Gear &amp; PC Parts"><img class="clicko-logo-image" src="./assets/clicko-logo-red.svg" width="800" height="212" alt="CLICKO Gaming Gear &amp; PC Parts" decoding="async" fetchpriority="high"></a><nav class="nav clicko-main-nav" aria-label="เมนูหลัก"><a class="active" href="./">หน้าร้าน</a><a href="#catalog">สินค้า</a><a href="#buyback">รับซื้อ / เทิร์น</a><a href="#reviews">รีวิวร้าน</a><a href="https://www.facebook.com/groups/3325289464276829" target="_blank" rel="noopener noreferrer">กลุ่มซื้อขาย ↗</a><a href="#contact">ติดต่อเรา</a></nav><div class="top-actions"><a class="clicko-mobile-group" href="https://www.facebook.com/groups/3325289464276829" target="_blank" rel="noopener noreferrer">กลุ่มซื้อขาย ↗</a><a class="contact-phone" href="tel:0959759965">☎ 095-975-9965</a><a class="contact" href="https://www.facebook.com/sippavit.gomarn/" target="_blank" rel="noopener noreferrer">ติดต่อร้าน ↗</a></div></div><nav class="clicko-mobile-nav" aria-label="เมนูเว็บไซต์สำหรับมือถือ"><a href="#catalog">สินค้า</a><a href="#buyback">รับซื้อ / เทิร์น</a><a href="#reviews">รีวิวร้าน</a><a href="#contact">ติดต่อเรา</a></nav></header><main class="wrap"><section class="hero"><div class="hero-copy"><div class="eyebrow"><span class="eyebrow-dot"></span> GAMING GEAR &amp; PC PARTS</div><h1>GEAR UP<br><em>YOUR SETUP.</em></h1><p class="hero-lead">อุปกรณ์คอมพิวเตอร์และเกมมิ่งเกียร์ มือ 1 / มือ 2<br>เลือกรุ่นที่ใช่ ในราคาที่ชอบ</p><div class="hero-cta-row"><a class="hero-link" href="#catalog">เลือกดูสินค้า <span aria-hidden="true">→</span></a><a class="hero-call" href="#buyback">รับซื้อ / เทิร์น ↗</a></div></div><div class="hero-art clicko-brand-stage clicko-new-brand-stage" aria-label="Clicko Gaming Gear &amp; PC Parts"><img class="clicko-hero-logo-image" src="./assets/clicko-logo-red.svg" alt="CLICKO Gaming Gear &amp; PC Parts" width="800" height="212" loading="eager" decoding="async"></div></section><div class="highlights" aria-label="จุดเด่นของร้าน"><div class="highlight"><span class="highlight-icon">✓</span><div><strong>สินค้าคัดคุณภาพ</strong><small>ตรวจสอบก่อนส่งให้ลูกค้า</small></div></div><a class="highlight" href="#buyback"><span class="highlight-icon">⇄</span><div><strong>รับซื้อ / รับเทิร์น</strong><small>สอบถามราคาและแลกเปลี่ยนได้</small></div></a><div class="highlight"><span class="highlight-icon">▣</span><div><strong>จัดส่งทั่วไทย</strong><small>Grab / Lalamove / พัสดุ</small></div></div><a class="highlight" href="#contact"><span class="highlight-icon">☏</span><div><strong>สอบถามสินค้า</strong><small>ทักแชตหรือโทรหาร้าน</small></div></a></div><section class="trust-actions" aria-label="รับซื้ออุปกรณ์และเครดิตการขาย">
  <article class="tradein-promo" id="buyback">
   <div class="promo-copy">
@@ -1662,5 +1673,70 @@ clickoLoadAdminRows();
    if(!error)sessionStorage.setItem('clicko_view_counted_v1','1');
   }).catch(()=>{});
  }catch(e){console.warn('Pageview unavailable',e.message)}
+})();
+</script><script id="clicko-buyer-tools">
+(function(){
+ const key='clicko_favorite_skus_v1';
+ let favorites=[];
+ try{const raw=JSON.parse(localStorage.getItem(key)||'[]');if(Array.isArray(raw))favorites=raw.filter(x=>typeof x==='string').slice(0,500)}catch(e){}
+ let onlyFavorites=false;
+ const catalog=document.getElementById('catalog'),grid=document.getElementById('grid');
+ const toolbar=document.createElement('div');toolbar.id='clicko-favorites-bar';
+ toolbar.innerHTML='<button type="button" id="clicko-favorite-filter" aria-pressed="false">♡ สินค้าที่บันทึก (0)</button><span style="font-size:12px;color:#718198">แตะ ♡ เพื่อเก็บสินค้าไว้ดูภายหลังในเครื่องนี้</span>';
+ const heading=catalog.querySelector('.catalog-heading');heading.insertAdjacentElement('afterend',toolbar);
+ const filterButton=document.getElementById('clicko-favorite-filter');
+ function productUrl(id){const u=new URL(window.location.href);u.searchParams.set('sku',id);u.hash='catalog';return u.href}
+ function save(){try{localStorage.setItem(key,JSON.stringify(favorites))}catch(e){}}
+ function renderTools(){
+  filterButton.textContent='♡ สินค้าที่บันทึก ('+favorites.length+')';filterButton.setAttribute('aria-pressed',String(onlyFavorites));
+  grid.querySelectorAll('.card').forEach(card=>{
+   const id=card.querySelector('.pic[data-pid]')?.dataset.pid;if(!id)return;
+   if(!card.querySelector('.clicko-card-tools')){
+    const actions=document.createElement('div');actions.className='clicko-card-tools';
+    actions.innerHTML='<button type="button" data-favorite="'+id.replace(/[^a-zA-Z0-9_-]/g,'')+'">♡ บันทึก</button><button type="button" data-share="'+id.replace(/[^a-zA-Z0-9_-]/g,'')+'">แชร์สินค้า</button>';
+    card.append(actions);
+   }
+   const button=card.querySelector('[data-favorite]');
+   const active=favorites.includes(id);button.textContent=active?'♥ บันทึกแล้ว':'♡ บันทึก';button.setAttribute('aria-pressed',String(active));
+   card.hidden=onlyFavorites&&!active;
+  });
+  if(onlyFavorites)document.getElementById('count').textContent=grid.querySelectorAll('.card:not([hidden])').length+' รายการที่บันทึก';
+ }
+ const originalDraw=draw;
+ draw=function(){originalDraw();renderTools()};
+ function toggle(id){favorites=favorites.includes(id)?favorites.filter(x=>x!==id):[...favorites,id];save();renderTools()}
+ async function share(id){
+  const p=products.find(x=>String(x.id)===String(id));if(!p)return;
+  const url=productUrl(id);
+  try{if(navigator.share){await navigator.share({title:p.name,text:'ดูสินค้าที่ Clicko: '+p.name,url});return}}catch(e){if(e.name==='AbortError')return}
+  try{await navigator.clipboard.writeText(url);alert('คัดลอกลิงก์สินค้าแล้ว')}catch(e){window.prompt('คัดลอกลิงก์สินค้านี้',url)}
+ }
+ filterButton.onclick=()=>{onlyFavorites=!onlyFavorites;renderTools()};
+ document.addEventListener('click',e=>{
+  const fav=e.target.closest('[data-favorite]'),shareBtn=e.target.closest('[data-share]');
+  if(!fav&&!shareBtn)return;
+  e.preventDefault();e.stopPropagation();
+  if(fav)toggle(fav.dataset.favorite);else share(shareBtn.dataset.share);
+ },true);
+ const detail=document.getElementById('product-detail');
+ const observer=new MutationObserver(()=>{
+  if(!detail.open)return;
+  const title=detail.querySelector('.detail-content h2')?.textContent;
+  const p=products.find(x=>x.name===title);
+  if(!p)return;
+  let actions=detail.querySelector('.clicko-detail-tools');
+  if(!actions){actions=document.createElement('div');actions.className='clicko-detail-tools';detail.querySelector('.detail-content').append(actions)}
+  actions.innerHTML='<button type="button" data-favorite="'+String(p.id).replace(/[^a-zA-Z0-9_-]/g,'')+'">'+(favorites.includes(String(p.id))?'♥ บันทึกแล้ว':'♡ บันทึกสินค้า')+'</button><button type="button" data-share="'+String(p.id).replace(/[^a-zA-Z0-9_-]/g,'')+'">แชร์ลิงก์สินค้านี้</button>';
+ });
+ observer.observe(detail,{attributes:true,attributeFilter:['open']});
+ function openShared(){
+  const id=new URLSearchParams(location.search).get('sku');if(!id||!clickoInventoryVerified)return;
+  const p=products.find(x=>String(x.id)===id);if(!p)return;
+  openProductDetail(id);
+ }
+ const apply=clickoApplyAdminRows;
+ clickoApplyAdminRows=function(){apply();openShared()};
+ if(clickoInventoryVerified)openShared();
+ renderTools();
 })();
 </script></body></html>
