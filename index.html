@@ -1285,6 +1285,17 @@ header{background:#fff!important;border-bottom:1px solid #E7E7E7!important;box-s
 #clicko-inventory-notice[data-state="error"]{cursor:pointer}
 #clicko-inventory-notice[data-state="error"]:after{content:" · คลิกเพื่อลองใหม่";font-weight:800;text-decoration:underline}
 #clicko-inventory-notice[data-state="success"]{color:#146346!important;background:#e9f8f0!important;border-color:#b7e7cb!important}
+</style><style id="clicko-next-stage-css">
+#clicko-new-arrivals{margin:16px 0 20px;padding:18px;border:1px solid #e2e7ed;border-radius:17px;background:#fff}
+#clicko-new-arrivals h3{font-size:18px;font-weight:900;color:#1c2d43;margin:0 0 5px}
+#clicko-new-arrivals p{font-size:12px;color:#75849a;margin:0 0 13px}
+.clicko-arrival-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.clicko-arrival-item{border:1px solid #e4e9f1;border-radius:11px;padding:12px;background:#f8fafc;text-align:left;cursor:pointer;min-width:0;color:#182d47}
+.clicko-arrival-item strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}
+.clicko-arrival-item span{font-size:12px;color:#b72035;font-weight:800}
+.clicko-arrival-item small{display:block;color:#718198;margin-top:5px}
+.clicko-restock{background:#172d46;color:white;border:0;border-radius:9px;padding:12px 16px;font-weight:800;cursor:pointer;margin-top:14px;width:100%}
+@media(max-width:720px){.clicko-arrival-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#clicko-new-arrivals{padding:13px}.catalog-area .bar{gap:8px}.catalog-area select{min-width:0}.detail-content{overflow-wrap:anywhere}}
 </style></head><body><header><div class="top"><a class="logo clicko-keys-logo clicko-logo-2026" href="./" aria-label="Clicko Gaming Gear &amp; PC Parts"><img class="clicko-logo-image" src="./assets/clicko-logo-red.svg" width="800" height="212" alt="CLICKO Gaming Gear &amp; PC Parts" decoding="async" fetchpriority="high"></a><nav class="nav clicko-main-nav" aria-label="เมนูหลัก"><a class="active" href="./">หน้าร้าน</a><a href="#catalog">สินค้า</a><a href="#buyback">รับซื้อ / เทิร์น</a><a href="#reviews">รีวิวร้าน</a><a href="https://www.facebook.com/groups/3325289464276829" target="_blank" rel="noopener noreferrer">กลุ่มซื้อขาย ↗</a><a href="#contact">ติดต่อเรา</a></nav><div class="top-actions"><a class="clicko-mobile-group" href="https://www.facebook.com/groups/3325289464276829" target="_blank" rel="noopener noreferrer">กลุ่มซื้อขาย ↗</a><a class="contact-phone" href="tel:0959759965">☎ 095-975-9965</a><a class="contact" href="https://www.facebook.com/sippavit.gomarn/" target="_blank" rel="noopener noreferrer">ติดต่อร้าน ↗</a></div></div><nav class="clicko-mobile-nav" aria-label="เมนูเว็บไซต์สำหรับมือถือ"><a href="#catalog">สินค้า</a><a href="#buyback">รับซื้อ / เทิร์น</a><a href="#reviews">รีวิวร้าน</a><a href="#contact">ติดต่อเรา</a></nav></header><main class="wrap"><section class="hero"><div class="hero-copy"><div class="eyebrow"><span class="eyebrow-dot"></span> GAMING GEAR &amp; PC PARTS</div><h1>GEAR UP<br><em>YOUR SETUP.</em></h1><p class="hero-lead">อุปกรณ์คอมพิวเตอร์และเกมมิ่งเกียร์ มือ 1 / มือ 2<br>เลือกรุ่นที่ใช่ ในราคาที่ชอบ</p><div class="hero-cta-row"><a class="hero-link" href="#catalog">เลือกดูสินค้า <span aria-hidden="true">→</span></a><a class="hero-call" href="#buyback">รับซื้อ / เทิร์น ↗</a></div></div><div class="hero-art clicko-brand-stage clicko-new-brand-stage" aria-label="Clicko Gaming Gear &amp; PC Parts"><img class="clicko-hero-logo-image" src="./assets/clicko-logo-red.svg" alt="CLICKO Gaming Gear &amp; PC Parts" width="800" height="212" loading="eager" decoding="async"></div></section><div class="highlights" aria-label="จุดเด่นของร้าน"><div class="highlight"><span class="highlight-icon">✓</span><div><strong>สินค้าคัดคุณภาพ</strong><small>ตรวจสอบก่อนส่งให้ลูกค้า</small></div></div><a class="highlight" href="#buyback"><span class="highlight-icon">⇄</span><div><strong>รับซื้อ / รับเทิร์น</strong><small>สอบถามราคาและแลกเปลี่ยนได้</small></div></a><div class="highlight"><span class="highlight-icon">▣</span><div><strong>จัดส่งทั่วไทย</strong><small>Grab / Lalamove / พัสดุ</small></div></div><a class="highlight" href="#contact"><span class="highlight-icon">☏</span><div><strong>สอบถามสินค้า</strong><small>ทักแชตหรือโทรหาร้าน</small></div></a></div><section class="trust-actions" aria-label="รับซื้ออุปกรณ์และเครดิตการขาย">
  <article class="tradein-promo" id="buyback">
   <div class="promo-copy">
@@ -1803,5 +1814,37 @@ clickoLoadAdminRows();
 (function(){
  const retry=()=>{if(!clickoInventoryVerified)clickoLoadAdminRows()};
  document.addEventListener('click',e=>{if(e.target.closest('#clicko-inventory-notice[data-state="error"]'))retry()});
+})();
+</script><script id="clicko-next-stage">
+(function(){
+ const catalog=document.getElementById('catalog');
+ const arrivals=document.createElement('section');arrivals.id='clicko-new-arrivals';
+ arrivals.innerHTML='<h3>NEW ARRIVALS · สินค้าเข้าใหม่</h3><p>อัปเดตจากรายการที่เพิ่มล่าสุดในระบบร้าน</p><div class="clicko-arrival-grid"></div>';
+ const bar=document.getElementById('clicko-favorites-bar');(bar||catalog.querySelector('.catalog-heading')).insertAdjacentElement('afterend',arrivals);
+ const client=(()=>{try{const c=window.CLICKO_SUPABASE;if(c?.url&&c?.anonKey&&window.supabase)return window.supabase.createClient(c.url,c.anonKey)}catch(e){}return null})();
+ function track(sku,type){if(!client||!clickoInventoryVerified)return;client.from('clicko_product_events').insert({sku:String(sku),event_type:type}).then(({error})=>{if(error)console.warn('Clicko event not recorded',error.message)}).catch(()=>{})}
+ function renderArrivals(){
+  const items=products.filter(p=>!p.is_hidden&&clickoStockStatus(p)==='available').sort((a,b)=>{const ta=Date.parse(a.created_at||'')||0,tb=Date.parse(b.created_at||'')||0;return tb-ta||String(b.id).localeCompare(String(a.id))}).slice(0,8);
+  arrivals.hidden=!clickoInventoryVerified||!items.length;
+  const grid=arrivals.querySelector('.clicko-arrival-grid');grid.replaceChildren();
+  for(const p of items){const btn=document.createElement('button');btn.type='button';btn.className='clicko-arrival-item';
+   const title=document.createElement('strong');title.textContent=p.name;const price=document.createElement('span');price.textContent=Number.isFinite(p.price)?'฿'+p.price.toLocaleString('th-TH'):'สอบถามราคา';
+   const label=document.createElement('small');label.textContent=p.condition+' · '+(p.warranty?'ประกัน '+p.warranty:'สอบถามประกัน');
+   btn.append(title,price,label);btn.onclick=()=>openProductDetail(p.id);grid.append(btn)}
+ }
+ const prevDraw=draw;draw=function(){prevDraw();renderArrivals()};
+ const prevDetail=openProductDetail;
+ openProductDetail=function(id){
+  prevDetail(id);
+  const p=products.find(x=>String(x.id)===String(id));if(!p)return;
+  track(id,'view');
+  if(clickoStockStatus(p)==='available')return;
+  const container=document.querySelector('#product-detail .detail-content');if(!container)return;
+  const button=document.createElement('button');button.className='clicko-restock';button.type='button';button.textContent='สนใจรุ่นนี้ · ฝากร้านแจ้งเมื่อมีของ';
+  button.onclick=async()=>{const msg='สวัสดีครับ สนใจสินค้า '+p.name+' (SKU: '+p.id+') หากมีของเข้ารบกวนแจ้งด้วยครับ';try{await navigator.clipboard.writeText(msg);alert('คัดลอกข้อความสอบถามแล้ว กรุณาวางข้อความในแชท Facebook เพื่อให้ร้านทราบ')}catch(e){window.prompt('คัดลอกข้อความส่งให้ร้าน',msg)}window.open('https://www.facebook.com/sippavit.gomarn/','_blank','noopener,noreferrer')};
+  container.append(button);
+ };
+ document.addEventListener('click',e=>{const b=e.target.closest('.clicko-order-btn');if(b&&b.dataset.orderSku)track(b.dataset.orderSku,'contact')},true);
+ renderArrivals();
 })();
 </script></body></html>
