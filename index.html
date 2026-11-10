@@ -1591,11 +1591,41 @@ clickoInventoryNotice('กำลังตรวจสอบสต๊อกสิ
 products.splice(0,products.length);
 categories.splice(0,categories.length,'ทั้งหมด');
 draw();
+function clickoDisplayProductName(p){
+ const original=String(p.name||'').trim();
+ if(!original)return original;
+ const cat=String(p.category||'').toUpperCase();
+ const sub=String(p.sub||'').toUpperCase();
+ const name=original.toUpperCase();
+ let prefix='';
+ if(cat==='GAMING MOUSE')prefix='เมาส์';
+ else if(cat==='GLASS MOUSEPAD')prefix='แผ่นรองเมาส์กระจก';
+ else if(cat==='MOUSEPAD')prefix=/GLASS|กระจก/i.test(original+' '+sub)?'แผ่นรองเมาส์กระจก':'แผ่นรองเมาส์';
+ else if(cat==='MAGNETIC KEYBOARD')prefix='คีย์บอร์ด';
+ else if(cat==='KEYBOARD')prefix='คีย์บอร์ด';
+ else if(cat==='AUDIO'){
+  if(/QUADCAST|MICROPHONE|\bMIC\b|ไมโครโฟน/i.test(original+' '+sub))prefix='ไมโครโฟน';
+  else if(/SPEAKER|EMBERton|ลำโพง|DITOO/i.test(original+' '+sub))prefix='ลำโพง';
+  else if(/EARBUD|IEM|IN.EAR|หูฟัง|HEADSET|HEADPHONE|CLOUD|ARCTIS|G PRO X2 LIGHTSPEED/i.test(original+' '+sub))prefix='หูฟัง';
+ }else if(cat==='MONITOR & ACCESSORIES'&&/MONITOR|จอ|XL25|AW25|AW27|MPG 27|XQ25/i.test(original+' '+sub))prefix='จอมอนิเตอร์';
+ else if(cat==='GAMEPAD & USB HUB'){
+  if(/HUB/i.test(original+' '+sub))prefix='USB HUB';
+  else if(/GAMEPAD|CONTROLLER|จอย/i.test(original+' '+sub))prefix='จอยเกม';
+ }else if(cat==='PC PARTS'){
+  if(/\bRTX\b|\bGTX\b|RADEON|RX ?[56789]\d{3}/i.test(original))prefix='การ์ดจอ';
+  else if(/RYZEN|\bCORE I[3579]\b|\bCPU\b/i.test(original))prefix='ซีพียู';
+  else if(/\bDDR[345]\b|\bRAM\b/i.test(original))prefix='แรม';
+  else if(/\bCASE\b|\bCHASSIS\b|JONSBO TK/i.test(original))prefix='เคส';
+ }
+ if(!prefix)return original;
+ const known=/^(?:เมาส์|ไมโครโฟน|คีย์บอร์ด|แผ่นรองเมาส์(?:กระจก|ผ้า)?|หูฟัง|ลำโพง|จอมอนิเตอร์|จอเกมมิ่ง|จอยเกม|ซีพียู|การ์ดจอ|แรม|เคส|USB HUB)\s*/i;
+ return known.test(original)?original:prefix+' '+original;
+}
 function clickoApplyAdminRows(){
  if(!clickoInventoryVerified)return;
  // Admin/Supabase is the sole inventory source; never resurrect embedded products.
  const merged=clickoAdminRows.filter(p=>!p.is_hidden).map(p=>({
-  id:p.sku,name:p.name,category:p.category||'อื่นๆ',sub:p.sub||'',condition:p.condition||'มือ2',
+  id:p.sku,name:clickoDisplayProductName(p),category:p.category||'อื่นๆ',sub:p.sub||'',condition:p.condition||'มือ2',
   price:p.price===null?null:Number(p.price),warranty:p.warranty||'',sold:!!p.sold,
   is_hidden:false,stock_status:p.stock_status||(p.sold?'sold':'available'),
   created_at:p.created_at||null,specs:p.specs||'',note:p.note||'',
