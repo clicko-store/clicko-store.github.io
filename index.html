@@ -1604,9 +1604,12 @@ function clickoDisplayProductName(p){
  else if(cat==='MAGNETIC KEYBOARD')prefix='คีย์บอร์ด';
  else if(cat==='KEYBOARD')prefix='คีย์บอร์ด';
  else if(cat==='AUDIO'){
-  if(/QUADCAST|MICROPHONE|\bMIC\b|ไมโครโฟน/i.test(original+' '+sub))prefix='ไมโครโฟน';
-  else if(/SPEAKER|EMBERton|ลำโพง|DITOO/i.test(original+' '+sub))prefix='ลำโพง';
-  else if(/EARBUD|IEM|IN.EAR|หูฟัง|HEADSET|HEADPHONE|CLOUD|ARCTIS|G PRO X2 LIGHTSPEED/i.test(original+' '+sub))prefix='หูฟัง';
+  const hint=original+' '+sub;
+  if(/(?:ไมค์|ขาไมค์|MIC(?:ROPHONE)?\s*(?:ARM|STAND|BOOM)|BOOM\s*ARM|MIC\s*STAND|MICROPHONE\s*STAND|LOW\s*PROFILE\s*ARM|WAVE\s*MIC\s*ARM|PSA1|BA37|BA39|ขาจับไมค์|แขนจับไมค์)/i.test(hint)&&!/(?:QUADCAST|SOLOCAST|YETI|SEIREN|MICROPHONE\s*(?:USB|XLR))/i.test(hint))prefix='ขาไมค์';
+  else if(/(?:SOUND\s*CARD|SOUNDCARD|ซาวด์การ์ด|ซาวการ์ด|AUDIO\s*INTERFACE|GOXLR|SCARLETT|SOUNDBLASTER|SOUND\s*BLASTER|CREATIVE\s*G[356]|GSX\s*1000|MIXAMP|DAC\b|AMP\b)/i.test(hint))prefix='ซาวการ์ด';
+  else if(/(?:QUADCAST|SOLOCAST|MICROPHONE|\bMIC\b|ไมโครโฟน|ไมโครโฟม|YETI|SEIREN|MV7|PODMIC|WAVE:?[13]\b|AT2020|FIFINE|MAONO)/i.test(hint))prefix='ไมโครโฟน';
+  else if(/(?:SPEAKER|EMBERTON|DITOO|ลำโพง)/i.test(hint))prefix='ลำโพง';
+  else if(/(?:EARBUD|IEM|IN.EAR|หูฟัง|HEADSET|HEADPHONE|EARPHONE|CLOUD|ARCTIS|LIGHTSPEED|DT\s?990|HD\s?550|KEFINE|SIMGOT|KIWI\s*EARS|ZIIGAAT|ASTRAL|SUPERMIX|EW300|GAMEBUDS)/i.test(hint))prefix='หูฟัง';
  }else if(cat==='MONITOR & ACCESSORIES'&&/MONITOR|จอ|XL25|AW25|AW27|MPG 27|XQ25/i.test(original+' '+sub))prefix='จอมอนิเตอร์';
  else if(cat==='GAMEPAD & USB HUB'){
   if(/HUB/i.test(original+' '+sub))prefix='USB HUB';
@@ -1618,7 +1621,7 @@ function clickoDisplayProductName(p){
   else if(/\bCASE\b|\bCHASSIS\b|JONSBO TK/i.test(original))prefix='เคส';
  }
  if(!prefix)return original;
- const known=/^(?:เมาส์|ไมโครโฟน|คีย์บอร์ด|แผ่นรองเมาส์(?:กระจก|ผ้า)?|หูฟัง|ลำโพง|จอมอนิเตอร์|จอเกมมิ่ง|จอยเกม|ซีพียู|การ์ดจอ|แรม|เคส|USB HUB)\s*/i;
+ const known=/^(?:เมาส์|ไมโครโฟน|คีย์บอร์ด|แผ่นรองเมาส์(?:กระจก|ผ้า)?|หูฟัง|ลำโพง|จอมอนิเตอร์|จอเกมมิ่ง|จอยเกม|ซีพียู|การ์ดจอ|แรม|เคส|USB HUB|ซาวการ์ด|ซาวด์การ์ด|ขาไมค์)\s*/i;
  return known.test(original)?original:prefix+' '+original;
 }
 function clickoApplyAdminRows(){
