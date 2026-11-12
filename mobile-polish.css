@@ -1,0 +1,29 @@
+/* CLICKO mobile polish: additive, no inventory or authentication changes. */
+@media(max-width:700px){
+ html{scroll-padding-top:82px}
+ body{overflow-x:clip}
+ .catalog-area{min-width:0}
+ .catalog-area .bar{gap:9px!important}
+ .catalog-area .search-wrap{min-width:0;width:100%}
+ .catalog-area input[type="search"]{font-size:16px!important;min-height:44px}
+ .catalog-area select{min-height:44px;font-size:14px}
+ #grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+ #grid .card{min-width:0;overflow:hidden;border-radius:14px!important}
+ #grid .card .pic{display:flex;align-items:center;justify-content:center;overflow:hidden}
+ #grid .card .pic img{max-width:100%;object-fit:contain}
+ #grid .card .info{min-width:0}
+ #grid .card .name{overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+ #grid .card .price{font-weight:800}
+ .clicko-mobile-bottom{padding-bottom:max(8px,env(safe-area-inset-bottom))!important}
+ .clicko-mobile-bottom a,.clicko-mobile-bottom button{min-height:48px;touch-action:manipulation}
+ .detail-layout{min-width:0}
+ .detail-content{overflow-wrap:anywhere}
+ .detail-content a,.detail-content button{min-height:44px}
+}
+@media(max-width:380px){
+ #grid{gap:8px!important}
+ #grid .card .info{padding:9px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ #grid .card{transition:none!important}
+}
