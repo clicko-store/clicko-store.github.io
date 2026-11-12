@@ -2055,4 +2055,60 @@ clickoLoadAdminRows();
   const observer=new MutationObserver(optimize);observer.observe(cards,{childList:true});optimize();
  }
 })();
+</script><style id="clicko-mobile-2026-v2">
+@media(max-width:700px){
+ html{scroll-padding-top:72px}
+ body{padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))}
+ .top{min-height:60px!important;padding:7px 12px!important;gap:8px}
+ .top-actions{gap:7px!important}.contact-phone{display:none!important}
+ .hero{min-height:0!important;padding:22px 18px!important;border-radius:15px!important}
+ .hero h1{font-size:clamp(27px,8vw,36px)!important;line-height:1.12!important}
+ .hero-link{min-height:44px;align-items:center}
+ .highlights{margin-bottom:18px!important}
+ .catalog-heading{gap:8px!important;flex-wrap:wrap}
+ .catalog-stats{margin-left:auto}
+ .grid{gap:9px!important}
+ .card{min-width:0;overflow:hidden}
+ .pic{height:auto!important;aspect-ratio:1/1;min-height:0!important}
+ .pic img{padding:8px!important;object-fit:contain}
+ .info{padding:10px!important}
+ .name{font-size:12px!important;line-height:1.4!important;min-height:0!important;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+ .price{font-size:18px!important}
+ .ask{min-height:40px;display:grid!important;place-items:center}
+ .clicko-mobile-bottom a,.clicko-mobile-bottom button{min-width:0;touch-action:manipulation}
+ .product-detail{width:100%!important;max-width:100%!important;max-height:100dvh!important;height:100dvh!important;margin:0!important;border-radius:0!important;overscroll-behavior:contain}
+ .detail-layout{display:block!important}
+ .detail-visual{min-height:0!important;padding:12px!important}
+ .detail-visual img{max-height:35dvh!important}
+ .detail-content{padding:16px 16px calc(95px + env(safe-area-inset-bottom,0px))!important;max-height:none!important;overflow:visible!important}
+ .detail-close{position:sticky!important;float:right;top:8px;right:8px;z-index:3;width:44px;height:44px}
+ .detail-cta{min-height:48px;display:grid;place-items:center}
+ input,select,textarea{font-size:16px!important}
+}
+@media(max-width:360px){.clicko-mobile-bottom{font-size:10px!important}.catalog-stats small{font-size:9px}}
+</style><script id="clicko-product-deeplink-mobile">
+(function(){
+ // Support both legacy ?sku= and Facebook-shared ?product= links.
+ const params=new URLSearchParams(location.search);
+ const requested=params.get('product')||params.get('sku');
+ if(!requested||!/^CLK-[a-zA-Z0-9_-]+$/.test(requested))return;
+ let opened=false;
+ function show(){
+  if(opened||!window.clickoInventoryVerified||typeof products==='undefined'||typeof openProductDetail!=='function')return;
+  const found=products.some(p=>String(p.id)===requested);
+  if(!found)return;
+  opened=true;
+  const dialog=document.getElementById('product-detail');
+  if(dialog?.open)dialog.close();
+  openProductDetail(requested);
+ }
+ // Inventory is loaded asynchronously. Observe only the existing catalog and stop once found.
+ show();
+ const grid=document.getElementById('grid');
+ if(grid&&!opened){
+  const observer=new MutationObserver(()=>{show();if(opened)observer.disconnect()});
+  observer.observe(grid,{childList:true});
+  window.addEventListener('pageshow',show,{once:true});
+ }
+})();
 </script></body></html>
