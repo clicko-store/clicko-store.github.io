@@ -29,3 +29,20 @@ td,th{border-color:#e8e8e8}
 .clicko-mobile-bottom{background:#fff!important;border-top:1px solid #e5e5e5!important}
 .tradein-promo,.credit-promo{background:#f1f1f1!important;background-image:none!important;border-color:#e1e1e1!important}
 @media(max-width:700px){.panel{box-shadow:none!important}}
+
+/* Accessibility corrections: storefront promo and mobile navigation */
+.tradein-promo .promo-kicker,.tradein-promo .promo-kicker span,.credit-promo .promo-kicker{color:#555!important}
+.tradein-promo h2,.tradein-promo h2 em,.tradein-promo h2 span,.tradein-promo p,.tradein-promo .promo-copy,.tradein-promo .benefit-line,.tradein-promo .promo-benefits,.tradein-promo .promo-call,.credit-promo h2,.credit-promo p{color:#202020!important;-webkit-text-fill-color:#202020!important;text-shadow:none!important}
+.tradein-promo .benefit-line span{background:#fff!important;color:#202020!important;-webkit-text-fill-color:#202020!important;box-shadow:none!important}
+.tradein-promo .promo-call{border:1px solid #bdbdbd!important;background:#fff!important;color:#222!important}
+.tradein-promo .promo-primary{background:#171717!important;color:#fff!important;-webkit-text-fill-color:#fff!important}
+.tradein-promo .promo-kicker,.credit-promo .promo-kicker,.shortcut-section .section-kicker,.shortcut-section .kicker,.arrivals-section .section-kicker,.arrivals-section .kicker{color:#555!important}
+.shortcut-icon{background:#ededed!important;color:#252525!important;-webkit-text-fill-color:#252525!important;border-color:#e3e3e3!important}
+.shortcut-arrow,.shortcut-section a,.arrivals-section a{color:#333!important;-webkit-text-fill-color:#333!important}
+.shortcut,.shortcut-grid button{background:#fff!important;border-color:#e5e5e5!important}
+@media(max-width:700px){
+ .clicko-mobile-bottom{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;background:#fff!important;border-top:1px solid #e5e5e5!important;box-shadow:0 -2px 12px #0000000a!important}
+ .clicko-mobile-bottom button,.clicko-mobile-bottom a,.clicko-mobile-bottom button:not(.secondary):not(.danger):not(.warning):not(.ghost):not([class*="outline"]){background:transparent!important;background-image:none!important;border:0!important;color:#424242!important;-webkit-text-fill-color:#424242!important;box-shadow:none!important;min-width:0!important}
+ .clicko-mobile-bottom .active,.clicko-mobile-bottom button.active,.clicko-mobile-bottom a.active{background:#eeeeee!important;color:#171717!important;-webkit-text-fill-color:#171717!important}
+ .clicko-mobile-bottom .clicko-mobile-icon{color:inherit!important;-webkit-text-fill-color:inherit!important}
+}
