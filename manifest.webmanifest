@@ -6,13 +6,13 @@
   "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#c62839",
+  "theme_color": "#171717",
   "icons": [
     {
-      "src": "./assets/clicko-app-icon.svg",
+      "src": "./file_00000000c0588211a3607aa0b0060573.png",
       "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }
