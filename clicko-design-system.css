@@ -1,0 +1,31 @@
+/* CLICKO design system · Monochrome Premium · 2026-11 */
+:root{--clicko-black:#171717;--clicko-ink:#202020;--clicko-muted:#626262;--clicko-bg:#f7f7f7;--clicko-white:#fff;--clicko-line:#e5e5e5;--clicko-soft:#f0f0f0;--ink:#202020;--blue:#222;--stroke:#e5e5e5;--surface:#fff;--muted:#626262;--accent:#171717;color-scheme:light}
+html,body{background:var(--clicko-bg)!important;color:var(--clicko-ink)!important}
+header{background:#fff!important;border-bottom:1px solid var(--clicko-line)!important;box-shadow:0 2px 12px #00000007!important}
+a{color:#292929}
+a:hover{color:#000}
+.panel,.card,.highlight,.product-card,.stat-card,.summary-card,.modal-content,.sheet-sync{background-color:#fff!important;border-color:var(--clicko-line)!important;box-shadow:0 2px 12px #00000006!important}
+input,textarea,select{background-color:#fff;color:#202020;border-color:#d7d7d7;accent-color:#222}
+input:focus-visible,textarea:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid #555!important;outline-offset:2px}
+button,.btn,.primary,.btn-primary{transition:background-color .15s,border-color .15s}
+button:not(.secondary):not(.danger):not(.warning):not(.ghost):not([class*="outline"]),.btn-primary,.primary{background-color:#1b1b1b;color:#fff;border-color:#1b1b1b}
+button:not(.secondary):not(.danger):not(.warning):not(.ghost):not([class*="outline"]):hover,.btn-primary:hover{background-color:#363636}
+button.secondary,.secondary,.btn-secondary{background:#fff!important;color:#222!important;border:1px solid #d6d6d6!important}
+button.danger,.danger,.error,[role="alert"]{ /* keep semantic warning/error colors for safety */ }
+label,.muted,.sub,.hint,small{color:#666}
+table{border-color:var(--clicko-line)}
+th{background:#f3f3f3;color:#343434}
+td,th{border-color:#e8e8e8}
+.badge,.chip,.tag{border-color:#dedede}
+.chip.active,.tab.active,.filter.active{background:#222!important;color:#fff!important;border-color:#222!important}
+.price,.detail-price,.card .price,.catalog-kicker{color:#242424!important}
+.highlight-icon{background:#ededed!important;color:#242424!important}
+.hero{background:#fff!important;background-image:none!important;border-color:#e5e5e5!important}
+.hero .hero-lead,.hero .hero-copy p{color:#555!important;opacity:1!important;-webkit-text-fill-color:#555!important}
+.hero h1 em{color:#3b3b3b!important}
+.hero .hero-art,.hero .hero-art.clicko-brand-stage{background:#fff!important}
+.hero .clicko-hero-logo-image{mix-blend-mode:multiply!important}
+.clicko-mobile-nav a,.top-actions .clicko-mobile-group{background:#fff!important;color:#222!important;border:1px solid #dedede!important}
+.clicko-mobile-bottom{background:#fff!important;border-top:1px solid #e5e5e5!important}
+.tradein-promo,.credit-promo{background:#f1f1f1!important;background-image:none!important;border-color:#e1e1e1!important}
+@media(max-width:700px){.panel{box-shadow:none!important}}
