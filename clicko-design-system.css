@@ -46,3 +46,21 @@ td,th{border-color:#e8e8e8}
  .clicko-mobile-bottom .active,.clicko-mobile-bottom button.active,.clicko-mobile-bottom a.active{background:#eeeeee!important;color:#171717!important;-webkit-text-fill-color:#171717!important}
  .clicko-mobile-bottom .clicko-mobile-icon{color:inherit!important;-webkit-text-fill-color:inherit!important}
 }
+
+/* Mobile nav reset: preserve transparent interactive targets and clear line icons */
+@media(max-width:700px){
+ .clicko-mobile-bottom,.clicko-mobile-bottom nav{background:#fff!important}
+ .clicko-mobile-bottom > a,.clicko-mobile-bottom > button,
+ .clicko-mobile-bottom > button:not(.secondary):not(.danger):not(.warning):not(.ghost):not([class*="outline"]){
+  appearance:none!important;background:transparent!important;background-color:transparent!important;background-image:none!important;
+  color:#404040!important;-webkit-text-fill-color:#404040!important;border:0!important;box-shadow:none!important;
+  display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
+  gap:5px!important;min-height:52px!important;font-size:11px!important;font-weight:650!important;line-height:1.3!important;
+  border-radius:12px!important;padding:5px 2px!important
+ }
+ .clicko-mobile-bottom > .active,.clicko-mobile-bottom > button.active,.clicko-mobile-bottom > a.active{
+  background:#f0f0f0!important;background-color:#f0f0f0!important;color:#111!important;-webkit-text-fill-color:#111!important
+ }
+ .clicko-mobile-bottom .clicko-mobile-icon{width:23px!important;height:23px!important;display:block!important;flex:none!important;color:inherit!important;stroke:currentColor!important;fill:none!important;opacity:1!important}
+ .clicko-mobile-bottom > button:active,.clicko-mobile-bottom > a:active{background:#eaeaea!important}
+}
