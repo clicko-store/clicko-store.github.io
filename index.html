@@ -1892,6 +1892,7 @@ function clickoInventoryNotice(message,state){
  if(el){el.textContent=message;el.dataset.state=state;}
 }
 clickoInventoryNotice('กำลังตรวจสอบสต๊อกสินค้าล่าสุด...','pending');
+window.clickoInventoryLoading=true;
 products.splice(0,products.length);
 categories.splice(0,categories.length,'ทั้งหมด');
 draw();
@@ -1966,6 +1967,7 @@ async function clickoLoadAdminRows(){
    }
   }catch(photoError){console.warn('Clicko gallery unavailable',photoError.message);clickoGalleryPhotos.clear();}
   clickoInventoryVerified=true;
+  window.clickoInventoryLoading=false;
   // A presentation error must never invalidate a successfully verified inventory response.
   try{clickoApplyAdminRows();}
   catch(renderError){
@@ -1985,9 +1987,10 @@ async function clickoLoadAdminRows(){
   document.getElementById('stat-available').textContent=products.filter(p=>clickoCanOrder(p)).length.toLocaleString('th-TH');
   clickoInventoryNotice('อัปเดตสต๊อกจากระบบแล้ว · '+products.filter(p=>clickoCanOrder(p)).length+' รายการพร้อมขาย','success');
  }catch(e){
+  window.clickoInventoryLoading=false;
   clickoInventoryVerified=false;clickoVerifiedSkus.clear();
   document.getElementById('stat-available').textContent='—';
-  clickoInventoryNotice('เชื่อมต่อสต๊อกไม่ได้: '+(e?.message||'เครือข่ายขัดข้อง')+' · กดลองใหม่','error');
+  clickoInventoryNotice('เชื่อมต่อสต๊อกไม่ได้: '+(e?.message||'เครือข่ายขัดข้อง')+' · คลิกเพื่อลองใหม่','error');
   console.error('Clicko inventory fetch unavailable',e);
  }
 }
@@ -2603,4 +2606,40 @@ function setup(){
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup);else setup();
 })();
-</script></body></html>
+</script><script id="clicko-inventory-reliability-20261114">
+(function(){
+ function init(){
+  const notice=document.getElementById('clicko-inventory-notice');
+  const count=document.getElementById('count');
+  if(!notice||!count)return;
+  notice.addEventListener('click',function(){
+   if(notice.dataset.state!=='error'||window.clickoInventoryLoading)return;
+   notice.dataset.state='pending';notice.textContent='กำลังเชื่อมต่อสต๊อกอีกครั้ง…';
+   window.clickoInventoryLoading=true;
+   Promise.resolve().then(()=>clickoLoadAdminRows()).finally(()=>{window.clickoInventoryLoading=false});
+  });
+  function reconcile(){
+   if(notice.dataset.state!=='success'||!window.clickoInventoryVerified)return;
+   const q=document.getElementById('q'),brand=document.getElementById('brand'),condition=document.getElementById('condition'),availability=document.getElementById('availability');
+   const total=Array.isArray(products)?products.length:0;
+   if(total===0){count.textContent='ยังไม่มีข้อมูลสินค้าที่แสดงได้';return}
+   const noUserFilters=!q.value.trim()&&!brand.value&&!condition.value&&availability.value==='available'&&category==='ทั้งหมด';
+   const available=products.filter(p=>clickoCanOrder(p)).length;
+   if(noUserFilters&&available>0&&/^0\s*รายการ/.test(count.textContent)){
+    console.warn('CLICKO: restoring available catalog view after an inconsistent zero count');
+    try{draw()}catch(err){console.error('CLICKO catalog refresh failed',err)}
+    if(/^0\s*รายการ/.test(count.textContent)){count.textContent='ตรวจสอบรายการสินค้าอีกครั้ง';}
+   }
+  }
+  const observer=new MutationObserver(reconcile);observer.observe(notice,{attributes:true,attributeFilter:['data-state']});
+  // The notice is set to success after the catalog has been rendered.
+  reconcile();
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+<style id="clicko-inventory-reliability-style-20261114">
+#clicko-inventory-notice[data-state="error"]{cursor:pointer!important}
+#clicko-inventory-notice[data-state="pending"]{color:#475569!important;background:#f1f5f9!important;border-color:#dce4ee!important}
+#catalog #grid img{content-visibility:auto}
+</style></body></html>
