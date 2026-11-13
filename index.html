@@ -2517,4 +2517,14 @@ header .top .clicko-header-chat:hover{background:#303741!important}
 @media(max-width:540px){header .top .top-actions{gap:5px!important}header .top .clicko-header-search,header .top .clicko-header-chat{width:36px!important;min-height:36px!important;padding:7px!important}}
 </style><script id="clicko-header-search-behavior">
 document.addEventListener('DOMContentLoaded',function(){var b=document.querySelector('.clicko-header-search');if(!b)return;b.addEventListener('click',function(){var q=document.getElementById('q');if(q){q.scrollIntoView({behavior:'smooth',block:'center'});window.setTimeout(function(){q.focus({preventScroll:true})},250)}else{window.location.hash='catalog'}})});
-</script></body></html>
+</script><style id="clicko-header-refinement-20261114">
+/* Final desktop header polish: even spacing and quieter phone action. */
+@media(min-width:1101px){
+header .top .clicko-main-nav{display:flex!important;align-items:center!important;justify-content:center!important;gap:5px!important;min-width:0!important}
+header .top .clicko-main-nav>a{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;white-space:nowrap!important}
+header .top .top-actions{gap:8px!important}
+header .top .contact-phone{background:#f3f5f8!important;color:#374151!important;border:1px solid #dfe5ed!important;box-shadow:none!important;border-radius:11px!important;font-weight:600!important}
+header .top .contact-phone:hover{background:#eaf2ff!important;color:#2563eb!important}
+}
+@media(max-width:1100px){header .top .contact-phone{background:#f3f5f8!important;color:#374151!important;border:1px solid #dfe5ed!important;box-shadow:none!important}}
+</style></body></html>
