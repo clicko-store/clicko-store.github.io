@@ -2533,4 +2533,43 @@ header .top .contact-phone:hover{background:#eaf2ff!important;color:#2563eb!impo
 html,body{background:#F4F6F9!important}
 header,header .top{background:#FFFFFF!important}
 #catalog .grid .card,.catalog-area .grid .card{background:#FFFFFF!important}
-</style></body></html>
+</style><style id="clicko-minimal-compact-filters-20261114">
+/* Compact search-first catalog without removing existing filtering controls. */
+#catalog .bar{display:flex!important;align-items:center!important;gap:10px!important;padding:12px!important;background:#fff!important;border:1px solid #e1e6ec!important;border-radius:16px!important}
+#catalog .bar .search-wrap{flex:1 1 auto!important;min-width:0!important}
+#catalog .bar>.filter,#catalog .bar>#reset-filters{display:none!important}
+#catalog .clicko-filter-toggle{display:inline-flex;align-items:center;justify-content:center;gap:8px;flex:0 0 auto;background:#17191c;color:#fff;border:1px solid #17191c;border-radius:11px;min-height:42px;padding:0 15px;font-weight:650;cursor:pointer}
+#catalog .clicko-filter-panel{display:none;background:#fff;border:1px solid #e1e6ec;border-radius:14px;padding:14px;margin-top:8px;gap:10px;align-items:center;flex-wrap:wrap}
+#catalog .clicko-filter-panel.is-open{display:flex}
+#catalog .clicko-filter-panel .filter{flex:1 1 140px;min-width:130px}
+#catalog .clicko-filter-panel .reset-filters{display:inline-flex!important;visibility:visible!important}
+#catalog .clicko-filter-panel .clicko-extra-filters{display:flex!important;align-items:center;gap:9px;flex:1 1 100%;width:100%;padding:10px 0 0!important;margin:0!important;border:0!important;background:transparent!important;flex-wrap:wrap}
+#catalog .clicko-filter-panel .clicko-extra-filters label{font-size:12px;color:#64748b}
+#catalog .category-label{display:flex;align-items:center;justify-content:space-between;margin-top:15px!important}
+#catalog .category-label span{display:none!important}
+#catalog .clicko-category-toggle{border:0;background:transparent;color:#2563eb;font-weight:650;font-size:12px;cursor:pointer;padding:6px}
+#catalog #chips:not(.clicko-chips-expanded){max-height:47px!important;overflow:hidden!important;flex-wrap:nowrap!important}
+#catalog #chips.clicko-chips-expanded{max-height:none!important;overflow:visible!important;flex-wrap:wrap!important}
+.quick-contact-actions .quick-chat,.quick-contact-actions .quick-call{font-size:12px!important;padding:9px 12px!important;min-height:36px!important;box-shadow:none!important}
+.clicko-inventory-notice{font-size:12px!important}
+@media(max-width:700px){#catalog .bar{padding:8px!important;gap:7px!important}#catalog .clicko-filter-toggle{min-height:40px;padding:0 11px;font-size:12px}#catalog .clicko-filter-panel{padding:10px}#catalog .clicko-filter-panel .filter{flex:1 1 44%;min-width:0}#catalog .clicko-filter-panel .clicko-extra-filters input,#catalog .clicko-filter-panel .clicko-extra-filters select{flex:1 1 42%;min-width:0}#catalog #chips:not(.clicko-chips-expanded){max-height:44px!important}}
+</style>
+<script id="clicko-minimal-compact-filters-behavior">
+(function(){
+function setup(){
+ const catalog=document.getElementById('catalog'),bar=catalog?.querySelector('.bar');if(!bar||document.getElementById('clicko-filter-toggle'))return;
+ const toggle=document.createElement('button');toggle.type='button';toggle.id='clicko-filter-toggle';toggle.className='clicko-filter-toggle';toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-controls','clicko-filter-panel');toggle.textContent='☷ ตัวกรอง';
+ const panel=document.createElement('div');panel.id='clicko-filter-panel';panel.className='clicko-filter-panel';
+ for(const id of ['brand','condition','availability','sort','reset-filters']){const el=document.getElementById(id);if(el)panel.appendChild(el)}
+ const extra=catalog.querySelector('.clicko-extra-filters');if(extra)panel.appendChild(extra);
+ bar.appendChild(toggle);bar.insertAdjacentElement('afterend',panel);
+ toggle.addEventListener('click',()=>{const open=panel.classList.toggle('is-open');toggle.setAttribute('aria-expanded',String(open));toggle.textContent=open?'✕ ปิดตัวกรอง':'☷ ตัวกรอง'});
+ const label=catalog.querySelector('.category-label'),chips=document.getElementById('chips');
+ if(label&&chips&&!document.getElementById('clicko-category-toggle')){
+  const btn=document.createElement('button');btn.type='button';btn.id='clicko-category-toggle';btn.className='clicko-category-toggle';btn.textContent='ดูทั้งหมด →';btn.setAttribute('aria-expanded','false');
+  label.appendChild(btn);btn.addEventListener('click',()=>{const open=chips.classList.toggle('clicko-chips-expanded');btn.textContent=open?'แสดงน้อยลง ↑':'ดูทั้งหมด →';btn.setAttribute('aria-expanded',String(open))});
+ }
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup);else setup();
+})();
+</script></body></html>
