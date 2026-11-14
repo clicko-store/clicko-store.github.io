@@ -208,7 +208,7 @@ a:focus-visible,button:focus-visible{outline:3px solid #D90429!important;outline
 <section id="workspace" class="hidden"><div class="panel"><div class="workspace-head"><div><span class="overline">PRODUCT MANAGER</span><h2>จัดการสินค้า</h2><p class="muted">แก้ราคาและสถานะได้จากหน้ารายการทันที</p></div><button id="new" type="button">+ เพิ่มสินค้า</button></div><section id="clicko-facebook-tools" style="border:1px solid #e5e7eb;border-radius:14px;padding:14px;margin:14px 0;background:#fff">
 <div style="font-weight:700;margin-bottom:10px">คัดลอกโพสต์ Facebook</div>
 <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:end">
-<label style="flex:1;min-width:170px">รายการสินค้า<select id="fb-scope"><option value="filtered">ตามตัวกรอง / ค้นหา</option><option value="all">ทั้งหมดที่พร้อมขาย</option></select></label>
+<label style="flex:1;min-width:170px">รายการสินค้า<select id="fb-scope"><option value="all" selected>ทั้งหมดที่พร้อมขาย</option><option value="filtered">ตามตัวกรอง / ค้นหา</option></select></label><label style="flex:1;min-width:170px">หมวดหมู่<select id="fb-category"><option value="all">ทุกหมวดหมู่</option></select></label>
 <label style="flex:1;min-width:150px">สภาพสินค้า<select id="fb-condition"><option value="all">มือ 1 และมือ 2</option><option value="มือ1">มือ 1 เท่านั้น</option><option value="มือ2">มือ 2 เท่านั้น</option></select></label>
 <label style="flex:1;min-width:150px">รูปแบบ<select id="fb-format"><option value="full">รายละเอียดครบ</option><option value="compact">แบบกระชับ</option></select></label>
 </div>
@@ -216,9 +216,14 @@ a:focus-visible,button:focus-visible{outline:3px solid #D90429!important;outline
 <label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="fb-link" checked> แนบลิงก์เว็บไซต์</label>
 <label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="fb-warranty" checked> แสดงประกัน</label>
 </div>
+<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin:10px 0"><label style="flex:1;min-width:140px">แบ่งโพสต์<select id="fb-split"><option value="0">โพสต์เดียว</option><option value="20">20 รายการ / โพสต์</option><option value="30">30 รายการ / โพสต์</option><option value="50">50 รายการ / โพสต์</option></select></label><label style="flex:1;min-width:150px">ค้นหาสินค้าที่จะเลือก<input id="fb-product-search" placeholder="ชื่อสินค้า / SKU"></label></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0"><button type="button" class="secondary" id="fb-select-all">เลือกทั้งหมด</button><button type="button" class="secondary" id="fb-select-none">ยกเลิกทั้งหมด</button><span id="fb-selected-count" class="muted"></span></div>
+<div id="fb-product-list" style="max-height:210px;overflow:auto;border:1px solid #e5e7eb;border-radius:8px;padding:8px;margin-bottom:10px"></div>
 <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px"><button type="button" class="secondary" id="fb-preview">สร้างตัวอย่างโพสต์</button><button type="button" id="fb-copy">คัดลอกข้อความ</button><span class="muted" id="fb-count" aria-live="polite">เลือกตัวเลือกแล้วกดสร้างตัวอย่าง</span></div>
 <textarea id="fb-text" rows="12" spellcheck="false" aria-label="ตัวอย่างโพสต์ Facebook" style="width:100%;box-sizing:border-box;resize:vertical;line-height:1.65" placeholder="กดสร้างตัวอย่างโพสต์เพื่อดูข้อความก่อนคัดลอก"></textarea>
-<small class="muted">แก้ไขข้อความในช่องนี้ได้ก่อนคัดลอก · คัดลอกเฉพาะสินค้าพร้อมขายและไม่ซ่อนจากหน้าร้าน</small>
+<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0"><label>โพสต์ที่<select id="fb-page"><option value="0">1</option></select></label><button type="button" class="secondary" id="fb-history-save">บันทึกประวัติโพสต์</button></div>
+<details><summary style="cursor:pointer;font-weight:600">ประวัติโพสต์ที่บันทึกไว้ในเบราว์เซอร์นี้</summary><div id="fb-history-list" style="padding:10px 0"></div></details>
+<small class="muted">แก้ไขข้อความได้ก่อนคัดลอก · ประวัติเก็บเฉพาะเบราว์เซอร์นี้ ไม่ซิงก์ข้ามอุปกรณ์ · ตรวจสอบสต๊อกก่อนนำโพสต์เก่ากลับมาใช้</small>
 </section><div class="stock-overview" id="stock-overview" aria-label="สรุปจำนวนสินค้าตามสถานะ"><div class="stock-stat"><span>ทั้งหมด</span><strong id="stock-all">0</strong></div><div class="stock-stat"><span>พร้อมขาย</span><strong id="stock-available">0</strong></div><div class="stock-stat"><span>จองแล้ว</span><strong id="stock-reserved">0</strong></div><div class="stock-stat"><span>ขายแล้ว</span><strong id="stock-sold">0</strong></div><div class="stock-stat"><span>ยังไม่มีรูปหลัก</span><strong id="stock-no-image">0</strong></div><div class="stock-stat"><span>ยังไม่ระบุราคา</span><strong id="stock-no-price">0</strong></div></div><div class="stock-toolbar"><div class="search-field"><span class="search-symbol" aria-hidden="true">⌕</span><input id="search" type="search" autocomplete="off" placeholder="ค้นหาชื่อรุ่น / รหัสสินค้า" aria-label="ค้นหาสินค้า"><button type="button" class="search-clear" id="search-clear" aria-label="ล้างคำค้นหา">×</button></div><select id="stock-filter" aria-label="กรองสถานะ"><option value="all">ทุกสถานะ</option><option value="available">พร้อมขาย</option><option value="reserved">จองแล้ว</option><option value="sold">ขายแล้ว</option><option value="hidden">ซ่อนจากหน้าร้าน</option><option value="missing-image">ยังไม่มีรูปหลัก</option><option value="missing-price">ยังไม่ระบุราคา</option></select></div><div class="list-heading"><span id="result-count">0 รายการ</span><button type="button" id="reload" class="reload-button">↻ รีเฟรช</button></div><div id="items"></div></div>
 <section id="editor" class="panel hidden"><div class="editor-heading"><div><span class="overline">PRODUCT EDITOR</span><h2 id="editor-title">แก้ไขสินค้า</h2></div><button type="button" class="secondary editor-back" id="editor-back">← กลับรายการ</button></div><form id="product-form"><div class="grid"><div><label>รหัสสินค้า (SKU)</label><input id="sku" required readonly placeholder="ระบบสร้าง SKU อัตโนมัติ"><small class="muted" id="sku-hint">ระบบตรวจสอบเลขล่าสุดจากฐานข้อมูล</small></div><div><label>ชื่อสินค้า</label><input id="name" required></div><div><label>หมวดหมู่</label><select id="category"><option>PC PARTS</option><option>GAMING MOUSE</option><option>GAMEPAD & USB HUB</option><option>KEYBOARD</option><option>MOUSEPAD</option><option>AUDIO</option><option>MONITOR & ACCESSORIES</option></select></div><div><label>ประเภทย่อย</label><input id="sub" list="clicko-subtypes" placeholder="เลือกหรือพิมพ์ประเภทย่อย"><datalist id="clicko-subtypes"><option value="หูฟัง"><option value="หูฟัง IEM"><option value="ไมโครโฟน"><option value="ซาวด์การ์ด"><option value="ขาไมค์"><option value="ลำโพง"><option value="จอมอนิเตอร์"><option value="ขาจับจอ"><option value="USB HUB"></datalist></div><div><label>สภาพสินค้า</label><select id="condition"><option>มือ1</option><option>มือ2</option></select></div><div><label>ราคา (บาท)</label><input id="price" type="number" min="0" step="1" placeholder="เว้นว่างเมื่อยังไม่ระบุราคา"></div><div><label>ประกัน</label><input id="warranty"></div><div><label>สถานะสต๊อก</label><select id="stock_status"><option value="available">พร้อมขาย</option><option value="reserved">จองแล้ว</option><option value="sold">ขายแล้ว</option></select></div></div><label>สเปคสินค้า</label><textarea id="specs"></textarea><label>หมายเหตุ / ตำหนิ</label><textarea id="note"></textarea><label>ลิงก์ภาพกล่องสินค้าตรงรุ่น (HTTPS)</label><p class="muted">ใช้ภาพกล่องตรงรุ่นเท่านั้น หากไม่มีภาพยืนยัน ให้เว้นว่างแทนการใช้ภาพผิดรุ่น</p><p><a id="box-search" href="https://www.google.com/search?tbm=isch&q=product%20retail%20box" target="_blank" rel="noopener">ค้นหาภาพกล่องสินค้ารุ่นนี้ ↗</a></p><input id="image" type="url" placeholder="https://...">
 <div class="manufacturer-photo-settings">
@@ -375,14 +380,39 @@ async function load(){
 async function check(){const {data:{user}}=await db.auth.getUser();if(!user){authorized=false;visible('login',true);visible('workspace',false);visible('logout',false);visible('mobile-add',false);return;}const {data,error}=await db.from('clicko_admins').select('user_id').eq('user_id',user.id).maybeSingle();authorized=!!data&&!error;visible('login',!authorized);visible('workspace',authorized);visible('logout',true);visible('mobile-add',authorized&&!editing);if(!authorized){visible('mobile-add',false);notice('บัญชีนี้ยังไม่มีสิทธิ์ผู้ดูแล กรุณาเพิ่ม user_id ในตาราง clicko_admins');return;}await load();notice('เข้าสู่ระบบสำเร็จ');}
 $('login-form').addEventListener('submit',async e=>{e.preventDefault();notice('กำลังเข้าสู่ระบบ...');const {error}=await db.auth.signInWithPassword({email:$('email').value,password:$('password').value});if(error){notice(error.message);return;}try{await check()}catch(err){notice(err.message)}});
 $('logout').onclick=async()=>{await db.auth.signOut();authorized=false;closeEditor();visible('mobile-add',false);notice('ออกจากระบบแล้ว');await check()};
-function clickoFacebookSelection(){
- const scope=$('fb-scope').value,condition=$('fb-condition').value,q=$('search').value.trim().toLocaleLowerCase(),filter=$('stock-filter').value;
+
+let fbExcluded=new Set(),fbPages=[],fbLastText='',fbHistory=[];
+const fbHistoryKey='clicko_fb_post_history_v2';
+try{fbHistory=JSON.parse(localStorage.getItem(fbHistoryKey)||'[]');if(!Array.isArray(fbHistory))fbHistory=[];}catch(e){fbHistory=[];}
+function fbEligible(){
+ const scope=$('fb-scope').value,condition=$('fb-condition').value,category=$('fb-category').value,q=$('search').value.trim().toLocaleLowerCase(),filter=$('stock-filter').value;
  return rows.filter(p=>!p.is_hidden&&stockStatus(p)==='available'
-  &&(condition==='all'||p.condition===condition)
-  &&(scope==='all'||((filter==='all'||filter==='available'||filter==='missing-image'||filter==='missing-price')
-  &&(p.sku+' '+p.name+' '+p.category+' '+p.sub).toLocaleLowerCase().includes(q)
-  &&(filter!=='missing-image'||!p.image)
-  &&(filter!=='missing-price'||p.price===null||p.price===undefined||p.price==='')));
+ &&(condition==='all'||p.condition===condition)
+ &&(category==='all'||p.category===category)
+ &&(scope==='all'||((filter==='all'||filter==='available'||filter==='missing-image'||filter==='missing-price')
+ &&(p.sku+' '+p.name+' '+p.category+' '+p.sub).toLocaleLowerCase().includes(q)
+ &&(filter!=='missing-image'||!p.image)
+ &&(filter!=='missing-price'||p.price===null||p.price===undefined||p.price==='')));
+}
+function fbCategories(){
+ const previous=$('fb-category').value;
+ const categories=[...new Set(rows.filter(p=>!p.is_hidden&&stockStatus(p)==='available').map(p=>p.category).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'th'));
+ $('fb-category').replaceChildren(new Option('ทุกหมวดหมู่','all'),...categories.map(cat=>new Option(cat,cat)));
+ $('fb-category').value=categories.includes(previous)?previous:'all';
+}
+function fbDrawProducts(){
+ const eligible=fbEligible(),search=$('fb-product-search').value.trim().toLocaleLowerCase();
+ const list=eligible.filter(p=>(p.name+' '+p.sku).toLocaleLowerCase().includes(search));
+ const box=$('fb-product-list');box.replaceChildren();
+ for(const p of list){
+  const label=document.createElement('label');label.style.cssText='display:flex;gap:8px;align-items:center;padding:5px 3px;font-size:13px';
+  const input=document.createElement('input');input.type='checkbox';input.checked=!fbExcluded.has(p.sku);
+  input.addEventListener('change',()=>{if(input.checked)fbExcluded.delete(p.sku);else fbExcluded.add(p.sku);fbGenerate();});
+  const name=document.createElement('span');name.textContent=p.name+' · '+p.sku;
+  label.append(input,name);box.append(label);
+ }
+ if(!list.length)box.textContent='ไม่พบสินค้าที่ตรงกับการค้นหา';
+ $('fb-selected-count').textContent=(eligible.filter(p=>!fbExcluded.has(p.sku)).length)+' / '+eligible.length+' รายการที่เลือก';
 }
 function clickoFacebookPost(items){
  const groups=new Map(),compact=$('fb-format').value==='compact',warranty=$('fb-warranty').checked;
@@ -407,22 +437,53 @@ function clickoFacebookPost(items){
  if($('fb-link').checked)lines.push('เช็กสินค้า: https://clicko-store.github.io/');
  return lines.join('\n').trim();
 }
-function clickoRefreshFacebookPreview(){
- if(!authorized)return;
- const selected=clickoFacebookSelection();
- $('fb-text').value=selected.length?clickoFacebookPost(selected):'';
- $('fb-count').textContent=selected.length+' รายการพร้อมขาย · '+$('fb-text').value.length.toLocaleString('th-TH')+' ตัวอักษร';
- $('fb-copy').disabled=!selected.length;
- if(!selected.length)notice('ไม่พบสินค้าพร้อมขายตามเงื่อนไขที่เลือก');
+function fbShowPage(){
+ const index=Number($('fb-page').value)||0;
+ $('fb-text').value=fbPages[index]||'';
+ fbLastText=$('fb-text').value;
+ $('fb-count').textContent=fbPages.length+' โพสต์ · '+$('fb-text').value.length.toLocaleString('th-TH')+' ตัวอักษรในโพสต์นี้';
+ $('fb-copy').disabled=!$('fb-text').value;
 }
-$('fb-preview').onclick=clickoRefreshFacebookPreview;
-['fb-scope','fb-condition','fb-format','fb-link','fb-warranty'].forEach(id=>$(id).addEventListener('change',clickoRefreshFacebookPreview));
-$('fb-copy').onclick=async()=>{
- const content=$('fb-text').value;
- if(!content.trim()){notice('กรุณาสร้างตัวอย่างโพสต์ก่อน');return;}
- try{await navigator.clipboard.writeText(content);notice('คัดลอกโพสต์ Facebook แล้ว นำไปวางได้เลย');}
- catch(err){const el=document.createElement('textarea');el.value=content;el.style.position='fixed';el.style.left='-9999px';document.body.append(el);el.select();const ok=document.execCommand('copy');el.remove();notice(ok?'คัดลอกโพสต์ Facebook แล้ว':'คัดลอกไม่สำเร็จ กรุณาเลือกข้อความในช่องและคัดลอกเอง');}
+function fbGenerate(){
+ if(!authorized)return;
+ const selected=fbEligible().filter(p=>!fbExcluded.has(p.sku));
+ const size=Number($('fb-split').value)||selected.length||1;
+ fbPages=[];
+ for(let i=0;i<selected.length;i+=size)fbPages.push(clickoFacebookPost(selected.slice(i,i+size)));
+ const page=$('fb-page');page.replaceChildren(...fbPages.map((_,i)=>new Option('โพสต์ '+(i+1)+' / '+fbPages.length,String(i))));
+ fbShowPage();
+ $('fb-selected-count').textContent=selected.length+' / '+fbEligible().length+' รายการที่เลือก';
+}
+function fbHistoryRender(){
+ const box=$('fb-history-list');box.replaceChildren();
+ for(const [i,h] of fbHistory.entries()){
+  const line=document.createElement('div');line.style.cssText='display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid #eee;padding:8px 0';
+  const info=document.createElement('span');info.textContent=new Date(h.date).toLocaleString('th-TH')+' · '+h.count+' รายการ';
+  const open=document.createElement('button');open.type='button';open.className='secondary';open.textContent='ดูข้อความ';
+  open.onclick=()=>{$('fb-text').value=h.text;notice('เปิดข้อความเก่าแล้ว กรุณาตรวจสอบสต๊อกก่อนโพสต์');};
+  line.append(info,open);box.append(line);
+ }
+ if(!fbHistory.length)box.textContent='ยังไม่มีประวัติที่บันทึก';
+}
+$('fb-history-save').onclick=()=>{
+ const value=$('fb-text').value.trim();if(!value)return notice('ยังไม่มีข้อความให้บันทึก');
+ fbHistory.unshift({date:new Date().toISOString(),count:fbEligible().filter(p=>!fbExcluded.has(p.sku)).length,text:value});
+ fbHistory=fbHistory.slice(0,20);
+ try{localStorage.setItem(fbHistoryKey,JSON.stringify(fbHistory));fbHistoryRender();notice('บันทึกประวัติโพสต์ในเบราว์เซอร์แล้ว');}
+ catch(e){notice('ไม่สามารถบันทึกประวัติในเบราว์เซอร์ได้');}
 };
+$('fb-preview').onclick=()=>{fbCategories();fbDrawProducts();fbGenerate();};
+$('fb-page').onchange=fbShowPage;
+$('fb-product-search').oninput=fbDrawProducts;
+$('fb-select-all').onclick=()=>{for(const p of fbEligible())fbExcluded.delete(p.sku);fbDrawProducts();fbGenerate();};
+$('fb-select-none').onclick=()=>{for(const p of fbEligible())fbExcluded.add(p.sku);fbDrawProducts();fbGenerate();};
+['fb-scope','fb-condition','fb-category','fb-format','fb-link','fb-warranty','fb-split'].forEach(id=>$(id).addEventListener('change',()=>{fbDrawProducts();fbGenerate();}));
+$('fb-copy').onclick=async()=>{
+ const content=$('fb-text').value;if(!content.trim())return notice('กรุณาสร้างตัวอย่างโพสต์ก่อน');
+ try{await navigator.clipboard.writeText(content);notice('คัดลอกโพสต์ Facebook แล้ว');}
+ catch(err){const el=document.createElement('textarea');el.value=content;el.style.position='fixed';el.style.left='-9999px';document.body.append(el);el.select();const ok=document.execCommand('copy');el.remove();notice(ok?'คัดลอกโพสต์แล้ว':'คัดลอกไม่สำเร็จ กรุณาคัดลอกข้อความเอง');}
+};
+fbCategories();fbHistoryRender();
 $('new').onclick=()=>edit(null);
 $('mobile-add').onclick=()=>edit(null);
 $('cancel').onclick=closeEditor;
