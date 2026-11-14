@@ -270,7 +270,7 @@ function list(){
  $('stock-no-image')&&($('stock-no-image').textContent=rows.filter(p=>!p.is_hidden&&!p.image).length);
  $('stock-no-price')&&($('stock-no-price').textContent=rows.filter(p=>!p.is_hidden&&p.price===null).length);
  const shown=rows.filter(p=>(p.sku+' '+p.name+' '+p.category+' '+p.sub).toLocaleLowerCase().includes(q)&&(filter==='all'||(filter==='hidden'?p.is_hidden:filter==='missing-image'?!p.is_hidden&&!p.image:filter==='missing-price'?!p.is_hidden&&p.price===null:!p.is_hidden&&stockStatus(p)===filter)));
- $('result-count')&&($('result-count').textContent=shown.length+' / '+rows.length+' รายการ);
+ if($('result-count'))$('result-count').textContent=shown.length+' / '+rows.length+' รายการ';
  $('search-clear').hidden=!$('search').value;
  $('items').innerHTML=shown.length?shown.map(p=>{
    const state=p.is_hidden?'hidden':stockStatus(p);
