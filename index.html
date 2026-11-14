@@ -2642,4 +2642,25 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 #clicko-inventory-notice[data-state="error"]{cursor:pointer!important}
 #clicko-inventory-notice[data-state="pending"]{color:#475569!important;background:#f1f5f9!important;border-color:#dce4ee!important}
 #catalog #grid img{content-visibility:auto}
+</style>
+<style id="clicko-product-card-premium-20261115">
+/* Presentation-only product card refresh: existing inventory and handlers untouched. */
+#catalog .grid{gap:16px!important;align-items:stretch}
+#catalog .card{background:#fff!important;color:#14191f!important;border:1px solid #e7e9ed!important;border-radius:19px!important;box-shadow:0 5px 20px rgba(10,17,30,.055)!important;overflow:hidden;transition:transform .18s ease,box-shadow .18s ease}
+#catalog .card:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(10,17,30,.1)!important}
+#catalog .card .pic{height:205px!important;background:#f7f8fa!important;border-bottom:1px solid #f0f1f3!important}
+#catalog .card .pic img{background:transparent!important;mix-blend-mode:normal!important;object-fit:contain!important;padding:13px!important}
+#catalog .card .info{padding:15px!important;gap:0}
+#catalog .card .name{color:#14191f!important;font-weight:800!important;line-height:1.4!important;overflow-wrap:anywhere}
+#catalog .card .sub,#catalog .card .warranty,#catalog .card .specs{color:#667085!important}
+#catalog .card .tag{background:#171b22!important;color:#fff!important;border-radius:7px!important;font-size:10px!important;padding:5px 8px!important}
+#catalog .card .tag.used{background:#eef0f3!important;color:#323943!important}
+#catalog .card .tag.sold{background:#fee2e2!important;color:#b91c1c!important}
+#catalog .card .price{color:#111318!important;font-weight:900!important;letter-spacing:-.5px!important}
+#catalog .card .price.unpriced{color:#b91c1c!important}
+#catalog .card .ask{background:#171b22!important;border:1px solid #171b22!important;color:#fff!important;border-radius:10px!important;box-shadow:none!important;min-height:39px;display:flex!important;align-items:center;justify-content:center}
+#catalog .card .ask.sold-button{background:#e5e7eb!important;color:#6b7280!important;border-color:#e5e7eb!important}
+@media(max-width:700px){#catalog .grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}#catalog .card{border-radius:14px!important}#catalog .card .pic{height:145px!important}#catalog .card .pic img{padding:9px!important}#catalog .card .info{padding:11px!important}#catalog .card .name{font-size:12px!important;min-height:0!important}#catalog .card .price{font-size:19px!important}#catalog .card .ask{font-size:11px!important;padding:9px 4px!important;min-height:36px}}
+@media(max-width:370px){#catalog .card .pic{height:125px!important}}
+@media(prefers-reduced-motion:reduce){#catalog .card{transition:none!important}}
 </style></body></html>
