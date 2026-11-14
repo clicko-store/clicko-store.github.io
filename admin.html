@@ -223,7 +223,7 @@ a:focus-visible,button:focus-visible{outline:3px solid #D90429!important;outline
 <div id="photo-gallery-admin" class="photo-gallery-admin"></div></div>
 <p class="row"><button type="submit" id="save">บันทึกสินค้า</button><button type="button" class="secondary" id="cancel">ยกเลิก</button><button type="button" class="danger" id="remove">ซ่อนจากหน้าร้าน</button></p></form></section></section><button id="mobile-add" type="button" class="mobile-add hidden" aria-label="เพิ่มสินค้าใหม่">+ เพิ่มสินค้า</button></main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script src="./supabase-config.js"></script><script>
-const cfg=window.CLICKO_SUPABASE||{}, $=id=>document.getElementById(id), visible=(id,on)=>$(id).classList.toggle('hidden',!on), notice=t=>$('notice').textContent=t;
+const cfg=window.CLICKO_SUPABASE||{}, $=id=>document.getElementById(id), visible=(id,on)=>{const el=$(id);if(el)el.classList.toggle('hidden',!on);else console.warn('CLICKO Admin: missing element',id)}, notice=t=>{const el=$('notice');if(el)el.textContent=t;else console.warn('CLICKO Admin notice:',t)};
 let db=null,rows=[],editing=null,authorized=false,loading=false,photoRows=[];
 const money=n=>n===null||n===undefined?'สอบถามราคา':'฿'+Number(n).toLocaleString('th-TH');
 const fields=['sku','name','category','sub','condition','price','warranty','stock_status','specs','note','image','manufacturer_image_url','manufacturer_source_url'];
@@ -265,12 +265,12 @@ function list(){
  const q=$('search').value.trim().toLocaleLowerCase(),filter=$('stock-filter').value;
  const stats={available:0,reserved:0,sold:0};
  for(const p of rows)if(!p.is_hidden)stats[stockStatus(p)]++;
- $('stock-all').textContent=rows.length;
- for(const key of Object.keys(stats))$('stock-'+key).textContent=stats[key];
- $('stock-no-image').textContent=rows.filter(p=>!p.is_hidden&&!p.image).length;
- $('stock-no-price').textContent=rows.filter(p=>!p.is_hidden&&p.price===null).length;
+ $('stock-all')&&($('stock-all').textContent=rows.length);
+ for(const key of Object.keys(stats)){const el=$('stock-'+key);if(el)el.textContent=stats[key];else console.warn('CLICKO Admin: missing stock counter',key)}
+ $('stock-no-image')&&($('stock-no-image').textContent=rows.filter(p=>!p.is_hidden&&!p.image).length);
+ $('stock-no-price')&&($('stock-no-price').textContent=rows.filter(p=>!p.is_hidden&&p.price===null).length);
  const shown=rows.filter(p=>(p.sku+' '+p.name+' '+p.category+' '+p.sub).toLocaleLowerCase().includes(q)&&(filter==='all'||(filter==='hidden'?p.is_hidden:filter==='missing-image'?!p.is_hidden&&!p.image:filter==='missing-price'?!p.is_hidden&&p.price===null:!p.is_hidden&&stockStatus(p)===filter)));
- $('result-count').textContent=shown.length+' / '+rows.length+' รายการ';
+ $('result-count')&&($('result-count').textContent=shown.length+' / '+rows.length+' รายการ);
  $('search-clear').hidden=!$('search').value;
  $('items').innerHTML=shown.length?shown.map(p=>{
    const state=p.is_hidden?'hidden':stockStatus(p);
