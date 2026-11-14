@@ -49,7 +49,7 @@ ok(inventory.clickoCanOrder({id:'QA-1',stock_status:'sold',sold:true,price:null}
 ok(inventory.clickoCanOrder({id:'QA-UNSEEN',stock_status:'available',sold:false,price:10})===false,'Unverified SKU cannot be ordered');
 ok(inventory.clickoCanOrder({id:'QA-1',stock_status:'available',sold:false,is_hidden:true,price:10})===false,'Archived SKU cannot be ordered');
 ok(html['index.html'].includes('clickoAdminRows.filter(p=>!p.is_hidden).map(p=>({'),'Hidden products must be excluded from merged storefront');
-ok(html['index.html'].includes('products.filter(p=>verified.has(String(p.id)))'),'Only database-verified products remain after Supabase sync');
+ok(html['index.html'].includes('products.splice(0,products.length,...merged)')&&html['index.html'].includes('clickoVerifiedSkus=new Set(data.filter(row=>!row.is_hidden)'),'Only database-synced products replace storefront catalog and verified SKUs exclude hidden products');
 ok(html['admin.html'].includes('toggleProductHidden'),'Admin must hide products without deleting them');
 ok(html['orders.html'].includes("p.stock_status==='available'&&!p.is_hidden"),'Order form must exclude archived products');
 ok(html['backup.html'].includes("'stock_status','is_hidden'"),'Backup recovery must preserve archived status');
