@@ -257,7 +257,7 @@ async function clickoSuggestSku(){
   notice('ไม่สามารถสร้าง SKU ได้: '+err.message);
  }
 }
-function edit(p){editing=p?.sku||null;visible('editor',true);visible('mobile-add',false);$('editor-title').textContent=editing?'แก้ไขสินค้า '+editing:'เพิ่มสินค้าใหม่';fields.forEach(k=>$(k).value=p?.[k]??(k==='stock_status'?'available':''));$('manufacturer_image_verified').checked=!!p?.manufacturer_image_verified;$('sku').readOnly=!!editing;$('stock_status').value=p?.stock_status||(p?.sold?'sold':'available');$('box-search').href='https://www.google.com/search?tbm=isch&q='+encodeURIComponent((p?.name||'')+' retail box packaging');$('photo').value='';$('extra-photos').value='';$('preview').src=p?.image||'';visible('preview',!!p?.image);$('remove').disabled=!editing;$('remove').textContent=p?.is_hidden?'นำกลับมาแสดง':'ซ่อนจากหน้าร้าน';renderPhotoGallery();if(!editing){clickoSkuVerified=false;$('sku').value='';void clickoSuggestSku();}else{$('sku-hint').textContent='รหัสสินค้าเดิม';$('save').disabled=false;}$('editor').scrollIntoView({behavior:'smooth'});}
+function edit(p){editing=p?.sku||null;visible('editor',true);visible('mobile-add',false);$('editor-title').textContent=editing?'แก้ไขสินค้า '+editing:'เพิ่มสินค้าใหม่';fields.forEach(k=>$(k).value=p?.[k]??(k==='stock_status'?'available':''));clickoRefreshSubtypeCatalog();$('manufacturer_image_verified').checked=!!p?.manufacturer_image_verified;$('sku').readOnly=!!editing;$('stock_status').value=p?.stock_status||(p?.sold?'sold':'available');$('box-search').href='https://www.google.com/search?tbm=isch&q='+encodeURIComponent((p?.name||'')+' retail box packaging');$('photo').value='';$('extra-photos').value='';$('preview').src=p?.image||'';visible('preview',!!p?.image);$('remove').disabled=!editing;$('remove').textContent=p?.is_hidden?'นำกลับมาแสดง':'ซ่อนจากหน้าร้าน';renderPhotoGallery();if(!editing){clickoSkuVerified=false;$('sku').value='';void clickoSuggestSku();}else{$('sku-hint').textContent='รหัสสินค้าเดิม';$('save').disabled=false;}$('editor').scrollIntoView({behavior:'smooth'});}
 const STOCK_LABELS={available:'พร้อมขาย',reserved:'จองแล้ว',sold:'ขายแล้ว'};
 function stockStatus(p){return ['available','reserved','sold'].includes(p.stock_status)?p.stock_status:(p.sold?'sold':'available');}
 function stockOptions(selected){return Object.keys(STOCK_LABELS).map(k=>'<option value="'+k+'"'+(k===selected?' selected':'')+'>'+STOCK_LABELS[k]+'</option>').join('');}
@@ -388,20 +388,32 @@ $('items').onclick=e=>{
 };
 $('items').onchange=e=>{const sel=e.target.closest('select[data-stock-sku]');if(sel)changeStock(sel.dataset.stockSku,sel.value,sel)};
 // Keep subtype suggestions relevant to the selected category without changing saved values.
-const clickoSubtypeOptions=Array.from($('clicko-subtypes').options).map(o=>o.value);
 const clickoSubtypeByCategory={
- 'MOUSEPAD':['CLOTH PADS','GLASS MOUSEPAD','ARTISAN PADS'],
- 'AUDIO':['หูฟัง','หูฟัง IEM','ไมโครโฟน','ซาวด์การ์ด','ขาไมค์','ลำโพง'],
- 'MONITOR & ACCESSORIES':['จอมอนิเตอร์','ขาจับจอ','GAMING MONITOR'],
- 'GAMEPAD & USB HUB':['USB HUB']
+ 'PC PARTS':['CPU','VGA','RAM','MAINBOARD','COOLER','CASE','STREAMING & SPEAKER','การ์ดจอ'],
+ 'GAMING MOUSE':['มีสาย','ไร้สาย','ATK','HITSCAN','LAMZU','LOGITECH','PULSAR','RAZER','VAXEE','WLMOUSE','OTHERS'],
+ 'GAMEPAD & USB HUB':['GAMEPAD','USB HUB','CONTROLLER'],
+ 'KEYBOARD':['MAGNETIC SWITCH','MECHANICAL SWITCH','มีสาย','ไร้สาย'],
+ 'MAGNETIC KEYBOARD':['MAGNETIC SWITCH','MECHANICAL SWITCH'],
+ 'MOUSEPAD':['CLOTH PADS','GLASS MOUSEPADS','GLASS MOUSEPAD','ARTISAN PADS'],
+ 'AUDIO':['หูฟังไร้สาย','หูฟังมีสาย','หูฟัง IEM','IEM','MICROPHONE','ไมโครโฟน','SOUNDCARD','ซาวด์การ์ด','ลำโพง','Boom ARM Stand','ขาไมค์'],
+ 'MONITOR & ACCESSORIES':['GAMING MONITOR','จอมอนิเตอร์','MONITOR ARM','ขาจับจอ','แขนจับจอคู่'],
+ 'MONITOR ARM':['แขนจับจอคู่','ขาจับจอ']
 };
+const clickoExistingSubtypeValues=new Map();
+function clickoRememberSubtype(category,sub){category=String(category||'').trim();sub=String(sub||'').trim();if(!category||!sub)return;if(!clickoExistingSubtypeValues.has(category))clickoExistingSubtypeValues.set(category,new Set());clickoExistingSubtypeValues.get(category).add(sub)}
 function clickoRefreshSubtypeSuggestions(){
- const selected=clickoSubtypeByCategory[$('category').value]||[];
+ const category=$('category').value;
+ const options=[...(clickoSubtypeByCategory[category]||[]),...(clickoExistingSubtypeValues.get(category)||[])];
+ const current=$('sub').value.trim();
+ if(current)options.push(current);
+ const unique=[...new Set(options.filter(Boolean))];
  const list=$('clicko-subtypes');
- list.replaceChildren(...selected.map(value=>{const option=document.createElement('option');option.value=value;return option;}));
+ list.replaceChildren(...unique.map(value=>{const option=document.createElement('option');option.value=value;return option}));
 }
+function clickoRefreshSubtypeCatalog(){if(typeof rows!=='undefined'&&Array.isArray(rows))rows.forEach(p=>clickoRememberSubtype(p.category,p.sub));clickoRefreshSubtypeSuggestions()}
+$('sub').addEventListener('change',()=>clickoRememberSubtype($('category').value,$('sub').value));
 $('category').addEventListener('change',clickoRefreshSubtypeSuggestions);
-clickoRefreshSubtypeSuggestions();
+clickoRefreshSubtypeCatalog();
 $('name').addEventListener('input',()=>{$('box-search').href='https://www.google.com/search?tbm=isch&q='+encodeURIComponent($('name').value+' retail box packaging')});
 $('image').oninput=()=>{const url=$('image').value.trim();$('preview').src=url;visible('preview',!!url)};
 $('photo').onchange=()=>{const f=$('photo').files[0];if(!f)return;const url=URL.createObjectURL(f);$('preview').src=url;visible('preview',true)};
