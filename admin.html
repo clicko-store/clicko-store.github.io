@@ -248,6 +248,14 @@ main.admin-layout{max-width:1400px}
 #stock-overview .stock-stat[aria-pressed="true"]{border-color:var(--stat-accent)!important}
 #stock-overview .stock-stat:focus-visible{outline:2px solid #1762c9;outline-offset:2px}
 @media(max-width:650px){#stock-overview{gap:8px}#stock-overview .stock-stat{min-height:80px;padding:10px}}
+</style><style id="clicko-stock-table-pagination">
+#stock-pager[hidden],.stock-table tbody tr[hidden]{display:none!important}
+#stock-pager{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:12px 0 0;color:#34465e;font-size:12px}
+#stock-pager label,#stock-pager>div{display:flex;align-items:center;gap:6px;margin:0}
+#stock-page-size{width:auto;min-height:38px}
+#stock-pager button{min-height:38px}
+#stock-pager button:disabled{opacity:.45;cursor:default}
+.stock-table tbody tr:hover{background:#f0f6ff}
 </style></head><body>
 <header><div><h1>Clicko<span class="admin-title-accent">.</span> Admin</h1><span class="muted">จัดการร้านบนมือถือได้ทุกที่</span></div><div><a href="./orders.html">ออเดอร์ / กำไร</a> <a href="./sheets.html">Google Sheets</a> <a href="./backup.html">สำรองข้อมูล</a> <a href="./">หน้าร้าน ↗</a> <button id="logout" class="secondary hidden">ออกจากระบบ</button></div></header>
 <main class="admin-layout"><aside class="admin-sidebar">
@@ -272,7 +280,12 @@ main.admin-layout{max-width:1400px}
 <button class="stock-stat" type="button" data-stat-filter="sold" aria-pressed="false"><span>ขายแล้ว</span><strong id="stock-sold">0</strong></button>
 <button class="stock-stat" type="button" data-stat-filter="missing-image" aria-pressed="false"><span>ยังไม่มีรูปหลัก</span><strong id="stock-no-image">0</strong></button>
 <button class="stock-stat" type="button" data-stat-filter="missing-price" aria-pressed="false"><span>ยังไม่ระบุราคา</span><strong id="stock-no-price">0</strong></button>
-</div><div class="stock-toolbar"><div class="search-field"><span class="search-symbol" aria-hidden="true">⌕</span><input id="search" type="search" autocomplete="off" placeholder="ค้นหาชื่อรุ่น / รหัสสินค้า" aria-label="ค้นหาสินค้า"><button type="button" class="search-clear" id="search-clear" aria-label="ล้างคำค้นหา">×</button></div><select id="stock-filter" aria-label="กรองสถานะ"><option value="all">ทุกสถานะ</option><option value="available">พร้อมขาย</option><option value="reserved">จองแล้ว</option><option value="sold">ขายแล้ว</option><option value="hidden">ซ่อนจากหน้าร้าน</option><option value="missing-image">ยังไม่มีรูปหลัก</option><option value="missing-price">ยังไม่ระบุราคา</option></select></div><div class="list-heading"><span id="result-count">0 รายการ</span><button type="button" id="reload" class="reload-button">↻ รีเฟรช</button></div><div id="items"></div></div>
+</div><div class="stock-toolbar"><div class="search-field"><span class="search-symbol" aria-hidden="true">⌕</span><input id="search" type="search" autocomplete="off" placeholder="ค้นหาชื่อรุ่น / รหัสสินค้า" aria-label="ค้นหาสินค้า"><button type="button" class="search-clear" id="search-clear" aria-label="ล้างคำค้นหา">×</button></div><select id="stock-filter" aria-label="กรองสถานะ"><option value="all">ทุกสถานะ</option><option value="available">พร้อมขาย</option><option value="reserved">จองแล้ว</option><option value="sold">ขายแล้ว</option><option value="hidden">ซ่อนจากหน้าร้าน</option><option value="missing-image">ยังไม่มีรูปหลัก</option><option value="missing-price">ยังไม่ระบุราคา</option></select></div><div class="list-heading"><span id="result-count">0 รายการ</span><button type="button" id="reload" class="reload-button">↻ รีเฟรช</button></div><div id="items"></div><nav id="stock-pager" aria-label="แบ่งหน้าตารางสต๊อก" hidden>
+<label>แถวต่อหน้า <select id="stock-page-size"><option>25</option><option>50</option><option>100</option></select></label>
+<span id="stock-page-range" role="status"></span>
+<div><button type="button" class="secondary" id="stock-page-prev">ก่อนหน้า</button>
+<button type="button" class="secondary" id="stock-page-next">ถัดไป</button></div>
+</nav></div>
 <section id="editor" class="panel hidden"><div class="editor-heading"><div><span class="overline">PRODUCT EDITOR</span><h2 id="editor-title">แก้ไขสินค้า</h2></div><button type="button" class="secondary editor-back" id="editor-back">← กลับรายการ</button></div><form id="product-form"><div class="grid"><div><label>รหัสสินค้า (SKU)</label><input id="sku" required readonly placeholder="ระบบสร้าง SKU อัตโนมัติ"><small class="muted" id="sku-hint">ระบบตรวจสอบเลขล่าสุดจากฐานข้อมูล</small></div><div><label>ชื่อสินค้า</label><input id="name" required></div><div><label>หมวดหมู่</label><select id="category"><option>PC PARTS</option><option>GAMING MOUSE</option><option>GAMEPAD & USB HUB</option><option>KEYBOARD</option><option>MOUSEPAD</option><option>AUDIO</option><option>MONITOR & ACCESSORIES</option></select></div><div><label>ประเภทย่อย</label><input id="sub" list="clicko-subtypes" placeholder="เลือกหรือพิมพ์ประเภทย่อย"><datalist id="clicko-subtypes"><option value="หูฟัง"><option value="หูฟัง IEM"><option value="ไมโครโฟน"><option value="ซาวด์การ์ด"><option value="ขาไมค์"><option value="ลำโพง"><option value="จอมอนิเตอร์"><option value="ขาจับจอ"><option value="USB HUB"><option value="CLOTH PADS"><option value="GLASS MOUSEPAD"><option value="ARTISAN PADS"></datalist></div><div><label>สภาพสินค้า</label><select id="condition"><option>มือ1</option><option>มือ2</option></select></div><div><label>ราคา (บาท)</label><input id="price" type="number" min="0" step="1" placeholder="เว้นว่างเมื่อยังไม่ระบุราคา"></div><div><label>ประกัน</label><input id="warranty"></div><div><label>สถานะสต๊อก</label><select id="stock_status"><option value="available">พร้อมขาย</option><option value="reserved">จองแล้ว</option><option value="sold">ขายแล้ว</option></select></div></div><label>สเปคสินค้า</label><textarea id="specs"></textarea><label>หมายเหตุ / ตำหนิ</label><textarea id="note"></textarea><label>ลิงก์ภาพกล่องสินค้าตรงรุ่น (HTTPS)</label><p class="muted">ใช้ภาพกล่องตรงรุ่นเท่านั้น หากไม่มีภาพยืนยัน ให้เว้นว่างแทนการใช้ภาพผิดรุ่น</p><p><a id="box-search" href="https://www.google.com/search?tbm=isch&q=product%20retail%20box" target="_blank" rel="noopener">ค้นหาภาพกล่องสินค้ารุ่นนี้ ↗</a></p><input id="image" type="url" placeholder="https://...">
 <div class="manufacturer-photo-settings">
  <strong>ภาพประกอบจากผู้ผลิต (แยกจากภาพสินค้าจริง)</strong>
@@ -378,8 +391,32 @@ $('stock-overview').addEventListener('click',event=>{
  $('stock-filter').value=card.dataset.statFilter;
  list();
 });
+let stockPage=1;
+let stockPageFilter='';
+let stockPageRows=[];
+function renderStockPage(){
+ const size=Number($('stock-page-size').value);
+ const total=stockPageRows.length;
+ const pageCount=Math.max(1,Math.ceil(total/size));
+ stockPage=Math.min(pageCount,Math.max(1,stockPage));
+ const start=(stockPage-1)*size;
+ const end=Math.min(start+size,total);
+ stockPageRows.forEach((row,index)=>{
+  row.hidden=index<start||index>=end;
+  if(row.hidden){const menu=row.querySelector('details[open]');if(menu)menu.open=false;}
+ });
+ $('stock-pager').hidden=total===0;
+ $('stock-page-prev').disabled=stockPage===1;
+ $('stock-page-next').disabled=stockPage===pageCount;
+ $('stock-page-range').textContent=total?(start+1)+'–'+end+' จาก '+total+' รายการ · หน้า '+stockPage+'/'+pageCount:'';
+}
+$('stock-page-size').onchange=()=>{stockPage=1;renderStockPage();};
+$('stock-page-prev').onclick=()=>{stockPage--;renderStockPage();};
+$('stock-page-next').onclick=()=>{stockPage++;renderStockPage();};
 function list(){
  const q=$('search').value.trim().toLocaleLowerCase(),filter=$('stock-filter').value;
+ const pageFilter=JSON.stringify([q,filter]);
+ if(stockPageFilter!==pageFilter){stockPage=1;stockPageFilter=pageFilter;}
  const stats={available:0,reserved:0,sold:0};
  for(const p of rows)if(!p.is_hidden)stats[stockStatus(p)]++;
  $('stock-all')&&($('stock-all').textContent=rows.length);
@@ -404,6 +441,8 @@ function list(){
      '<td>'+(p.is_hidden?'<span class="stock-badge status-hidden">ซ่อนแล้ว</span>':'')+'<select id="status-'+sku+'" data-stock-sku="'+sku+'" aria-label="สถานะ '+esc(p.name)+'"'+(p.is_hidden?' disabled':'')+'>'+stockOptions(stockStatus(p))+'</select></td>'+
      '<td><details class="stock-row-menu" name="stock-row-menu"><summary aria-label="จัดการสินค้า '+sku+'">จัดการ</summary><div class="stock-table-actions"><button type="button" class="secondary edit-mini" data-sku="'+sku+'">แก้ไขรายละเอียด ↗</button>'+(p.is_hidden?'<button type="button" class="secondary edit-mini" data-unhide="'+sku+'">นำกลับมาแสดง</button>':'')+'</div></details></td></tr>';
  }).join('')+'</tbody></table></div>':'<div class="empty-results"><strong>ไม่พบสินค้า</strong><p>ลองค้นหาชื่อรุ่นอื่นหรือเลือกสถานะทั้งหมด</p><button type="button" id="empty-clear" class="secondary">ล้างตัวกรอง</button></div>';
+ stockPageRows=[...$('items').querySelectorAll('tbody tr[data-product-id]')];
+ renderStockPage();
 }
 async function savePrice(sku,button){
  if(!authorized||loading)return;
