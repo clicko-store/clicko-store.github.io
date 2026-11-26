@@ -215,7 +215,12 @@ a:focus-visible,button:focus-visible{outline:3px solid #D90429!important;outline
 .stock-table-sku{white-space:nowrap;font-variant-numeric:tabular-nums}
 .stock-table input[data-price-sku]{min-width:75px}
 .stock-table select[data-stock-sku]{min-width:104px}
-.stock-table-actions{display:flex;flex-direction:column;gap:5px;white-space:nowrap}
+.stock-row-menu{min-width:126px}
+.stock-row-menu summary{cursor:pointer;min-height:40px;padding:10px 12px;border:1px solid #d5deea;border-radius:9px;background:#fff;font-weight:700;white-space:nowrap}
+.stock-row-menu summary:hover,.stock-row-menu[open] summary{background:#edf5ff;color:#125bb5}
+.stock-row-menu summary:focus-visible{outline:2px solid #1769e9;outline-offset:2px}
+.stock-table-actions{display:flex;flex-direction:column;gap:5px;margin-top:6px;white-space:nowrap}
+.stock-table-actions button{text-align:left;min-height:40px}
 .stock-table td .status-hidden{display:inline-block;margin-bottom:4px}
 </style></head><body>
 <header><div><h1>Clicko<span class="admin-title-accent">.</span> Admin</h1><span class="muted">จัดการร้านบนมือถือได้ทุกที่</span></div><div><a href="./orders.html">ออเดอร์ / กำไร</a> <a href="./sheets.html">Google Sheets</a> <a href="./backup.html">สำรองข้อมูล</a> <a href="./">หน้าร้าน ↗</a> <button id="logout" class="secondary hidden">ออกจากระบบ</button></div></header>
@@ -327,7 +332,7 @@ function list(){
      '<td class="stock-table-sku">'+sku+'</td><td>'+esc(p.category)+'</td><td>'+esc(p.condition)+'</td>'+
      '<td><div class="quick-price-row"><input id="price-'+sku+'" data-price-sku="'+sku+'" type="number" inputmode="numeric" min="0" step="1" value="'+(p.price===null?'':Number(p.price))+'" placeholder="ไม่ระบุ" aria-label="ราคา '+esc(p.name)+'"><button type="button" class="quick-save" data-save-price="'+sku+'" disabled>บันทึก</button></div></td>'+
      '<td>'+(p.is_hidden?'<span class="stock-badge status-hidden">ซ่อนแล้ว</span>':'')+'<select id="status-'+sku+'" data-stock-sku="'+sku+'" aria-label="สถานะ '+esc(p.name)+'"'+(p.is_hidden?' disabled':'')+'>'+stockOptions(stockStatus(p))+'</select></td>'+
-     '<td><div class="stock-table-actions"><button type="button" class="secondary edit-mini" data-sku="'+sku+'">แก้ไขรายละเอียด ↗</button>'+(p.is_hidden?'<button type="button" class="secondary edit-mini" data-unhide="'+sku+'">นำกลับมาแสดง</button>':'')+'</div></td></tr>';
+     '<td><details class="stock-row-menu" name="stock-row-menu"><summary aria-label="จัดการสินค้า '+sku+'">จัดการ</summary><div class="stock-table-actions"><button type="button" class="secondary edit-mini" data-sku="'+sku+'">แก้ไขรายละเอียด ↗</button>'+(p.is_hidden?'<button type="button" class="secondary edit-mini" data-unhide="'+sku+'">นำกลับมาแสดง</button>':'')+'</div></details></td></tr>';
  }).join('')+'</tbody></table></div>':'<div class="empty-results"><strong>ไม่พบสินค้า</strong><p>ลองค้นหาชื่อรุ่นอื่นหรือเลือกสถานะทั้งหมด</p><button type="button" id="empty-clear" class="secondary">ล้างตัวกรอง</button></div>';
 }
 async function savePrice(sku,button){
@@ -396,7 +401,20 @@ $('items').addEventListener('keydown',e=>{
  if(e.key!=='Enter')return;const inp=e.target.closest('input[data-price-sku]');if(!inp)return;
  e.preventDefault();const btn=[...$('items').querySelectorAll('button[data-save-price]')].find(b=>b.dataset.savePrice===inp.dataset.priceSku);if(btn&&!btn.disabled)savePrice(inp.dataset.priceSku,btn);
 });
+$('items').addEventListener('keydown',e=>{
+ if(e.key!=='Escape')return;
+ const menu=e.target.closest('.stock-row-menu[open]');
+ if(!menu)return;
+ menu.open=false;
+ menu.querySelector('summary').focus();
+});
 $('items').onclick=e=>{
+ const action=e.target.closest('.stock-row-menu button');
+ if(action){
+  const menu=action.closest('details');
+  menu.open=false;
+  menu.querySelector('summary').focus();
+ }
  const price=e.target.closest('button[data-save-price]');if(price){savePrice(price.dataset.savePrice,price);return;}
  const clear=e.target.closest('#empty-clear');if(clear){$('search').value='';$('stock-filter').value='all';list();return;}
  const restore=e.target.closest('button[data-unhide]');
