@@ -2048,7 +2048,10 @@ clickoLoadAdminRows();
   if(!spotlight)return;
   if(!clickoInventoryVerified){spotlight.closest('.spotlight').hidden=true;return;}
   const selected=products.filter(p=>clickoCanOrder(p)&&typeof p.price==='number'&&p.price>0).sort((a,b)=>(Date.parse(b.created_at||'')||0)-(Date.parse(a.created_at||'')||0)||String(b.id).localeCompare(String(a.id))).slice(0,4);
-  spotlight.innerHTML=selected.map(p=>'<article class="spotlight-card"><a class="spotlight-link" href="?product='+encodeURIComponent(p.id)+'" data-sku="'+esc(p.id)+'" aria-label="ดูรายละเอียด '+esc(p.name)+'"><div class="spotlight-visual">'+(p.image?'<img src="'+esc(p.image)+'" alt="'+esc(p.name)+'" loading="lazy" onerror="this.remove()">':'<span aria-hidden="true">'+(symbols[p.category]||'▦')+'</span>')+'<small>'+esc(p.condition)+'</small></div><div class="spotlight-details"><span class="spotlight-cat">'+esc(p.category)+'</span><span class="spotlight-name">'+esc(p.name)+'</span><span class="spotlight-price">฿'+p.price.toLocaleString('th-TH')+'</span><span class="spotlight-action">ดูรายละเอียดสินค้า ↗</span></div></a></article>').join('');
+  spotlight.innerHTML=selected.map(p=>{
+   const used=p.condition==='มือ2'||p.condition==='มือ 2';
+   return '<article class="spotlight-card"><a class="spotlight-link" href="?product='+encodeURIComponent(p.id)+'" data-sku="'+esc(p.id)+'" aria-label="ดูรายละเอียด '+esc(p.name)+'"><div class="spotlight-visual">'+'<span class="spotlight-placeholder" aria-hidden="true">'+(symbols[p.category]||'▦')+'</span>'+(p.image?'<img src="'+esc(p.image)+'" alt="" loading="lazy" onerror="this.remove()">':'')+'<small class="'+(used?'spotlight-used':'spotlight-new')+'">'+(used?'มือ 2':'มือ 1')+'</small></div><div class="spotlight-details"><span class="spotlight-cat">'+esc(p.category)+'</span><span class="spotlight-name">'+esc(p.name)+'</span><span class="spotlight-price">฿'+p.price.toLocaleString('th-TH')+'</span><span class="spotlight-action">ดูรายละเอียดสินค้า ↗</span></div></a></article>';
+  }).join('');
   spotlight.closest('.spotlight').hidden=selected.length===0;
  }
  spotlight.addEventListener('click',e=>{
@@ -2873,5 +2876,22 @@ header .top .navbar-toggle{display:none;font-size:23px;border:1px solid #dce4ee;
  header .top #navbar-links.navbar-open{display:flex!important;flex-direction:column;align-items:stretch;gap:4px;position:absolute;top:100%;right:12px;width:min(300px,calc(100vw - 24px));max-height:75vh;overflow:auto;padding:8px;background:#fff;border:1px solid #dce4ee;border-radius:12px;box-shadow:0 12px 32px #14233b25;z-index:20}
  header .top #navbar-links a{justify-content:flex-start;min-height:44px}
  header .top .top-actions :is(.clicko-header-chat,.clicko-mobile-group,.contact-phone,.contact){display:none!important}
+}
+</style><style id="clicko-arrival-card-layout">
+#spotlight-products .spotlight-card{overflow:hidden;border-radius:16px!important}
+#spotlight-products .spotlight-link:focus-visible{outline:2px solid #1769e9;outline-offset:-3px}
+#spotlight-products .spotlight-visual{height:clamp(158px,14vw,208px)!important;flex:0 0 auto!important;position:relative;background:#f6f8fb!important;border-bottom:1px solid #e8edf4}
+#spotlight-products .spotlight-visual img{position:absolute;inset:0;min-width:0;min-height:0;padding:32px 12px 10px!important;object-fit:contain!important;background:#f6f8fb!important}
+#spotlight-products .spotlight-visual small{z-index:1;border:0!important;color:#fff!important;font-size:11px}
+#spotlight-products .spotlight-visual .spotlight-new{background:#155ec9!important}
+#spotlight-products .spotlight-visual .spotlight-used{background:#273549!important}
+#spotlight-products .spotlight-details{padding:14px!important;gap:7px!important}
+#spotlight-products .spotlight-name{overflow-wrap:anywhere}
+#spotlight-products .spotlight-price{font-size:23px!important;font-variant-numeric:tabular-nums}
+#spotlight-products .spotlight-action{background:#edf4ff;border-radius:9px;padding:8px!important;min-height:36px;display:grid;place-items:center;text-align:center}
+@media(max-width:700px){
+ #spotlight-products .spotlight-visual{height:clamp(115px,35vw,158px)!important}
+ #spotlight-products .spotlight-details{padding:10px!important}
+ #spotlight-products .spotlight-price{font-size:19px!important}
 }
 </style></body></html>
