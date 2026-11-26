@@ -2755,4 +2755,34 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  #catalog .catalog-results #grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 }
 </style>
+<style id="clicko-product-card-layout">
+#catalog #grid{gap:14px!important}
+#catalog #grid .card{border:1px solid #dce3ed!important;border-radius:16px!important;box-shadow:0 2px 8px #10244609!important}
+#catalog #grid .card:focus-within{border-color:#7aaeff!important}
+#catalog #grid .card .pic{height:clamp(155px,15vw,220px)!important;min-height:0!important;background:#f6f8fb!important}
+#catalog #grid .card .pic img{padding:36px 12px 12px!important}
+#catalog #grid .card .info{padding:13px 12px 10px!important}
+#catalog #grid .card .tags:empty,#catalog #grid .card .sub:empty,#catalog #grid .card .specs:empty{display:none}
+#catalog #grid .card .sub{margin:0 0 5px!important}
+#catalog #grid .card .name{font-size:14px!important;min-height:0!important;line-height:1.45!important;-webkit-line-clamp:3!important}
+#catalog #grid .card .warranty{min-height:0!important;color:#475569!important;margin-top:6px!important}
+#catalog #grid .card .bottom{padding-top:13px!important}
+#catalog #grid .card .price{font-size:23px!important;color:#1262e1!important}
+#catalog #grid .card .price.unpriced{font-size:17px!important;color:#a21b25!important}
+#catalog #grid .card .ask{width:100%;min-height:42px!important}
+#catalog #grid .card .clicko-card-tools{padding:0 12px 12px;gap:6px}
+#catalog #grid .card .clicko-card-tools button{background:#f6f8fb!important;color:#23334b!important;border:1px solid #dce3ed!important;min-width:0;min-height:38px}
+#catalog #grid .card .clicko-card-tools [aria-pressed="true"]{background:#eaf3ff!important;color:#1157c0!important;border-color:#a9caff!important}
+#catalog #grid .card :is(a,button):focus-visible{outline:2px solid #1769e9;outline-offset:-2px}
+@media(max-width:700px){
+ #catalog #grid{gap:9px!important}
+ #catalog #grid .card .pic{height:clamp(120px,38vw,170px)!important}
+ #catalog #grid .card .pic img{padding:31px 8px 8px!important}
+ #catalog #grid .card .info{padding:10px 9px 8px!important}
+ #catalog #grid .card .name{font-size:12px!important}
+ #catalog #grid .card .price{font-size:20px!important}
+ #catalog #grid .card .clicko-card-tools{padding:0 8px 9px;gap:5px}
+ #catalog #grid .card .clicko-card-tools button{min-height:40px;padding-inline:3px}
+}
+</style>
 </body></html>
